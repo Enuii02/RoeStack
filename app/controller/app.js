@@ -1,5 +1,6 @@
 // Import express.js
 const express = require("express");
+const { DateTime } = require("luxon");
 
 // Create express app
 var app = express();
@@ -12,7 +13,7 @@ app.set('view engine', 'pug');
 app.set('views', './app/views');
 
 // Get the functions in the db.js file to use
-const db = require('./services/db');
+const db = require('../model/db');
 
 // Create a route for root - /
 app.get("/", function(req, res) {
