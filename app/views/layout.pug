@@ -1,5 +1,16 @@
 html 
     head    
-        title Title here...
+        title RoeStack
+        link(rel="stylesheet", href="/styles/home-page.css")
     body 
-        block content
+        include ./partials/header.pug
+
+        .layout 
+            include ./partials/left-sidebar.pug
+
+            main.content 
+                block content 
+            
+            include ./partials/right-sidebar.pug
+        script(src="/js/sidebar.js" defer)
+
