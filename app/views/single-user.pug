@@ -1,0 +1,56 @@
+extends layout
+
+block head 
+    link(rel="stylesheet", href="/styles/user-profile.css")
+
+block content
+    .profile-info
+        .left 
+            .profile-photo-wrapper
+                .profile-photo
+            .name-role
+                h2= userName
+                h3= userRole
+        .right      
+            .posts-counter
+                h3= postsCount              
+                p post(s)
+            .meatballs
+                .dropdown 
+                    button.icon-btn(type="button" onclick="toggleMenu(this)")
+                        i.fa-solid.fa-ellipsis-vertical  
+
+                    ul.dropdown-menu 
+                        li 
+                            a(href="#") Placeholder button 
+
+                        li 
+                            a(href="#") Placeholder button
+
+                        li 
+                            a(href="#") Placeholder button
+    .about-me
+        h3.about-title About me
+        p= userDescription
+    .divider
+        p Sort by: 
+        button.sort-btn(type="button" onclick="toggleMenu(this)")
+            p Best
+            i.fa-solid.fa-angle-down
+        
+        ul.dropdown-menu 
+            li 
+                a(href="#") Placeholder button 
+
+            li 
+                a(href="#") Placeholder button
+
+            li 
+                a(href="#") Placeholder button
+    .line
+
+    .posts
+        // additional posts can go here
+
+block scripts
+    script(src="/js/profile-page.js" defer)
