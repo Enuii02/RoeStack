@@ -1,13 +1,10 @@
 html 
     head    
         title RoeStack
-<<<<<<< HEAD
         link(rel="stylesheet", href="/styles/main.css")
-=======
-        link(rel="stylesheet", href="/styles/home-page.css")
+        link(rel="stylesheet", href="/styles/layout.css")
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> 
         block head   // <--- child templates can inject CSS here
->>>>>>> 10914a9ed10ba3ed7ec84225fe56883d05dd2344
     body 
         include ./partials/header.pug
 
@@ -16,7 +13,6 @@ html
 
             main.content 
                 block content 
-                
             
             include ./partials/right-sidebar.pug
         script(src="/js/sidebar.js" defer)
