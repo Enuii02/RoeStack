@@ -62,7 +62,7 @@ header .center {
   border-right: 1px solid #4e4e4e;
   border-width: 1.5px;
 }
-.right-side {
+.header-container .right-side {
   align-content: end;
 }
 .menu-bar {

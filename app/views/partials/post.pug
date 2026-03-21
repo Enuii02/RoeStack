@@ -1,0 +1,41 @@
+.post-box 
+    .top-section
+        .left-side
+            img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            .user-info
+                .top-line
+                    span.username John
+                    //span.username= post.user.firstName
+                    span.dot •
+                    span.post-time 2 hours ago
+                    //span.post-time= #{post.createdAt} ago
+                .role Student
+        .right-side
+            .container 
+                .community-name Computer Science
+                //.community-name= post.community.name
+                .category-box
+                    img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
+                    span.category-name Question
+                    //span.category-name= post.category
+            button
+                img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+    h2.post-title Which books to read for better low-level understanding/programming?
+    //h2.post-title= post.title
+    .post-content 
+        p I am looking for recommendations on books that can help me improve my low-level understanding and programming skills. I am particularly interested in topics such as computer architecture, operating systems, and systems programming. Any suggestions would be greatly appreciated!
+        //p= post.content
+    .post-footer
+        .left-side 
+            .interactions
+                button.upvote 
+                    img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+                span.vote-count 
+                    span 17
+                //span= post.votes
+                button.downvote 
+                    img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
+            a.answers(href="/")
+                img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
+                .answer-count 5 answers
+                //span.answer-count= #{post.answersCount} answers
