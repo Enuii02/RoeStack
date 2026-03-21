@@ -73,6 +73,26 @@ app.get("/student-single/:id", async function (req, res) {
     res.send(JSON.stringify(stResult) + JSON.stringify(modResult));
     });
 
+// This is a temporary route to the single user page, structure only, without any calls to the database.
+
+app.get("/user-single", function(req, res) {
+    // To whoever will do the calls to the database, populate the following variable with data pls 
+
+    let userName = "Joe mama"
+    let userRole = "Student"
+    let postsCount = 10
+    let userDescription = "Hi, I’m Robert — a junior Embedded Software Developer with a strong interest in low-level systems and hardware-oriented programming. I’m focused on deepening my understanding of memory, architecture, and efficient C/C++ development. I’m here to learn, share insights, and grow through technical discussions."
+    let posts = []
+
+    res.render('single-user', {
+        userName,
+        userRole,
+        postsCount,
+        userDescription,
+        posts
+    })
+})
+
 
 
 // JSON output of all programmes
