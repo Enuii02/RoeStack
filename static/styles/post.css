@@ -1,0 +1,122 @@
+.post-box {
+  background-color: white;
+  border-radius: 21px;
+  padding: 33px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+}
+.top-section {
+  display: flex;
+  justify-content: space-between;
+}
+.top-section .left-side {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.top-section .avatar {
+  height: 64px;
+  width: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.user-info .top-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-info .username {
+  font-size: 24px;
+}
+.user-info .dot,
+.user-info .post-time {
+  font-size: 15px;
+  color: #7f7f7f;
+}
+.user-info .role {
+  font-size: 15px;
+  color: #888888;
+}
+.top-section .right-side {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+.right-side .container {
+  display: flex;
+  border-color: #004e36;
+  border-width: 1.5px;
+  border-style: solid;
+  align-items: center;
+}
+.right-side button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+.right-side .category-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: #004e36;
+  padding: 6px 13px;
+  font-size: 14px;
+  color: #f6f6f6;
+}
+.right-side .community-name {
+  font-size: 14px;
+  padding: 0 13px;
+}
+.post-footer {
+  display: flex;
+  margin-top: 20px;
+}
+.post-footer .left-side {
+  display: flex;
+  gap: 41px;
+  align-items: center;
+}
+.left-side .interactions {
+  display: flex;
+  height: 26px;
+  border-radius: 8px;
+}
+.interactions button {
+  background-color: #d9d9d9;
+  border: none;
+  cursor: pointer;
+  padding: 0 8px;
+  height: 100%;
+  align-items: center;
+  transition: background-color 0.5s ease;
+}
+.interactions .upvote {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+.interactions .downvote {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+.interactions .vote-count {
+  background-color: #f6f6f6;
+  height: 100%;
+  font-size: 15px;
+  padding: 0 14px;
+  align-content: center;
+  cursor: default;
+}
+.interactions button:hover {
+  background-color: #c2c2c2;
+}
+.left-side .answers {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #4e4e4e;
+  font-size: 12px;
+}
