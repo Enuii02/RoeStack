@@ -20,6 +20,21 @@ app.get("/", function(req, res) {
     res.render("index");
 });
 
+// Create a route for root - /
+app.get("/explore", function(req, res) {
+    res.render("pages/explore");
+});
+
+// Create a route for root - /
+app.get("/add-post", function(req, res) {
+    res.render("pages/add-post");
+});
+
+// Create a route for root - /
+app.get("/profile", function(req, res) {
+    res.render("pages/profile");
+});
+
 
 // Task 1 JSON formatted listing of students
 app.get("/all-students", function(req, res) {
