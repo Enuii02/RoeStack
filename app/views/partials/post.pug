@@ -6,16 +6,13 @@ block head
             img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .user-info
                 .top-line
-                    span.username John
-                    //span.username= post.user.firstName
+                    span.username= post.user.name
                     span.dot •
-                    span.post-time 2 hours ago
-                    //span.post-time= #{post.createdAt} ago
+                    span.post-time= #{post.createdAt} ago
                 .role Student
         .right-side
             .container 
-                .community-name Computer Science
-                //.community-name= post.community.name
+                .community-name= post.community.name
                 .category-box
                     img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
                     span.category-name Question

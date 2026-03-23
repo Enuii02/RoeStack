@@ -26,8 +26,8 @@ class User {
         this.isMod = isMod;
         this.email = email;
         this.passwordHash = passwordHash;
-        this.createdAt = createdAt
-        this.postCount = -1
+        this.createdAt = createdAt;
+        this.postCount = -1;
     }
 
     /**
@@ -35,7 +35,8 @@ class User {
      * @param {int} id 
      * @returns 
      */
-    async loadFromDB(id) {
+    async load(id) {
+        
         const sql = "SELECT * FROM Users WHERE id = ?";
 
         const results = await db.query(sql, [id]);
