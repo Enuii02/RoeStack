@@ -5,7 +5,7 @@ const db = require("../db");
 const Post = require("./Post");
 
 
-class ContentMgr {
+class ContentManager {
 
     async getLatestPosts() {
 
@@ -26,7 +26,19 @@ class ContentMgr {
         }
         return posts;
     }
+
+    async getTotalPosts() {
+        const sql = "SELECT count(id) as count FROM posts";
+        const results = await db.query(sql, null);
+        return results[0].count
+    }
+
+    async getTotalUsers() {
+        const sql = "SELECT count(id) as count FROM users";
+        const results = await db.query(sql, null);
+        return results[0].count
+    }
 }
 
 // Add class to the exports, so that other classes can use it
-module.exports = ContentMgr;
+module.exports = ContentManager;

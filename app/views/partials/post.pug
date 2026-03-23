@@ -8,7 +8,7 @@ block head
                 .top-line
                     span.username= post.user.name
                     span.dot •
-                    span.post-time = #{post.createdAt} ago
+                    span.post-time = #{post.elapsedTime}
                 .role Student
         .right-side
             .container 
@@ -27,7 +27,7 @@ block head
                 button.upvote 
                     img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
                 span.vote-count 
-                    span= post.currentVotes
+                    span= post.amountVotes
                 button.downvote 
                     img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
             a.answers(href="/")

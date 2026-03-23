@@ -19,14 +19,18 @@ const db = require("../model/db");
 const User = require("../model/classes/User.js");
 const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
-const ContentMgr = require("../model/classes/ContentMgr.js");
+const ContentManager = require("../model/classes/ContentManager.js");
 
 
 
 // Create a route for root - /
 app.get("/", async function (req, res) {
-    var posts = await new ContentMgr().getLatestPosts();
-    res.render("index", { posts });
+    var contentManager = new ContentManager();
+    let posts = await contentManager.getLatestPosts();
+    console.log(posts[1])
+    let totalPosts = await contentManager.getTotalPosts();
+    let totalUsers = await contentManager.getTotalUsers();
+    res.render("index", { posts, totalPosts, totalUsers });
 });
 
 // Create a route for explore - /explore
@@ -50,11 +54,16 @@ app.get("/profile", function(req, res) {
  */
 app.get("/user/:id", async (req, res) => {
 
+    var id = req.params.id;
+
+    // TODO Assign user based on current login
+    if (id === "me") { id = 1}
+
     // Create new empty User
     let user = new User();
 
     // Load data from database
-    await user.load(req.params.id);
+    await user.load(id);
 
     // Render single user
     res.render("single-user", { user });

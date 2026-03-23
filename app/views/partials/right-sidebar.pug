@@ -26,16 +26,17 @@ aside.sidebar-right
         ul.stats-list
             li.stat-item
                 img(src="/images/icons/person-raised-hand.svg")
-                //span.value= stats.questions
-                span.label Total Questions
+                span.value= totalPosts
+                span.label Total Posts
 
             li.stat-item
                 img(src="/images/icons/chat-left-quote.svg")
-                //span.value= stats.answers
-                span.label Total Answers
+                //- TODO Change this value with live data
+                span.value= 25
+                span.label Total Comments
 
             li.stat-item
                 img(src="/images/icons/people-fill.svg")
-                //span.value= stats.users
+                span.value= totalUsers
                 span.label Active Users  
             
