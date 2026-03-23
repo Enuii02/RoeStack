@@ -33,20 +33,22 @@ class Community {
      * @returns 
      */
     async load(id) {
-        
+
         const sql = "SELECT * FROM Communities WHERE id = ?";
 
         const results = await db.query(sql, [id]);
+        console.log(results);
 
         const community = results[0];
         // Save the results rows in the User object
         this.id = community.id;
         this.name = community.name;
         this.description = community.description;
-        this.createdBy = await User().load(community.user_id);
+        this.createdBy = await new User().load(community.created_by);
         this.createdAt = community.created_at;
-        this.amountPosts = await this.getPostCount(id);
+        // this.amountPosts = await this.getPostCount(id);
         
+        console.log(this);
         return this;
     }
 
@@ -56,9 +58,9 @@ class Community {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT vote_count AS count FROM posts WHERE id = ?";
-          var row = await db.query(sql, [id]);
-          return row[0].count;
+        var sql = "SELECT post_count AS count FROM communities WHERE id = ?";
+        var row = await db.query(sql, [id]);
+        return row[0].count;
     }
 
 }

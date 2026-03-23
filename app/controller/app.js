@@ -19,12 +19,14 @@ const db = require("../model/db");
 const User = require("../model/classes/User.js");
 const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
+const ContentMgr = require("../model/classes/ContentMgr.js");
 
 
 
 // Create a route for root - /
-app.get("/", function (req, res) {
-  res.render("index");
+app.get("/", async function (req, res) {
+    var posts = await new ContentMgr().getLatestPosts();
+    res.render("index", { posts });
 });
 
 // Create a route for explore - /explore
@@ -93,5 +95,5 @@ app.get("/community/:id", async (req, res) => {
 
 // Start server on port 3000
 app.listen(3000, function () {
-  console.log(`Server running at http://127.0.0.1:3000/`);
+    console.log(`Server running at http://127.0.0.1:3000/`);
 });

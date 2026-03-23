@@ -39,17 +39,19 @@ class Post {
         const sql = "SELECT * FROM Posts WHERE id = ?";
 
         const results = await db.query(sql, [id]);
+        console.log(results);
 
         const post = results[0];
         // Save the results rows in the User object
         this.id = post.id;
         this.title = post.title;
         this.content = post.content;
-        this.user = await User().load(post.user_id);
-        this.community = await Community().load(post.community_id);
+        this.user = await new User().load(post.user_id);
+        this.community = await new Community().load(post.community_id);
         this.createdAt = post.created_at;
         this.amountVotes = await this.getVoteCount(id);
         
+        console.log(this);
         return this;
     }
 
@@ -60,8 +62,8 @@ class Post {
      */
     async getVoteCount(id) {
         var sql = "SELECT vote_count AS count FROM posts WHERE id = ?";
-          var row = await db.query(sql, [id]);
-          return row[0].count;
+        var row = await db.query(sql, [id]);
+        return row[0].count;
     }
 
 }

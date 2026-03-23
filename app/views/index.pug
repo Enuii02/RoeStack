@@ -1,4 +1,8 @@
 extends layout
 block content 
     //each post in posts
-    include ./partials/post.pug
+    ul
+        each post in posts
+            include ./partials/post.pug
+            div(style= "margin-bottom: 2rem") 
+    
