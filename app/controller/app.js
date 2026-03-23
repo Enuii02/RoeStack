@@ -27,7 +27,6 @@ const ContentManager = require("../model/classes/ContentManager.js");
 app.get("/", async function (req, res) {
     var contentManager = new ContentManager();
     let posts = await contentManager.getLatestPosts();
-    console.log(posts[1])
     let totalPosts = await contentManager.getTotalPosts();
     let totalUsers = await contentManager.getTotalUsers();
     res.render("index", { posts, totalPosts, totalUsers });
@@ -57,7 +56,7 @@ app.get("/user/:id", async (req, res) => {
     var id = req.params.id;
 
     // TODO Assign user based on current login
-    if (id === "me") { id = 1}
+    if (id === "me") { id = 1 }
 
     // Create new empty User
     let user = new User();
@@ -65,8 +64,12 @@ app.get("/user/:id", async (req, res) => {
     // Load data from database
     await user.load(id);
 
+    
+    var contentManager = new ContentManager();
+    let posts = await contentManager.getLatestPostsFromID(id);
+
     // Render single user
-    res.render("single-user", { user });
+    res.render("single-user", { user, posts});
 
 });
 
