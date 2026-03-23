@@ -2,24 +2,24 @@ aside.sidebar-right
     .sidebar-card
         h3.sidebar-title Most Helpful 
         ul.leaderboard-list 
-            //each user, index in topUsers
-                //- li.leaderboard-item
+            each user, index in mostHelpful
+                li.leaderboard-item
 
-                //-     if index === 0
-                //-         img.rank-icon(src="/images/rank-1.png" alt="1st place")
+                    if index === 0
+                        img.rank-icon(src="/images/rank-1.png" alt="1st place")
 
-                //-     else if index === 1
-                //-         img.rank-icon(src="/images/rank-2.png" alt="2nd place")
+                    else if index === 1
+                        img.rank-icon(src="/images/rank-2.png" alt="2nd place")
 
-                //-     else if index === 2
-                //-         img.rank-icon(src="/images/rank-3.png" alt="3rd place")
+                    else if index === 2
+                        img.rank-icon(src="/images/rank-3.png" alt="3rd place")
 
-                //-     else
-                //-         span.rank-number= index + 1
+                    else
+                        span.rank-number= index + 1
 
-                //-     img.avatar(src=user.avatar alt=user.name)
+                    img.avatar(src=user.avatar alt=user.name)
 
-                //-     span.name= user.name
+                    span.name= user.name
     .sidebar-card
         h3.sidebar-title Statistic
 

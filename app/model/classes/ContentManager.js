@@ -3,6 +3,7 @@
 const db = require("../db");
 
 const Post = require("./Post");
+const User = require("./User");
 
 
 class ContentManager {
@@ -65,6 +66,18 @@ class ContentManager {
         const sql = "SELECT count(id) as count FROM users";
         const results = await db.query(sql, null);
         return results[0].count
+    }
+
+    async getMostHelpful() {
+        const sql = "SELECT users.id, SUM(vote_count) as count FROM users, posts WHERE posts.user_id = users.id GROUP BY users.id ORDER BY `count` DESC LIMIT 5";
+        const results = await db.query(sql, null);
+        var users = [];
+        var user;
+        for (let i = 0; i < results.length; i++) {
+            user = await new User().load(results[i].id);
+            users.push(user);
+        }
+        return users;
     }
 }
 

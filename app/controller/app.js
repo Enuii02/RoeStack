@@ -29,7 +29,8 @@ app.get("/", async function (req, res) {
     let posts = await contentManager.getLatestPosts();
     let totalPosts = await contentManager.getTotalPosts();
     let totalUsers = await contentManager.getTotalUsers();
-    res.render("index", { posts, totalPosts, totalUsers });
+    let mostHelpful = await contentManager.getMostHelpful();
+    res.render("index", { posts, totalPosts, totalUsers, mostHelpful });
 });
 
 // Create a route for explore - /explore
