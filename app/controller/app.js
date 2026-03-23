@@ -15,6 +15,9 @@ app.set("views", "./app/views");
 // Get the functions in the db.js file to use
 const db = require("../model/db");
 
+// Get Misc Classes
+const User = require("../model/classes/User.js");
+
 // Create a route for root - /
 app.get("/", function (req, res) {
   res.render("index");
@@ -91,23 +94,24 @@ app.get("/student-single/:id", async function (req, res) {
 
 // This is a temporary route to the single user page, structure only, without any calls to the database.
 
-app.get("/user-single", function (req, res) {
+app.get("/user/:id", async (req, res) => {
+
+    let user = new User();
+
+    await user.loadFromDB(req.params.id);
+
+    console.log(user); 
+
+    res.render("single-user", { user });
+    
+});
+
+app.get("/user/me", function (req, res) {
   // To whoever will do the calls to the database, populate the following variable with data pls
 
-  let userName = "Joe mama";
-  let userRole = "Student";
-  let postsCount = 10;
-  let userDescription =
-    "Hi, I’m Robert — a junior Embedded Software Developer with a strong interest in low-level systems and hardware-oriented programming. I’m focused on deepening my understanding of memory, architecture, and efficient C/C++ development. I’m here to learn, share insights, and grow through technical discussions.";
-  let posts = [];
+  let user = new User(1, "Name", "Student", "Bio", 0, "email@email.com", "secret", new Date("2021-03-25"));
 
-  res.render("single-user", {
-    userName,
-    userRole,
-    postsCount,
-    userDescription,
-    posts,
-  });
+  res.render("single-user", { user });
 });
 
 // JSON output of all programmes

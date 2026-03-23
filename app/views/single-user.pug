@@ -9,11 +9,11 @@ block content
             .profile-photo-wrapper
                 .profile-photo
             .name-role
-                h2= userName
-                h3= userRole
+                h2= user.name
+                h3= user.role
         .right      
             .posts-counter
-                h3= postsCount              
+                h3= user.postCount              
                 p post(s)
             .meatballs
                 .dropdown 
@@ -31,7 +31,7 @@ block content
                             a(href="#") Placeholder button
     .about-me
         h3.about-title About me
-        p= userDescription
+        p= user.bio
     .divider
         p Sort by: 
         button.sort-btn(type="button" onclick="toggleMenu(this)")
