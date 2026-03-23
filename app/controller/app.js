@@ -34,18 +34,33 @@ app.get("/", async function (req, res) {
 });
 
 // Create a route for explore - /explore
-app.get("/explore", function(req, res) {
-    res.render("pages/explore");
+app.get("/explore", async function(req, res) {
+    
+    var contentManager = new ContentManager();
+    let totalPosts = await contentManager.getTotalPosts();
+    let totalUsers = await contentManager.getTotalUsers();
+    let mostHelpful = await contentManager.getMostHelpful();
+    res.render("pages/explore", { totalPosts, totalUsers, mostHelpful });
 });
 
 // Create a route for add-post - /add-post
-app.get("/add-post", function(req, res) {
-    res.render("pages/add-post");
+app.get("/add-post", async function(req, res) {
+    
+    var contentManager = new ContentManager();
+    let totalPosts = await contentManager.getTotalPosts();
+    let totalUsers = await contentManager.getTotalUsers();
+    let mostHelpful = await contentManager.getMostHelpful();
+    res.render("pages/add-post", { totalPosts, totalUsers, mostHelpful });
 });
 
 // Create a route for profile - /profile
-app.get("/profile", function(req, res) {
-    res.render("pages/profile");
+app.get("/profile", async function(req, res) {
+    
+    var contentManager = new ContentManager();
+    let totalPosts = await contentManager.getTotalPosts();
+    let totalUsers = await contentManager.getTotalUsers();
+    let mostHelpful = await contentManager.getMostHelpful();
+    res.render("pages/profile", { totalPosts, totalUsers, mostHelpful });
 });
 
 
@@ -53,6 +68,11 @@ app.get("/profile", function(req, res) {
  * Single User page that takes in as input an id and renders the information about the user.
  */
 app.get("/user/:id", async (req, res) => {
+
+    var contentManager = new ContentManager();
+    let totalPosts = await contentManager.getTotalPosts();
+    let totalUsers = await contentManager.getTotalUsers();
+    let mostHelpful = await contentManager.getMostHelpful();
 
     var id = req.params.id;
 
@@ -70,7 +90,7 @@ app.get("/user/:id", async (req, res) => {
     let posts = await contentManager.getLatestPostsFromID(id);
 
     // Render single user
-    res.render("single-user", { user, posts});
+    res.render("single-user", { user, posts, totalPosts, totalUsers, mostHelpful });
 
 });
 
