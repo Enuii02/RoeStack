@@ -92,6 +92,7 @@ header .center {
 }
 .sidebar-left {
   position: sticky;
+  top: 142px;
   height: 750px;
   background: #fff;
   border-radius: 21px;
@@ -142,13 +143,15 @@ header .center {
   color: #4e4e4e;
 }
 .sidebar-right .sidebar-card {
-  position: sticky;
   height: 300px;
   background: #fff;
   border-radius: 21px;
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.06);
 }
 .sidebar-right {
+  top: 142px;
+  position: sticky;
+  height: fit-content;
   display: flex;
   flex-direction: column;
   gap: 24px;
