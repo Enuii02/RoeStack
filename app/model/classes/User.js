@@ -64,7 +64,7 @@ class User {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT count(id) AS count FROM posts WHERE user_id = ?";
+        var sql = "SELECT count(id) AS count FROM posts WHERE id = ?";
           var row = await db.query(sql, [id]);
           return row[0].count;
     }
