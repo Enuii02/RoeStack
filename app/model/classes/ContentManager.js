@@ -5,18 +5,30 @@ const db = require("../db");
 const Post = require("./Post");
 const User = require("./User");
 
-
+// TODO Convert to Singleton or Observer
 class ContentManager {
 
-    async update(includePosts = false) {
+    async update(
+        getStatistics = true,
+        getLatestPosts = false, 
+        getUserList = false
+    ) {
 
-        var latestPosts;
-        (includePosts) ? latestPosts = await this.getLatestPosts() : latestPosts = null;
-        let totalPosts = await this.getTotalPosts();
-        let totalUsers = await this.getTotalUsers();
-        let mostHelpful = await this.getMostHelpful();
+        var totalPosts, totalUsers, mostHelpful, 
+            latestPosts, userList;
 
-        return new Content(latestPosts, totalPosts, totalUsers, mostHelpful);
+        // Get all statistics
+        (getStatistics)  ? totalPosts  = await this.getTotalPosts()  : latestPosts = [];
+        (getStatistics)  ? totalUsers  = await this.getTotalUsers()  : latestPosts = [];
+        (getStatistics)  ? mostHelpful = await this.getMostHelpful() : latestPosts = [];
+
+        // Get latest post sorted by created_at descending
+        (getLatestPosts) ? latestPosts = await this.getLatestPosts() : latestPosts = [];
+
+        // Get all users sorted by mods ascending
+        (getUserList)    ? userList    = await this.getUserList()    : userList    = [];
+
+        return new Content(latestPosts, totalPosts, totalUsers, userList, mostHelpful);
 
     }
 
@@ -38,6 +50,21 @@ class ContentManager {
             console.log(post);
         }
         return posts;
+    }
+
+    
+    async getUserList() {
+        // Get all users, ordering it by wether it is a mod or not
+        const sql = "SELECT id FROM user ORDER BY is_mod ASC";
+
+        const results = await db.query(sql, null);
+        var users = [];
+        var user;
+        for (let i = 0; i < results.length; i++) {
+            user = await new User().load(results[i].id);
+            users.push(user);
+        }
+        return users;
     }
 
     async getLatestPostsFromID(id) {
@@ -87,12 +114,13 @@ class ContentManager {
 
 class Content {
 
-    constructor(latestPosts, totalPosts, totalUsers, mostHelpful) {
+    constructor(latestPosts, totalPosts, totalUsers, userList, mostHelpful) {
 
         this.latestPosts = latestPosts; 
         this.totalPosts = totalPosts;
         this.totalUsers = totalUsers;
         this.mostHelpful = mostHelpful;
+        this.userList = userList;
     
     }
 }

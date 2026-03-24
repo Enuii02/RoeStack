@@ -4,6 +4,7 @@ const db = require("../db");
 
 const Community = require("./Community");
 const User = require("./User");
+const Utils = require("../../controller/Utils");
 
 /**
  * This class defines a Post created by an user
@@ -53,7 +54,7 @@ class Post {
         this.community = await new Community().load(post.community_id);
         this.createdAt = post.created_at;
         this.amountVotes = await this.getVoteCount(id);
-        this.elapsedTime = this.getElapsedTime();
+        this.elapsedTime = Utils.getElapsedTime(this.createdAt);
         
         console.log(this);
         return this;
@@ -68,26 +69,6 @@ class Post {
         var sql = "SELECT vote_count AS count FROM posts WHERE id = ?";
         var row = await db.query(sql, [id]);
         return row[0].count;
-    }
-
-    getElapsedTime() {
-        var dateNow = new Date();
-
-        var seconds = Math.floor((this.createdAt - (dateNow))/1000*-1);
-        var minutes = Math.floor(seconds/60);
-        var hours = Math.floor(minutes/60);
-        var days = Math.floor(hours/24);
-
-        if (hours === 0 && days === 0) {
-            return "Just now"
-        }
-        
-        if (hours < 24 && days === 0) {
-            return hours + ((hours === 1) ? " hour ago" : " hours ago")
-        } else {
-            return days + ((days === 1) ? " day ago" : " days ago")
-        }
-        
     }
 
 }

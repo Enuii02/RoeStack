@@ -1,0 +1,18 @@
+
+.post-box 
+    .top-section
+        .left-side
+            img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            .user-info
+                .top-line
+                    span.username= user.name
+                    span.dot •
+                    span.post-time Created #{user.elapsedTime}
+                .role Student
+        .right-side
+            .container 
+                .community-name= user.isMod
+            button
+                img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+    .post-content 
+        p= user.bio

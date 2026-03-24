@@ -1,6 +1,7 @@
 
 // Get the functions in the db.js file
 const db = require("../db");
+const Utils = require("../../controller/Utils");
 
 /**
  * This class defines a User, used to distinguish each student/staff/moderator
@@ -17,6 +18,8 @@ class User {
      * @param {String} email 
      * @param {String} passwordHash 
      * @param {Date} createdAt 
+     * @param {int} postCount 
+     * @param {String} elapsedTime 
      */
     constructor(id = -1, name = "Undefined", role = "Undefined", bio = "Undefined", isMod = false, email = "Undefined", passwordHash = "Undefined", createdAt = new Date("2000-01-01")) {
         this.id = id;
@@ -28,6 +31,7 @@ class User {
         this.passwordHash = passwordHash;
         this.createdAt = createdAt;
         this.postCount = -1;
+        this.elapsedTime = "";
     }
 
     /**
@@ -53,6 +57,7 @@ class User {
         this.passwordHash = user.password_hash;
         this.createdAt = user.created_at;
         this.postCount = await this.getPostCount(id);
+        this.elapsedTime = Utils.getElapsedTime(this.createdAt)
         
         console.log(this);
         return this;

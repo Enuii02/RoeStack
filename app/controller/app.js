@@ -22,30 +22,34 @@ const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
 
-
 // Create a route for root - /
-app.get("/", async function (req, res) {
-    let content = await new ContentManager().update(true);
+app.get("/", async function (_, res) {
+    let content = await new ContentManager().update(getLatestPosts = true);
     res.render("index", { content });
 });
 
 // Create a route for explore - /explore
-app.get("/explore", async function(req, res) {
+app.get("/explore", async function(_req, res) {
     let content = await new ContentManager().update();
     res.render("pages/explore", { content });
 });
 
 // Create a route for add-post - /add-post
-app.get("/add-post", async function(req, res) {
+app.get("/add-post", async function(_, res) {
     let content = await new ContentManager().update();
     res.render("pages/add-post", { content });
 });
 
 // Create a route for profile - /profile
-app.get("/profile", async function(req, res) {
-    
+app.get("/profile", async function(_, res) {
     let content = await new ContentManager().update();
     res.render("pages/profile", { content });
+});
+
+// Create a route for all-users - /all-users
+app.get("/all-users", async function(_, res) {
+    let content = await new ContentManager().update(getUserList = true);
+    res.render("pages/all-users", { content });
 });
 
 
