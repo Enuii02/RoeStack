@@ -2,22 +2,22 @@ aside.sidebar-right
     .sidebar-card
         h3.sidebar-title Most Helpful 
         ul.leaderboard-list 
-            each user, index in mostHelpful
+            each user, index in content.mostHelpful
                 li.leaderboard-item
 
                     if index === 0
-                        img.rank-icon(src="/images/rank-1.png" alt="1st place")
+                        img.rank-icon(src="/images/rank-1.png" alt="1st place ")
 
                     else if index === 1
-                        img.rank-icon(src="/images/rank-2.png" alt="2nd place")
+                        img.rank-icon(src="/images/rank-2.png" alt="2nd place ")
 
                     else if index === 2
-                        img.rank-icon(src="/images/rank-3.png" alt="3rd place")
+                        img.rank-icon(src="/images/rank-3.png" alt="3rd place ")
 
                     else
-                        span.rank-number= index + 1
+                        span.rank-number= index + 1 + " "
 
-                    img.avatar(src=user.avatar alt=user.name)
+                    //- V removed img.avatar(src=user.avatar alt=user.name), TODO add it back when we have access to the avatars V
 
                     span.name= user.name
     .sidebar-card
@@ -26,17 +26,16 @@ aside.sidebar-right
         ul.stats-list
             li.stat-item
                 img(src="/images/icons/person-raised-hand.svg")
-                span.value= totalPosts
+                span.value= content.totalPosts
                 span.label Total Posts
 
             li.stat-item
                 img(src="/images/icons/chat-left-quote.svg")
-                //- TODO Change this value with live data
-                span.value= 25
+                span.value= content.totalComments
                 span.label Total Comments
 
             li.stat-item
                 img(src="/images/icons/people-fill.svg")
-                span.value= totalUsers
+                span.value= content.totalUsers
                 span.label Active Users  
             

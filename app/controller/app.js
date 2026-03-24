@@ -25,42 +25,27 @@ const ContentManager = require("../model/classes/ContentManager.js");
 
 // Create a route for root - /
 app.get("/", async function (req, res) {
-    var contentManager = new ContentManager();
-    let posts = await contentManager.getLatestPosts();
-    let totalPosts = await contentManager.getTotalPosts();
-    let totalUsers = await contentManager.getTotalUsers();
-    let mostHelpful = await contentManager.getMostHelpful();
-    res.render("index", { posts, totalPosts, totalUsers, mostHelpful });
+    let content = await new ContentManager().update(true);
+    res.render("index", { content });
 });
 
 // Create a route for explore - /explore
 app.get("/explore", async function(req, res) {
-    
-    var contentManager = new ContentManager();
-    let totalPosts = await contentManager.getTotalPosts();
-    let totalUsers = await contentManager.getTotalUsers();
-    let mostHelpful = await contentManager.getMostHelpful();
-    res.render("pages/explore", { totalPosts, totalUsers, mostHelpful });
+    let content = await new ContentManager().update();
+    res.render("pages/explore", { content });
 });
 
 // Create a route for add-post - /add-post
 app.get("/add-post", async function(req, res) {
-    
-    var contentManager = new ContentManager();
-    let totalPosts = await contentManager.getTotalPosts();
-    let totalUsers = await contentManager.getTotalUsers();
-    let mostHelpful = await contentManager.getMostHelpful();
-    res.render("pages/add-post", { totalPosts, totalUsers, mostHelpful });
+    let content = await new ContentManager().update();
+    res.render("pages/add-post", { content });
 });
 
 // Create a route for profile - /profile
 app.get("/profile", async function(req, res) {
     
-    var contentManager = new ContentManager();
-    let totalPosts = await contentManager.getTotalPosts();
-    let totalUsers = await contentManager.getTotalUsers();
-    let mostHelpful = await contentManager.getMostHelpful();
-    res.render("pages/profile", { totalPosts, totalUsers, mostHelpful });
+    let content = await new ContentManager().update();
+    res.render("pages/profile", { content });
 });
 
 
@@ -69,10 +54,7 @@ app.get("/profile", async function(req, res) {
  */
 app.get("/user/:id", async (req, res) => {
 
-    var contentManager = new ContentManager();
-    let totalPosts = await contentManager.getTotalPosts();
-    let totalUsers = await contentManager.getTotalUsers();
-    let mostHelpful = await contentManager.getMostHelpful();
+    let totalPosts, totalUsers, mostHelpful = await new ContentManager().update();
 
     var id = req.params.id;
 

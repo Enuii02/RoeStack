@@ -8,11 +8,15 @@ const User = require("./User");
 
 class ContentManager {
 
-    async update() {
+    async update(includePosts = false) {
 
-        await this.getLatestPosts();
-        await this.getTotalPosts();
-        await this.getTotalUsers();
+        var latestPosts;
+        (includePosts) ? latestPosts = await this.getLatestPosts() : latestPosts = null;
+        let totalPosts = await this.getTotalPosts();
+        let totalUsers = await this.getTotalUsers();
+        let mostHelpful = await this.getMostHelpful();
+
+        return new Content(latestPosts, totalPosts, totalUsers, mostHelpful);
 
     }
 
@@ -78,6 +82,18 @@ class ContentManager {
             users.push(user);
         }
         return users;
+    }
+}
+
+class Content {
+
+    constructor(latestPosts, totalPosts, totalUsers, mostHelpful) {
+
+        this.latestPosts = latestPosts; 
+        this.totalPosts = totalPosts;
+        this.totalUsers = totalUsers;
+        this.mostHelpful = mostHelpful;
+    
     }
 }
 
