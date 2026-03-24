@@ -143,10 +143,11 @@ header .center {
   color: #4e4e4e;
 }
 .sidebar-right .sidebar-card {
-  height: 300px;
+  height: fit-content;
   background: #fff;
   border-radius: 21px;
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.06);
+  padding-bottom: 20px;
 }
 .sidebar-right {
   top: 142px;
@@ -168,4 +169,30 @@ header .center {
 .stat-item {
   display: flex;
   gap: 10px;
+}
+.leaderboard-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.rank-number {
+  font-size: 18px;
+  font-weight: bold;
+  width: 28px;
+  text-align: center;
+}
+.leaderboard-item .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.stat-item .value {
+  color: #004e36;
+  font-weight: bold;
+}
+.leaderboard-item .name {
+  font-size: 16px;
+  color: #4e4e4e;
+  text-decoration: none;
 }

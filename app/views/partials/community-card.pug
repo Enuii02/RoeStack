@@ -1,0 +1,17 @@
+a(href="/communities/:communityId").community-card
+    img.community-cover(src="/images/default-community-cover.svg" alt="Community Cover")
+    .community-info
+        .top
+            .info
+                .community-name Computer Science
+                //= community.name
+                span.followers 0 Followers
+                //#{community.followers} 
+            button.join-btn Join
+            //if community.isJoined
+            //button.leave-btn Leave
+            //else
+            //button.join-btn Join
+        .line 
+        .community-description The Computer Science Forum is a space for students, lecturers, and alumni to discuss programme-related topics. Members can ask questions, share resources, and collaborate on subjects such as programming, algorithms, databases, and software engineering.
+        //= community.description
