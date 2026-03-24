@@ -44,7 +44,6 @@ class User {
         const sql = "SELECT * FROM Users WHERE id = ?";
 
         const results = await db.query(sql, [id]);
-        console.log(results);
 
         const user = results[0];
         // Save the results rows in the User object
@@ -59,7 +58,6 @@ class User {
         this.postCount = await this.getPostCount(id);
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
         
-        console.log(this);
         return this;
     }
 

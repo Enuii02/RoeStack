@@ -21,11 +21,10 @@ const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
-
 // Create a route for root - /
 app.get("/", async function (_, res) {
-    let content = await new ContentManager().update(getLatestPosts = true);
-    res.render("index", { content });
+    let content = await new ContentManager().update({getLatestPosts: true});
+    res.render("pages/index", { content });
 });
 
 // Create a route for explore - /explore
@@ -48,7 +47,8 @@ app.get("/profile", async function(_, res) {
 
 // Create a route for all-users - /all-users
 app.get("/all-users", async function(_, res) {
-    let content = await new ContentManager().update(getUserList = true);
+    let content = await new ContentManager().update({getUserList: true});
+    console.log(content);
     res.render("pages/all-users", { content });
 });
 
@@ -58,7 +58,7 @@ app.get("/all-users", async function(_, res) {
  */
 app.get("/user/:id", async (req, res) => {
 
-    let totalPosts, totalUsers, mostHelpful = await new ContentManager().update();
+    let content = await new ContentManager().update();
 
     var id = req.params.id;
 
@@ -71,12 +71,10 @@ app.get("/user/:id", async (req, res) => {
     // Load data from database
     await user.load(id);
 
-    
-    var contentManager = new ContentManager();
-    let posts = await contentManager.getLatestPostsFromID(id);
+    let posts = await new ContentManager().getLatestPostsFromID(id);
 
     // Render single user
-    res.render("single-user", { user, posts, totalPosts, totalUsers, mostHelpful });
+    res.render("./pages/single-user", { user, posts, content });
 
 });
 
@@ -85,6 +83,8 @@ app.get("/user/:id", async (req, res) => {
  */
 app.get("/post/:id", async (req, res) => {
 
+    let content = await new ContentManager().update();
+
     // Create new empty Post
     let post = new Post();
 
@@ -92,7 +92,7 @@ app.get("/post/:id", async (req, res) => {
     await post.load(req.params.id);
 
     // Render single post
-    res.render("single-post", { post });
+    res.render("./pages/single-post", { post, content });
 
 });
 
@@ -101,6 +101,8 @@ app.get("/post/:id", async (req, res) => {
  */
 app.get("/community/:id", async (req, res) => {
 
+    let content = await new ContentManager().update();
+    
     // Create new empty Community
     let community = new Community();
 
@@ -108,7 +110,7 @@ app.get("/community/:id", async (req, res) => {
     await community.load(req.params.id);
 
     // Render single community
-    res.render("single-community", { community });
+    res.render("./pages/single-community", { community, content });
 
 });
 

@@ -37,7 +37,6 @@ class Community {
         const sql = "SELECT * FROM Communities WHERE id = ?";
 
         const results = await db.query(sql, [id]);
-        console.log(results);
 
         const community = results[0];
         // Save the results rows in the User object
@@ -48,7 +47,6 @@ class Community {
         this.createdAt = community.created_at;
         // this.amountPosts = await this.getPostCount(id);
         
-        console.log(this);
         return this;
     }
 

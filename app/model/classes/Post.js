@@ -42,7 +42,6 @@ class Post {
         const sql = "SELECT * FROM Posts WHERE id = ?";
 
         const results = await db.query(sql, [id]);
-        console.log(results);
 
         const post = results[0];
         // Save the results rows in the User object
@@ -56,7 +55,6 @@ class Post {
         this.amountVotes = await this.getVoteCount(id);
         this.elapsedTime = Utils.getElapsedTime(this.createdAt);
         
-        console.log(this);
         return this;
     }
 

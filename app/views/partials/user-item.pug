@@ -11,7 +11,11 @@
                 .role Student
         .right-side
             .container 
-                .community-name= user.isMod
+                .community-name
+                    if (user.isMod)
+                        b Moderator
+                    else   
+                        b User
             button
                 img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
     .post-content 
