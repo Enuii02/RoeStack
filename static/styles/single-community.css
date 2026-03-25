@@ -1,0 +1,253 @@
+/* ===============================
+   Community Overview Container
+   =============================== */
+.community-overview {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* ===============================
+   Community Poster / Banner
+   =============================== */
+.community-poster {
+    background-color: grey;
+    height: 226px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+}
+
+.community-poster p {
+    font-size: 100px;
+    color: lightgray;
+    font-weight: bolder;
+    font-style: italic;
+    text-align: center;
+}
+
+/* ===============================
+   Poster & Profile Picture Wrapper
+   =============================== */
+.poster-and-picture {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: -50px; /* overlap effect */
+}
+
+.community-picture-wrapper {
+    width: 134px;
+    height: 134px;
+    border-radius: 50%;
+    border: 4px solid #fafafa;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-67px); /* lifts picture over poster */
+}
+
+.community-picture {
+    width: 134px;
+    height: 134px;
+    border-radius: 50%;
+    background-color: #666;
+}
+
+/* ===============================
+   Community Title
+   =============================== */
+.community-title {
+    font-size: 26px;
+}
+
+/* ===============================
+   Community Stats Section
+   =============================== */
+.community-stats {
+    margin: 35px 0;
+    display: flex;
+    align-items: center;       /* vertical alignment */
+    justify-content: center;   /* centers the counters */
+    gap: 20px;                 /* spacing between left/divider/right */
+    position: relative;        /* for meatballs positioning */
+}
+
+.left,
+.right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.divider-vertical {
+    width: 1px;
+    height: 40px;
+    background-color: #000;
+}
+
+/* ===============================
+   Meatballs (3-dot Menu)
+   =============================== */
+.meatballs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ececec;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    margin-left: auto;        /* pushes to right */
+    position: relative;
+}
+
+.fa-solid.fa-ellipsis-vertical {
+    transform: rotate(90deg);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    margin-top: 6px;
+    list-style: none;
+    padding: 6px 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    min-width: 120px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+}
+
+/* ===============================
+   Counter Boxes
+   =============================== */
+.counter {
+    border: 1px solid #004e36;
+    border-radius: 6px;
+    width: 174px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.counter h3 p {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+/* ===============================
+   Empty Placeholder
+   =============================== */
+.empty {
+    width: 46px;
+}
+
+/* ===============================
+   Follow Button
+   =============================== */
+.follow-btn {
+    background-color: #004E36;
+    border: none;
+    width: 148px;
+    height: 39px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    border-radius: 9px;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.follow-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 2px 0px #00000040;
+}
+
+/* ===============================
+   Community Description
+   =============================== */
+.community-description {
+    background-color: #ffffff;
+    border-radius: 21px;
+    padding: 15px 20px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 0px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    margin-top: 43px;
+}
+
+.description-title {
+    border-bottom: #000 1px solid;
+    width: fit-content;
+    padding-bottom: 6px;
+}
+
+.community-description h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.community-description p {
+    padding-top: 10px;
+    font-size: 16px;
+}
+
+/* ===============================
+   Divider Sections
+   =============================== */
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin-top: 20px;
+    position: relative;
+    width: fit-content;
+}
+
+.divider p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.sort-btn {
+    font: inherit;
+    display: flex;
+    background: none;
+    border: none;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.line {
+    border-bottom: #b6b6b6 1px solid;
+    margin-top: 17px;
+}
