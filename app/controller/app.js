@@ -113,7 +113,7 @@ app.get("/community/:id", async (req, res) => {
   let posts = await new ContentManager().getLatestPosts({communityID: community.id});
 
   // Render single community
-  res.render("./pages/single-community", { community, posts, content });
+  res.render("./pages/single-community", { community, content, posts });
 });
 
 // Start server on port 3000
