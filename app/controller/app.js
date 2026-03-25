@@ -71,7 +71,7 @@ app.get("/user/:id", async (req, res) => {
   // Load data from database
   await user.load(id);
 
-  let posts = await new ContentManager().getLatestPostsFromID(id);
+  let posts = await new ContentManager().getLatestPosts({userID: user.id});
 
   // Render single user
   res.render("./pages/single-user", {
@@ -110,8 +110,10 @@ app.get("/community/:id", async (req, res) => {
   // Load data from database
   await community.load(req.params.id);
 
+  let posts = await new ContentManager().getLatestPosts({communityID: community.id});
+
   // Render single community
-  res.render("./pages/single-community", { community, content });
+  res.render("./pages/single-community", { community, posts, content });
 });
 
 // Start server on port 3000

@@ -46,18 +46,35 @@ class ContentManager {
 
     }
 
-    async getLatestPosts() {
-        var posts = []
-        const sql = "SELECT id FROM posts ORDER BY created_at DESC";
-
-        const results = await db.query(sql, null);
-
+    async getLatestPosts({
+        userID = -1,
+        communityID = -1
+    } = {}) { 
         var post;
+        var posts = [];
+        var sql;
+        var results;
+
+        if (userID === -1 && communityID === -1) {
+            sql = "SELECT id FROM posts ORDER BY created_at DESC";
+            results = await db.query(sql, null);
+        } else if (userID !== -1 && communityID !== -1) {
+            sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY created_at DESC";
+            results = await db.query(sql, [userID, communityID]);
+        } else if (userID === -1) {
+            sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
+            results = await db.query(sql, [communityID]);
+        } else if (communityID === -1) {
+            sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
+            results = await db.query(sql, [userID]);
+        }
+
 
         for (let i = 0; i < results.length; i++) {
             post = await new Post().load(results[i].id);
             posts.push(post);
         }
+
         return posts;
     }
 
@@ -102,22 +119,6 @@ class ContentManager {
             communities.push(community);
         }
         return communities;
-    }
-
-    async getLatestPostsFromID(id) {
-
-        var posts = []
-        const sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
-
-        const results = await db.query(sql, [id]);
-
-        var post;
-
-        for (let i = 0; i < results.length; i++) {
-            post = await new Post().load(results[i].id);
-            posts.push(post);
-        }
-        return posts;
     }
 
     async getTotalPosts() {
