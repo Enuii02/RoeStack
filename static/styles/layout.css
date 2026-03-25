@@ -77,11 +77,18 @@ header .center {
   display: flex;
   justify-content: center;
   gap: 8px;
-}
-.menu-option a {
   text-decoration: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   color: #f6f6f6;
+}
+.menu-option span {
+  text-decoration: none;
   font-size: 20px;
+}
+.menu-option.active {
+  background: #f6f6f6;
+  color: #004e36;
 }
 
 .layout {
