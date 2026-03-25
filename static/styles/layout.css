@@ -77,11 +77,18 @@ header .center {
   display: flex;
   justify-content: center;
   gap: 8px;
-}
-.menu-option a {
   text-decoration: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   color: #f6f6f6;
+}
+.menu-option span {
+  text-decoration: none;
   font-size: 20px;
+}
+.menu-option.active {
+  background: #f6f6f6;
+  color: #004e36;
 }
 
 .layout {
@@ -94,7 +101,7 @@ header .center {
 .sidebar-left {
   position: sticky;
   top: 142px;
-  height: 750px;
+  height: 680px;
   background: #fff;
   border-radius: 21px;
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.06);
@@ -159,6 +166,7 @@ header .center {
   gap: 24px;
 }
 .leaderboard-list,
+.community-list,
 .stats-list {
   list-style: none;
   padding: 14px 50px;
@@ -196,4 +204,21 @@ header .center {
   font-size: 16px;
   color: #4e4e4e;
   text-decoration: none;
+}
+
+.community-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.community-item .title {
+  font-size: 16px;
+  color: #4e4e4e;
+  text-decoration: none;
+}
+.community-item .cover {
+  width: 32px;
+  height: 32px;
+  border-radius: 20%;
+  object-fit: cover;
 }

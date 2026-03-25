@@ -18,9 +18,9 @@ aside.sidebar-right
                         span.rank-number= index + 1 + " "
 
                     //- V removed img.avatar(src=user.avatar alt=user.name), TODO add it back when we have access to the avatars V
-                    a(href="/users/" + user.id)
+                    a(href="/user/" + user.id)
                         img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
-                    a(href="/users/" + user.id).name= user.name
+                    a(href="/user/" + user.id).name= user.name
     .sidebar-card
         h3.sidebar-title Statistic
 
