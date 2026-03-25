@@ -7,6 +7,9 @@ const Post = require("./Post");
 const User = require("./User");
 
 // TODO Convert to Singleton or Observer
+/**
+ * The Content Manager 
+ */
 class ContentManager {
 
     async update({
@@ -16,25 +19,30 @@ class ContentManager {
         getAllCommunities = false
     } = {}) { 
 
-        var totalPosts, totalUsers, totalComments, mostHelpful, 
+        var totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
             latestPosts, userList, communityList;
 
         // Get all statistics
-        if (getStatistics)  totalPosts    = await this.getTotalPosts();
-        if (getStatistics)  totalUsers    = await this.getTotalUsers();
-        if (getStatistics)  totalComments = await this.getTotalComments();
-        if (getStatistics)  mostHelpful   = await this.getMostHelpful();
+        if (getStatistics)  totalPosts       = await this.getTotalPosts();
+        if (getStatistics)  totalUsers       = await this.getTotalUsers();
+        if (getStatistics)  totalComments    = await this.getTotalComments();
+        if (getStatistics)  mostHelpful      = await this.getMostHelpful();
+        if (getStatistics)  mostHelpful      = await this.getMostHelpful();
+        if (getStatistics)  topCommunities   = await this.getTopCommunities();
 
         // Get latest post sorted by created_at descending
-        if (getLatestPosts) latestPosts   = await this.getLatestPosts();
+        if (getLatestPosts) latestPosts      = await this.getLatestPosts();
 
         // Get all users sorted by mods first
-        if (getUserList)    userList      = await this.getUsersList();
+        if (getUserList)    userList         = await this.getUsersList();
 
         // Get all communities sorted by oldest first
         if (getAllCommunities) communityList = await this.getAllCommunities();
 
-        return new Content(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful, communityList);
+        return new Content(
+            totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
+            latestPosts, userList, communityList
+        );
 
     }
 
@@ -66,6 +74,20 @@ class ContentManager {
             users.push(user);
         }
         return users;
+    }
+
+    async getTopCommunities() {
+        // TODO Get all communities sorted by amount of users DESC
+        const sql = "SELECT id FROM communities ORDER BY created_at ASC LIMIT 5";
+
+        const results = await db.query(sql, null);
+        var communities = [];
+        var community;
+        for (let i = 0; i < results.length; i++) {
+            community = await new Community().load(results[i].id);
+            communities.push(community);
+        }
+        return communities;
     }
 
     async getAllCommunities() {
@@ -134,13 +156,15 @@ class ContentManager {
 
 class Content {
 
-    constructor(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful, communityList) {
+    constructor(totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
+            latestPosts, userList, communityList) {
 
-        this.latestPosts = latestPosts; 
         this.totalPosts = totalPosts;
-        this.totalComments = totalComments;
         this.totalUsers = totalUsers;
+        this.totalComments = totalComments;
         this.mostHelpful = mostHelpful;
+        this.topCommunities = topCommunities;
+        this.latestPosts = latestPosts; 
         this.userList = userList;
         this.communityList = communityList;
     
