@@ -6,5 +6,5 @@ block content
         button.create-community-btn(type="button" onclick="") Create community
     h2.section-divider Communities 
     .community-grid 
-        //each community in communities
-        include ../partials/community-card.pug
+        each community in content.communityList
+            include ../partials/community-card.pug

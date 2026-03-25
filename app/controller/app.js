@@ -29,7 +29,7 @@ app.get("/", async function (_, res) {
 
 // Create a route for explore - /explore
 app.get("/explore", async function(_req, res) {
-    let content = await new ContentManager().update();
+    let content = await new ContentManager().update({getAllCommunities: true});
     res.render("pages/explore", { content });
 });
 
