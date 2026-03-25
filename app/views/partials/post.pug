@@ -17,8 +17,11 @@
                     img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
                     span.category-name Question
                     //post.category
-            button
+            button.icon-btn(type="button" onclick="toggleMenu(this)")
                 img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+            ul.dropdown-menu 
+                li 
+                    a(href="#" style="color: red;") Report post 
     h2.post-title= post.title
     .post-content 
         p= post.content
@@ -35,3 +38,5 @@
                 img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
                 .answer-count 5 answers
                 //span.answer-count= #{post.answersCount} answers
+block scripts
+    script(src="/js/profile-page.js" defer)
