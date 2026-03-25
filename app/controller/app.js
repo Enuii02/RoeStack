@@ -107,11 +107,15 @@ app.get("/community/:id", async (req, res) => {
   // Create new empty Community
   let community = new Community();
 
+  // Load posts relevant to the community
+  let posts = await new ContentManager().getLatestPostsFromCommunityID(req.params.id);
+
+
   // Load data from database
   await community.load(req.params.id);
 
   // Render single community
-  res.render("./pages/single-community", { community, content });
+  res.render("./pages/single-community", { community, content, posts });
 });
 
 // Start server on port 3000

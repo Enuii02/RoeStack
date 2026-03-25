@@ -120,6 +120,22 @@ class ContentManager {
         return posts;
     }
 
+        async getLatestPostsFromCommunityID(id) {
+
+        var posts = []
+        const sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
+
+        const results = await db.query(sql, [id]);
+
+        var post;
+
+        for (let i = 0; i < results.length; i++) {
+            post = await new Post().load(results[i].id);
+            posts.push(post);
+        }
+        return posts;
+    }
+
     async getTotalPosts() {
         const sql = "SELECT count(id) as count FROM posts";
         const results = await db.query(sql, null);
