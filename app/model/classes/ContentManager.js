@@ -1,6 +1,7 @@
 
 // Get the functions in the db.js file
 const db = require("../db");
+const Community = require("./Community");
 
 const Post = require("./Post");
 const User = require("./User");
@@ -11,11 +12,12 @@ class ContentManager {
     async update({
         getStatistics = true,
         getLatestPosts = false, 
-        getUserList = false
+        getUserList = false,
+        getAllCommunities = false
     } = {}) { 
 
         var totalPosts, totalUsers, totalComments, mostHelpful, 
-            latestPosts, userList;
+            latestPosts, userList, communityList;
 
         // Get all statistics
         if (getStatistics)  totalPosts    = await this.getTotalPosts();
@@ -29,7 +31,10 @@ class ContentManager {
         // Get all users sorted by mods first
         if (getUserList)    userList      = await this.getUsersList();
 
-        return new Content(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful);
+        // Get all communities sorted by oldest first
+        if (getAllCommunities) communityList = await this.getAllCommunities();
+
+        return new Content(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful, communityList);
 
     }
 
@@ -61,6 +66,20 @@ class ContentManager {
             users.push(user);
         }
         return users;
+    }
+
+    async getAllCommunities() {
+        // Get all communities sorted by oldest first
+        const sql = "SELECT id FROM communities ORDER BY created_at ASC";
+
+        const results = await db.query(sql, null);
+        var communities = [];
+        var community;
+        for (let i = 0; i < results.length; i++) {
+            community = await new Community().load(results[i].id);
+            communities.push(community);
+        }
+        return communities;
     }
 
     async getLatestPostsFromID(id) {
@@ -115,7 +134,7 @@ class ContentManager {
 
 class Content {
 
-    constructor(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful) {
+    constructor(latestPosts, totalPosts, totalComments, totalUsers, userList, mostHelpful, communityList) {
 
         this.latestPosts = latestPosts; 
         this.totalPosts = totalPosts;
@@ -123,6 +142,7 @@ class Content {
         this.totalUsers = totalUsers;
         this.mostHelpful = mostHelpful;
         this.userList = userList;
+        this.communityList = communityList;
     
     }
 }
