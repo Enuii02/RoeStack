@@ -27,6 +27,8 @@
 }
 .user-info .username {
   font-size: 24px;
+  text-decoration: none;
+  color: black;
 }
 .user-info .dot,
 .user-info .post-time {
@@ -71,6 +73,8 @@
 .right-side .community-name {
   font-size: 14px;
   padding: 0 13px;
+  text-decoration: none;
+  color: black;
 }
 .post-footer {
   display: flex;

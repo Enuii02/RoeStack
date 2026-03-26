@@ -32,6 +32,7 @@ class User {
         this.createdAt = createdAt;
         this.postCount = -1;
         this.elapsedTime = "";
+        this.amountPosts = 0;
     }
 
     /**
@@ -57,6 +58,7 @@ class User {
         this.createdAt = user.created_at;
         this.postCount = await this.getPostCount(id);
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
+        this.amountPosts = await this.getPostCount(id);
         
         return this;
     }
@@ -67,7 +69,7 @@ class User {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT count(id) AS count FROM posts WHERE id = ?";
+        var sql = "SELECT count(id) as count FROM posts WHERE user_id = ?";
           var row = await db.query(sql, [id]);
           return row[0].count;
     }

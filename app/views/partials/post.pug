@@ -6,13 +6,13 @@
             img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .user-info
                 .top-line
-                    span.username= post.user.name
+                    a.username(href="/user/" + post.user.id)= post.user.name
                     span.dot •
                     span.post-time= post.elapsedTime
                 .role Student
         .right-side
             .container 
-                .community-name= post.community.name
+                a.community-name(href="/community/" + post.community.id)= post.community.name
                 .category-box
                     img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
                     span.category-name Question

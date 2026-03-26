@@ -56,15 +56,19 @@ class ContentManager {
         var results;
 
         if (userID === -1 && communityID === -1) {
+            // Get all posts (ordered by newest)
             sql = "SELECT id FROM posts ORDER BY created_at DESC";
             results = await db.query(sql, null);
         } else if (userID !== -1 && communityID !== -1) {
+            // Get all posts related to a specific user and community (ordered by newest)
             sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY created_at DESC";
             results = await db.query(sql, [userID, communityID]);
         } else if (userID === -1) {
+            // Get all posts related to a specific community (ordered by newest)
             sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
             results = await db.query(sql, [communityID]);
         } else if (communityID === -1) {
+            // Get all posts related to a specific user (ordered by newest)
             sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
             results = await db.query(sql, [userID]);
         }
@@ -76,6 +80,30 @@ class ContentManager {
         }
 
         return posts;
+    }
+
+    async getAmountOfPosts({
+        userID = -1,
+        communityID = -1
+    } = {}) { 
+        var sql;
+        var results;
+
+        if (userID === -1 && communityID === -1) {
+            // Get count of all posts 
+            sql = "SELECT count(id) as count FROM posts";
+            results = await db.query(sql, null);
+        } else if (userID === -1) {
+            // Get count of all posts related to a specific community
+            sql = "SELECT count(id) FROM posts WHERE community_id = ?";
+            results = await db.query(sql, [communityID]);
+        } else if (communityID === -1) {
+            // Get count of all posts related to a specific user 
+            sql = "SELECT count(id) FROM posts WHERE user_id = ?";
+            results = await db.query(sql, [userID]);
+        }
+
+        return results[i].id;
     }
 
     

@@ -45,7 +45,7 @@ class Community {
         this.description = community.description;
         this.createdBy = await new User().load(community.created_by);
         this.createdAt = community.created_at;
-        // this.amountPosts = await this.getPostCount(id);
+        this.amountPosts = await this.getPostCount(id);
         
         return this;
     }
@@ -56,7 +56,7 @@ class Community {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT post_count AS count FROM communities WHERE id = ?";
+        var sql = "SELECT count(id) as count FROM posts WHERE community_id = ?";
         var row = await db.query(sql, [id]);
         return row[0].count;
     }

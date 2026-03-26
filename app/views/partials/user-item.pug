@@ -5,7 +5,7 @@
             img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .user-info
                 .top-line
-                    span.username= user.name
+                    a.username(href="/user/" + user.id)= user.name
                     span.dot •
                     span.post-time Created #{user.elapsedTime}
                 .role Student
