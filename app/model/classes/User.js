@@ -1,7 +1,8 @@
 
 // Get the functions in the db.js file
-const db = require("../db");
+const db = require("../Db");
 const Utils = require("../../controller/Utils");
+const bcrypt = require("bcryptjs");
 
 /**
  * This class defines a User, used to distinguish each student/staff/moderator
@@ -70,10 +71,58 @@ class User {
      */
     async getPostCount(id) {
         var sql = "SELECT count(id) as count FROM posts WHERE user_id = ?";
-          var row = await db.query(sql, [id]);
-          return row[0].count;
+        var row = await db.query(sql, [id]);
+        return row[0].count;
+    }
+
+    
+    // Checks to see if the submitted email address exists in the Users table
+    async getIdFromEmail() {
+        var sql = "SELECT id FROM Users WHERE email = ?";
+        const result = await db.query(sql, [this.email]);
+        console.log(result, this.email)
+        // TODO LOTS OF ERROR CHECKS HERE..
+        if (JSON.stringify(result) != '[]') {
+            this.id = result[0].id;
+            return this.id;
+        }
+        else {
+            return false;
+        }
+    }
+
+    async setUserPassword(password) {
+        const passwordHash = await bcrypt.hash(password, 10);
+        var sql = "UPDATE Users SET password_hash = ? WHERE id = ?"
+        const result = await db.query(sql, [passwordHash, this.id]);
+        return true;
+    }
+
+    // Test a submitted password against a stored password
+    async authenticate(password) {
+        // Get the stored, hashed password for the user
+        var sql = "SELECT password_hash FROM Users WHERE id = ?";
+        const result = await db.query(sql, [this.id]);
+        const match = await bcrypt.compare(password, result[0].password_hash);
+        if (match == true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // Add a new record to the users table
+    async addUser(password) {
+        const passwordHash = await bcrypt.hash(password, 10);
+        console.log(passwordHash)
+        var sql = "INSERT INTO Users (email, password_hash) VALUES (? , ?)";
+        const result = await db.query(sql, [this.email, passwordHash]);
+        this.id = result.insertId;
+        return true;
     }
 
 }
+
 // Add class to the exports, so that other classes can use it
 module.exports = User;
