@@ -30,8 +30,9 @@ block content
                         li 
                             a(href="#") Report
 
-                        li 
-                            a(href="/logout" style="color: red;") Logout
+                        if currentUser.id == user.id 
+                            li 
+                                a(href="/logout" style="color: red;") Logout
     .about-me
         h3.about-title About me
         p= user.bio
