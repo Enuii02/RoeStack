@@ -178,7 +178,6 @@ class ContentManager {
         for (let i = 0; i < results.length; i++) {
             user = await new User().load(results[i].id);
             users.push(user);
-            console.log(user)
         }
         return users;
     }

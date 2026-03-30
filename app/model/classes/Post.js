@@ -4,7 +4,7 @@ const db = require("../Db");
 
 const Community = require("./Community");
 const User = require("./User");
-const Utils = require("../../controller/Utils");
+const Utils = require("../../Utils");
 
 /**
  * This class defines a Post created by an user

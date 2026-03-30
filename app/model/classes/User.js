@@ -1,7 +1,7 @@
 
 // Get the functions in the db.js file
 const db = require("../Db");
-const Utils = require("../../controller/Utils");
+const Utils = require("../../Utils");
 const bcrypt = require("bcryptjs");
 
 /**
@@ -80,7 +80,6 @@ class User {
     async getIdFromEmail() {
         var sql = "SELECT id FROM Users WHERE email = ?";
         const result = await db.query(sql, [this.email]);
-        console.log(result, this.email)
         // TODO LOTS OF ERROR CHECKS HERE..
         if (JSON.stringify(result) != '[]') {
             this.id = result[0].id;
@@ -115,7 +114,6 @@ class User {
     // Add a new record to the users table
     async addUser(password) {
         const passwordHash = await bcrypt.hash(password, 10);
-        console.log(passwordHash)
         var sql = "INSERT INTO Users (email, password_hash) VALUES (? , ?)";
         const result = await db.query(sql, [this.email, passwordHash]);
         this.id = result.insertId;
