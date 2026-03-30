@@ -27,7 +27,6 @@ class ContentManager {
         if (getStatistics)  totalUsers       = await this.getTotalUsers();
         if (getStatistics)  totalComments    = await this.getTotalComments();
         if (getStatistics)  mostHelpful      = await this.getMostHelpful();
-        if (getStatistics)  mostHelpful      = await this.getMostHelpful();
         if (getStatistics)  topCommunities   = await this.getTopCommunities();
 
         // Get latest post sorted by created_at descending
@@ -49,6 +48,7 @@ class ContentManager {
     async getLatestPosts({
         userID = -1,
         communityID = -1
+        
     } = {}) { 
         var post;
         var posts = [];
@@ -71,6 +71,7 @@ class ContentManager {
             // Get all posts related to a specific user (ordered by newest)
             sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
             results = await db.query(sql, [userID]);
+
         }
 
 
