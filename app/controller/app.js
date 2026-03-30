@@ -50,39 +50,6 @@ app.get("/", async function (req, res) {
   }
 });
 
-<<<<<<< HEAD
-
-// Display a formatted list of students
-app.get("/users", function(req, res) {
-    var sql = 'select * from Users';
-    db.query(sql).then(results => {
-    	    // Send the results rows to the all-students template
-    	    // The rows will be in a variable called data
-        res.render('all-users', {data: results});
-    });
-});
-
-// Display a formatted list of posts
-app.get("/posts", function(req, res) {
-    var sql = 'select * from Posts, Users where Posts.fk_user_id = Users.id';
-    db.query(sql).then(results => {
-    	    // Send the results rows to the all-posts pug template
-        res.render('all-posts', {data: results});
-    });
-});
-
-// Single user page.  Show the user name and bio
-app.get("/user-single/:id", async function (req, res) {
-    var stId = req.params.id;
-    console.log(stId);
-    // Query to get the required results from the students table.  
-    // We need this to get the programme code for this student.
-    var stSql = "SELECT s.name as student, ps.name as programme, \
-    ps.id as pcode from Students s \
-    JOIN Student_Programme sp on sp.id = s.id \
-    JOIN Programmes ps on ps.id = sp.programme \
-    WHERE s.id = ?";
-=======
 // Create a route for explore - /explore
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn) {
@@ -115,7 +82,6 @@ app.get("/profile", async function (req, res) {
     res.redirect("/login");
   }
 });
->>>>>>> login-management
 
 // Create a route for all-users - /all-users
 app.get("/all-users", async function (req, res) {
@@ -169,10 +135,6 @@ app.get("/user/:id", async (req, res) => {
       content,
       currentPage: "profile",
     });
-<<<<<<< HEAD
-
-
-=======
   } else {
     res.redirect("/login");
   }
@@ -323,7 +285,6 @@ app.use((req, res) => {
   res.status(404).redirect("/invalid");
 });
 
->>>>>>> login-management
 // Start server on port 3000
 app.listen(3000, function () {
   Utils.log(`Server running at http://127.0.0.1:3000/`);
