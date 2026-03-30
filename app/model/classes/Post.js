@@ -64,7 +64,7 @@ class Post {
      * @returns Amount of Votes.
      */
     async getVoteCount(id) {
-        var sql = "SELECT vote_count AS count FROM posts WHERE id = ?";
+        var sql = "SELECT SUM(CASE WHEN positive = 1 THEN 1 ELSE -1 END) AS count FROM vote WHERE post_id = ?;";
         var row = await db.query(sql, [id]);
         return row[0].count;
     }

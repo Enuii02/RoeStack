@@ -171,7 +171,8 @@ class ContentManager {
     }
 
     async getMostHelpful() {
-        const sql = "SELECT users.id, SUM(vote_count) as count FROM users, posts WHERE posts.user_id = users.id GROUP BY users.id ORDER BY `count` DESC LIMIT 5";
+        // Select top five users that have the most votes, both on comments and posts (if no votes have been found, coalesce (default) to 0)
+        const sql = "SELECT u.id, COALESCE(SUM(v.positive * 2 - 1), 0) AS count FROM users u LEFT JOIN posts p ON p.user_id = u.id LEFT JOIN vote v ON v.post_id = p.id GROUP BY u.id ORDER BY count DESC LIMIT 5;";
         const results = await db.query(sql, null);
         var users = [];
         var user;
