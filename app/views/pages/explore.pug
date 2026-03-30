@@ -1,0 +1,10 @@
+extends ../layout
+block content 
+    .title-section 
+        h2(style="font-size: 32px; margin-bottom: 50px;") Explore Communities
+        // TODO: add route to the create community button
+        button.create-community-btn(type="button" onclick="") Create community
+    h2.section-divider Communities 
+    .community-grid 
+        each community in content.communityList
+            include ../partials/community-card.pug

@@ -1,0 +1,17 @@
+a(href="/community/"+community.id).community-card
+    img.community-cover(src="/images/default-community-cover.svg" alt="Community Cover")
+    .community-info
+        .top
+            .info
+                .community-name= community.name
+                //- No way of checking the amount of followers
+                span.followers 20 followers
+                //- #{community.followers} 
+            button.join-btn Join
+            //- TODO Uncomment when relationship has been implemented. THere is no way of checking if the current user has joined or not for the moment
+            //if community.isJoined
+            //button.leave-btn Leave
+            //else
+            //button.join-btn Join
+        .line 
+        .community-description= community.description

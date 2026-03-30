@@ -1,0 +1,42 @@
+
+.post-box 
+    .top-section
+        .left-side
+            //a(href="/users/" + user.id)
+            img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            .user-info
+                .top-line
+                    a.username(href="/user/" + post.user.id)= post.user.name
+                    span.dot •
+                    span.post-time= post.elapsedTime
+                .role Student
+        .right-side
+            .container 
+                a.community-name(href="/community/" + post.community.id)= post.community.name
+                .category-box
+                    img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
+                    span.category-name Question
+                    //post.category
+            button.icon-btn(type="button" onclick="toggleMenu(this)")
+                img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+            ul.dropdown-menu 
+                li 
+                    a(href="#" style="color: red;") Report post 
+    h2.post-title= post.title
+    .post-content 
+        p= post.content
+    .post-footer
+        .left-side 
+            .interactions
+                button.upvote 
+                    img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+                span.vote-count 
+                    span= post.amountVotes
+                button.downvote 
+                    img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
+            a.answers(href="/")
+                img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
+                .answer-count 5 answers
+                //span.answer-count= #{post.answersCount} answers
+block scripts
+    script(src="/js/profile-page.js" defer)

@@ -1,0 +1,42 @@
+aside.sidebar-right
+    .sidebar-card
+        h3.sidebar-title Most Helpful 
+        ul.leaderboard-list 
+            each user, index in content.mostHelpful
+                li.leaderboard-item
+
+                    if index === 0
+                        img.rank-icon(src="/images/icons/first-place-medal.svg" alt="1st place ")
+
+                    else if index === 1
+                        img.rank-icon(src="/images/icons/second-place-medal.svg" alt="2nd place ")
+
+                    else if index === 2
+                        img.rank-icon(src="/images/icons/third-place-medal.svg" alt="3rd place ")
+
+                    else
+                        span.rank-number= index + 1 + " "
+
+                    //- V removed img.avatar(src=user.avatar alt=user.name), TODO add it back when we have access to the avatars V
+                    a(href="/user/" + user.id)
+                        img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+                    a(href="/user/" + user.id).name= user.name
+    .sidebar-card
+        h3.sidebar-title Statistic
+
+        ul.stats-list
+            li.stat-item
+                img(src="/images/icons/person-raised-hand.svg")
+                span.value= content.totalPosts
+                span.label Total Posts
+
+            li.stat-item
+                img(src="/images/icons/chat-left-quote.svg")
+                span.value= content.totalComments
+                span.label Total Comments
+
+            li.stat-item
+                img(src="/images/icons/people-fill.svg")
+                span.value= content.totalUsers
+                span.label Active Users  
+            

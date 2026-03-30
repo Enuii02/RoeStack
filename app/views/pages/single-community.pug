@@ -1,0 +1,68 @@
+extends ../layout
+
+block head 
+    link(rel="stylesheet", href="/styles/single-community.css")
+
+block content 
+    .community-overview 
+        .poster-and-picture
+            .community-poster 
+                p RoeStack
+            .community-picture-wrapper
+                .community-picture 
+        .community-title
+            h2= community.name 
+        .community-stats 
+            .empty 
+            .right 
+                .counter 
+                    h3 0
+                    p Follower(s)
+            .divider-vertical 
+            .left     
+                .counter
+                    h3= community.amountPosts         
+                    p post(s)
+            .meatballs
+                .dropdown 
+                    button.icon-btn(type="button" onclick="toggleMenu(this)")
+                        i.fa-solid.fa-ellipsis-vertical  
+
+                    ul.dropdown-menu 
+                        li 
+                            a(href="#") Ban 
+
+                        li 
+                            a(href="#") Approve
+
+                        li 
+                            a(href="#") Placeholder button
+        button.follow-btn Follow
+        .community-description 
+            h2.description-title Module description
+            p= community.description
+    .divider
+        p Sort by: 
+        button.sort-btn(type="button" onclick="toggleMenu(this)")
+            p Best
+            i.fa-solid.fa-angle-down
+        
+        ul.dropdown-menu 
+            li 
+                a(href="#") Placeholder button 
+
+            li 
+                a(href="#") Placeholder button
+
+            li 
+                a(href="#") Placeholder button
+    .line
+
+    .posts 
+        each post in posts
+            div(style= "margin-bottom: 1rem") 
+            include ../partials/post.pug
+            div(style= "margin-bottom: 1rem") 
+
+block scripts 
+    script(src="/js/profile-page.js" defer)

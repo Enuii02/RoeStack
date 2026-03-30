@@ -1,0 +1,63 @@
+extends ../layout
+
+block head 
+    link(rel="stylesheet", href="/styles/user-profile.css")
+
+block content
+    .profile-info
+        .left 
+            .profile-photo-wrapper
+                .profile-photo
+            .name-role
+                h2= user.name
+                h3= user.role
+        .right      
+            .posts-counter
+                h3= user.amountPosts              
+                p post(s)
+            .meatballs
+                .dropdown 
+                    button.icon-btn(type="button" onclick="toggleMenu(this)")
+                        i.fa-solid.fa-ellipsis-vertical  
+
+                    ul.dropdown-menu 
+                        li 
+                            a(href="#") Message 
+
+                        li 
+                            a(href="#") Modify
+
+                        li 
+                            a(href="#") Report
+
+                        if currentUser.id == user.id 
+                            li 
+                                a(href="/logout" style="color: red;") Logout
+    .about-me
+        h3.about-title About me
+        p= user.bio
+    .divider
+        p Sort by: 
+        button.sort-btn(type="button" onclick="toggleMenu(this)")
+            p Best
+            i.fa-solid.fa-angle-down
+        
+        ul.dropdown-menu 
+            li 
+                a(href="#") Best 
+
+            li 
+                a(href="#") Latest
+
+            li 
+                a(href="#") Oldest
+    .line
+
+    .posts 
+        each post in posts
+            div(style= "margin-bottom: 1rem") 
+            include ../partials/post.pug
+            div(style= "margin-bottom: 1rem") 
+
+block scripts
+    script(src="/js/profile-page.js" defer)

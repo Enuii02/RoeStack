@@ -1,0 +1,25 @@
+aside.sidebar-left
+    .sidebar-card
+        h3.sidebar-title Categories 
+        ul.category-list 
+            li.category-item.active(data-category="all") 
+                span All Categories
+                .active-indicator
+            li.category-item(data-category="questions")
+                span Questions
+                .active-indicator
+            li.category-item(data-category="advices")
+                span Advices
+                .active-indicator
+            li.category-item(data-category="surveys")
+                span Surveys
+                .active-indicator
+    .sidebar-card 
+        h3.sidebar-title Communities 
+        ul.community-list 
+            
+            each community in content.topCommunities
+                li.community-item
+                    a(href="/community/" + community.id)
+                        img.cover(src="/images/default-community-cover.svg" alt="Community Image")
+                    a(href="/community/" + community.id).title= community.name
