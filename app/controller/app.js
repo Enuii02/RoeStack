@@ -27,10 +27,14 @@ app.get("/", async function (req, res) {
 
   if (sortby === "popular") {
     let content = await new ContentManager().update({ getPopularPosts: true });
-    res.render("pages/index", { content, currentPage: "home" });
+    res.render("pages/index", { content, currentPage: "home", activeSort: "popular" });
+  } else if (sortby === "foryou") {
+    // TODO: create getForYouPosts in content manager
+    let content = await new ContentManager().update();
+    res.render("pages/index", { content, currentPage: "home", activeSort: "forYou" });
   } else {
     let content = await new ContentManager().update({ getLatestPosts: true });
-    res.render("pages/index", { content, currentPage: "home" });
+    res.render("pages/index", { content, currentPage: "home", activeSort: "latest" });
   }
 });
 
