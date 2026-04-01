@@ -22,9 +22,16 @@ const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
 // Create a route for root - /
-app.get("/", async function (_, res) {
-  let content = await new ContentManager().update({ getLatestPosts: true });
-  res.render("pages/index", { content, currentPage: "home" });
+app.get("/", async function (req, res) {
+    const { query: { sortby } } = req;
+
+  if (sortby === "popular") {
+    let content = await new ContentManager().update({ getPopularPosts: true });
+    res.render("pages/index", { content, currentPage: "home" });
+  } else {
+    let content = await new ContentManager().update({ getLatestPosts: true });
+    res.render("pages/index", { content, currentPage: "home" });
+  }
 });
 
 // Create a route for explore - /explore
@@ -48,7 +55,7 @@ app.get("/profile", async function (_, res) {
 // Create a route for all-users - /all-users
 app.get("/all-users", async function (_, res) {
   let content = await new ContentManager().update({ getUserList: true });
-  console.log(content);
+  // console.log(content);
   res.render("pages/all-users", { content });
 });
 

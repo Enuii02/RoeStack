@@ -15,12 +15,13 @@ class ContentManager {
     async update({
         getStatistics = true,
         getLatestPosts = false, 
+        getPopularPosts = false,
         getUserList = false,
         getAllCommunities = false
     } = {}) { 
 
         var totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList;
+            latestPosts, userList, communityList, popularPosts;
 
         // Get all statistics
         if (getStatistics)  totalPosts       = await this.getTotalPosts();
@@ -32,6 +33,9 @@ class ContentManager {
         // Get latest post sorted by created_at descending
         if (getLatestPosts) latestPosts      = await this.getLatestPosts();
 
+        // Get posts sorted by sum of vote count and comment count
+        if (getPopularPosts) popularPosts    = await this.getPopularPosts(); 
+
         // Get all users sorted by mods first
         if (getUserList)    userList         = await this.getUsersList();
 
@@ -40,7 +44,7 @@ class ContentManager {
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList
+            latestPosts, userList, communityList, popularPosts
         );
 
     }
@@ -74,6 +78,42 @@ class ContentManager {
 
         }
 
+        for (let i = 0; i < results.length; i++) {
+            post = await new Post().load(results[i].id);
+            posts.push(post);
+        }
+
+        return posts;
+    }
+
+    async getPopularPosts({
+        userID = -1,
+        communityID = -1
+        
+    } = {}) { 
+        var post;
+        var posts = [];
+        var sql;
+        var results;
+
+        if (userID === -1 && communityID === -1) {
+        // Get all posts (ordered by sum of votes and comments)
+        sql = "SELECT id FROM posts ORDER BY (vote_count + comment_count) DESC";
+        results = await db.query(sql, null);
+        } else if (userID !== -1 && communityID !== -1) {
+        // Get all posts related to a specific user and community (ordered by sum of votes and comments)
+        sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY (vote_count + comment_count) DESC";
+        results = await db.query(sql, [userID, communityID]);
+        } else if (userID === -1) {
+        // Get all posts related to a specific community (ordered by sum of votes and comments)
+        sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY (vote_count + comment_count) DESC";
+        results = await db.query(sql, [communityID]);
+        } else if (communityID === -1) {
+        // Get all posts related to a specific user (ordered by sum of votes and comments)
+        sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY (vote_count + comment_count) DESC";
+        results = await db.query(sql, [userID]);
+
+    }
 
         for (let i = 0; i < results.length; i++) {
             post = await new Post().load(results[i].id);
@@ -178,7 +218,7 @@ class ContentManager {
         for (let i = 0; i < results.length; i++) {
             user = await new User().load(results[i].id);
             users.push(user);
-            console.log(user)
+            // console.log(user)
         }
         return users;
     }
@@ -187,7 +227,7 @@ class ContentManager {
 class Content {
 
     constructor(totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList) {
+            latestPosts, userList, communityList, popularPosts) {
 
         this.totalPosts = totalPosts;
         this.totalUsers = totalUsers;
@@ -197,6 +237,7 @@ class Content {
         this.latestPosts = latestPosts; 
         this.userList = userList;
         this.communityList = communityList;
+        this.popularPosts = popularPosts;
     
     }
 }
