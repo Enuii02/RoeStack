@@ -34,7 +34,11 @@ class Community {
      */
     async load(id) {
 
-        const sql = "SELECT * FROM Communities WHERE id = ?";
+        const sql = `
+            SELECT * 
+            FROM Communities 
+            WHERE id = ?
+        `;
 
         const results = await db.query(sql, [id]);
 
@@ -56,7 +60,11 @@ class Community {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT count(id) as count FROM posts WHERE community_id = ?";
+        var sql = `
+            SELECT count(id) as count 
+            FROM posts 
+            WHERE community_id = ?
+        `;
         var row = await db.query(sql, [id]);
         return row[0].count;
     }

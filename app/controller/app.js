@@ -8,6 +8,7 @@ var app = express();
 
 // Add static files location
 app.use(express.static("static"));
+app.use(express.json());
 
 // Use the Pug templating engine
 app.set("view engine", "pug");
@@ -43,7 +44,7 @@ Utils.log("Session created.");
 app.get("/", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Home page...");
-    let content = await new ContentManager().update({ getLatestPosts: true });
+    let content = await new ContentManager(req.session).update({ getLatestPosts: true });
     res.render("pages/index", { content, currentPage: "home" });
   } else {
     res.redirect("/login");
@@ -54,7 +55,7 @@ app.get("/", async function (req, res) {
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Explore page...");
-    let content = await new ContentManager().update({ getAllCommunities: true });
+    let content = await new ContentManager(req.session).update({ getAllCommunities: true });
     res.render("pages/explore", { content, currentPage: "explore" });
   } else {
     res.redirect("/login");
@@ -65,7 +66,7 @@ app.get("/explore", async function (req, res) {
 app.get("/add-post", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Add Post page...");
-    let content = await new ContentManager().update();
+    let content = await new ContentManager(req.session).update();
     res.render("pages/add-post", { content, currentPage: "add-post" });
   } else {
     res.redirect("/login");
@@ -76,7 +77,7 @@ app.get("/add-post", async function (req, res) {
 app.get("/profile", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Profile page...");
-    let content = await new ContentManager().update();
+    let content = await new ContentManager(req.session).update();
     res.render("pages/profile", { content });
   } else {
     res.redirect("/login");
@@ -88,7 +89,7 @@ app.get("/all-users", async function (req, res) {
   if (req.session.loggedIn) {
     if (req.session.user.isMod) {
       Utils.log("Going to Add Users page...");
-      let content = await new ContentManager().update({ getUserList: true });
+      let content = await new ContentManager(req.session).update({ getUserList: true });
       res.render("pages/all-users", { content });
     } else {
       Utils.log("Cannot access Add Users page, User is not mod.");
@@ -105,7 +106,7 @@ app.get("/all-users", async function (req, res) {
 app.get("/user/:id", async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to User page...");
-    let content = await new ContentManager().update();
+    let content = await new ContentManager(req.session).update();
 
     var id = req.params.id;
 
@@ -124,7 +125,7 @@ app.get("/user/:id", async (req, res) => {
     
     Utils.log("User '" + user.name + "' loaded.");
 
-    let posts = await new ContentManager().getLatestPosts({userID: user.id});
+    let posts = await new ContentManager(req.session).getLatestPosts({userID: user.id});
 
 
     // Render single user
@@ -146,13 +147,13 @@ app.get("/user/:id", async (req, res) => {
 app.get("/post/:id", async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to Post page...");
-    let content = await new ContentManager().update();
+    let content = await new ContentManager(req.session).update();
 
     // Create new empty Post
     let post = new Post();
 
     // Load data from database
-    await post.load(req.params.id);
+    await post.load(req.params.id, req.session);
     
     Utils.log("Post '" + post.title + "' loaded.");
 
@@ -170,7 +171,7 @@ app.get("/post/:id", async (req, res) => {
 app.get("/community/:id", async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to Community page...");
-    let content = await new ContentManager().update();
+    let content = await new ContentManager(req.session).update();
 
     // Create new empty Community
     let community = new Community();
@@ -180,7 +181,7 @@ app.get("/community/:id", async (req, res) => {
     
     Utils.log("Community '" + community.name + "' loaded.");
 
-    let posts = await new ContentManager().getLatestPosts({communityID: community.id});
+    let posts = await new ContentManager(req.session).getLatestPosts({communityID: community.id});
 
     // Render single community
     res.render("./pages/single-community", { community, posts, content });
@@ -191,12 +192,35 @@ app.get("/community/:id", async (req, res) => {
 });
 
 
+// VOTE SYSTEM ////////////////////////////////////////////////////////////////////////////////////
+
+app.post('/vote', async (req, res) => {
+    const { postId, positive } = req.body;
+
+    // Create and populate post object
+    const post = await new Post().load(postId, req.session);
+    var result;
+    if (post.currentVote === positive || positive === null) {
+      // The current vote is the same as the request, this means that the user clicked again on 
+      // the upvote/downvote button, leading the system to delete the vote.
+      await post.deleteCurrentUserVote();
+      result = await post.getVoteCount();
+      Utils.log(result);
+
+    } else {
+      // The user is casting either a new vote, or is replacing the current vote with the other.
+      result = await post.vote(positive);
+    }
+    // Give the total vote count result in json format
+    res.json({ votes: result });
+});
+
+
 // LOGIN //////////////////////////////////////////////////////////////////////////////////////////
 
 
 // Create a route for the login page - /login
 app.get("/login", async function (_, res) {
-  Utils.log("Going to Login page...");
   res.render("pages/login");
 });
 
@@ -276,7 +300,6 @@ app.get('/logout', function (req, res) {
 
 // Invalid page
 app.get('/invalid', function (req, res) {
-  Utils.log("Going to Invalid page...");
   res.render("pages/invalid");
 });
 

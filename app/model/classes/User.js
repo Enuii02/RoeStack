@@ -43,7 +43,11 @@ class User {
      */
     async load(id) {
         
-        const sql = "SELECT * FROM Users WHERE id = ?";
+        const sql = `
+            SELECT * 
+            FROM Users 
+            WHERE id = ?
+        `;
 
         const results = await db.query(sql, [id]);
 
@@ -70,7 +74,11 @@ class User {
      * @returns Amount of Posts.
      */
     async getPostCount(id) {
-        var sql = "SELECT count(id) as count FROM posts WHERE user_id = ?";
+        var sql = `
+            SELECT count(id) as count 
+            FROM posts 
+            WHERE user_id = ?
+        `;
         var row = await db.query(sql, [id]);
         return row[0].count;
     }
@@ -78,7 +86,11 @@ class User {
     
     // Checks to see if the submitted email address exists in the Users table
     async getIdFromEmail() {
-        var sql = "SELECT id FROM Users WHERE email = ?";
+        var sql = `
+            SELECT id 
+            FROM Users 
+            WHERE email = ?
+        `;
         const result = await db.query(sql, [this.email]);
         // TODO LOTS OF ERROR CHECKS HERE..
         if (JSON.stringify(result) != '[]') {
@@ -92,7 +104,10 @@ class User {
 
     async setUserPassword(password) {
         const passwordHash = await bcrypt.hash(password, 10);
-        var sql = "UPDATE Users SET password_hash = ? WHERE id = ?"
+        var sql = `
+            UPDATE Users SET password_hash = ? 
+            WHERE id = ?
+        `;
         const result = await db.query(sql, [passwordHash, this.id]);
         return true;
     }
@@ -100,7 +115,11 @@ class User {
     // Test a submitted password against a stored password
     async authenticate(password) {
         // Get the stored, hashed password for the user
-        var sql = "SELECT password_hash FROM Users WHERE id = ?";
+        var sql = `
+            SELECT password_hash 
+            FROM Users 
+            WHERE id = ?
+        `;
         const result = await db.query(sql, [this.id]);
         const match = await bcrypt.compare(password, result[0].password_hash);
         if (match == true) {
@@ -114,7 +133,10 @@ class User {
     // Add a new record to the users table
     async addUser(password) {
         const passwordHash = await bcrypt.hash(password, 10);
-        var sql = "INSERT INTO Users (email, password_hash) VALUES (? , ?)";
+        var sql = `
+            INSERT INTO Users (email, password_hash) 
+            VALUES (? , ?)
+        `;
         const result = await db.query(sql, [this.email, passwordHash]);
         this.id = result.insertId;
         return true;

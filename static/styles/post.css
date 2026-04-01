@@ -107,6 +107,15 @@
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
+.interactions .upvote.active {
+  background-color: #004e36;
+}
+
+.interactions .downvote.active {
+  background-color: red;
+}
+
 .interactions .vote-count {
   background-color: #f6f6f6;
   height: 100%;
