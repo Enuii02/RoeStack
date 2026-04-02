@@ -4,8 +4,6 @@ block head
     link(rel="stylesheet", href="/styles/homepage.css")
 
 block content 
-    - const posts = content.latestPosts || content.popularPosts ||  content.forYouPosts || []
-
     .sorting-buttons 
         a.sort-btn(class= activeSort === "latest" ? "active-latest" : "", href="/") 
             i.fa-regular.fa-clock 

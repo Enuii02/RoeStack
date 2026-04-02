@@ -22,12 +22,14 @@ const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
 // Get Middleware
-const sortingMiddleware = require("../model/middleware/sortingMiddleware.js");
+const getPosts = require("../model/middleware/getPosts.js");
 
 // Create a route for root - /
-app.get("/", sortingMiddleware, async function (req, res) {
+app.get("/", getPosts, async function (req, res) {
+  let content = await new ContentManager().update(); 
   res.render("pages/index", { 
-    content: req.sortedContent, 
+    content: content,
+    posts: req.sortedFilteredPosts,
     currentPage: "home", 
     activeSort: req.activeSort 
   });
@@ -46,6 +48,7 @@ app.get("/add-post", async function (_, res) {
 });
 
 // Create a route for profile - /profile
+// Currently unused.
 app.get("/profile", async function (_, res) {
   let content = await new ContentManager().update();
   res.render("pages/profile", { content });
@@ -61,9 +64,8 @@ app.get("/all-users", async function (_, res) {
 /**
  * Single User page that takes in as input an id and renders the information about the user.
  */
-app.get("/user/:id", async (req, res) => {
+app.get("/user/:id", getPosts, async (req, res) => {
   let content = await new ContentManager().update();
-
   var id = req.params.id;
 
   // TODO Assign user based on current login
@@ -77,12 +79,10 @@ app.get("/user/:id", async (req, res) => {
   // Load data from database
   await user.load(id);
 
-  let posts = await new ContentManager().getLatestPosts({userID: user.id});
-
   // Render single user
   res.render("./pages/single-user", {
     user,
-    posts,
+    posts: req.sortedFilteredPosts,
     content,
     currentPage: "profile",
   });
