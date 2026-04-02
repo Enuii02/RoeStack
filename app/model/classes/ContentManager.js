@@ -15,7 +15,6 @@ class ContentManager {
     async update({
         getStatistics = true,
         getLatestPosts = false, 
-        getPopularPosts = false,
         getUserList = false,
         getAllCommunities = false
     } = {}) { 
@@ -31,10 +30,7 @@ class ContentManager {
         if (getStatistics)  topCommunities   = await this.getTopCommunities();
 
         // Get latest post sorted by created_at descending
-        if (getLatestPosts) latestPosts      = await this.getLatestPosts();
-
-        // Get posts sorted by sum of vote count and comment count
-        if (getPopularPosts) popularPosts    = await this.getPopularPosts(); 
+        if (getLatestPosts) latestPosts      = await this.getPosts();
 
         // Get all users sorted by mods first
         if (getUserList)    userList         = await this.getUsersList();
@@ -49,80 +45,54 @@ class ContentManager {
 
     }
 
-    async getLatestPosts({
-        userID = -1,
-        communityID = -1
-        
-    } = {}) { 
-        var post;
-        var posts = [];
-        var sql;
-        var results;
+  async getPosts({
+    userID = -1,
+    communityID = -1,
+    sortByLatest = true,
+    sortByPopularity = false,
+    reverse = false,
+    
+} = {}) { 
+    var post;
+    var posts = [];
+    var sql;
+    var results;
+    
+    // Build query dynamically based on provided filters
+    let whereClause = "";
+    let orderByClause = ""
+    let params = [];
+    let sortOrder = (reverse) ? `ASC` : `DESC`;
 
-        if (userID === -1 && communityID === -1) {
-            // Get all posts (ordered by newest)
-            sql = "SELECT id FROM posts ORDER BY created_at DESC";
-            results = await db.query(sql, null);
-        } else if (userID !== -1 && communityID !== -1) {
-            // Get all posts related to a specific user and community (ordered by newest)
-            sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [userID, communityID]);
-        } else if (userID === -1) {
-            // Get all posts related to a specific community (ordered by newest)
-            sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [communityID]);
-        } else if (communityID === -1) {
-            // Get all posts related to a specific user (ordered by newest)
-            sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [userID]);
-
-        }
-
-        for (let i = 0; i < results.length; i++) {
-            post = await new Post().load(results[i].id);
-            posts.push(post);
-        }
-
-        return posts;
+    // Build WHERE clause and parameters array
+    if (userID !== -1 && communityID !== -1) {
+        whereClause = "WHERE user_id = ? AND community_id = ?";
+        params = [userID, communityID];
+    } else if (userID !== -1) {
+        whereClause = "WHERE user_id = ?";
+        params = [userID];
+    } else if (communityID !== -1) {
+        whereClause = "WHERE community_id = ?";
+        params = [communityID];
     }
 
-    async getPopularPosts({
-        userID = -1,
-        communityID = -1
-        
-    } = {}) { 
-        var post;
-        var posts = [];
-        var sql;
-        var results;
+    // Build ORDER BY clause
+    if (sortByPopularity) {
+        orderByClause = "ORDER BY (vote_count + comment_count)"
+    } else {
+        orderByClause = "ORDER BY created_at";
+    } 
 
-        if (userID === -1 && communityID === -1) {
-        // Get all posts (ordered by sum of votes and comments)
-        sql = "SELECT id FROM posts ORDER BY (vote_count + comment_count) DESC";
-        results = await db.query(sql, null);
-        } else if (userID !== -1 && communityID !== -1) {
-        // Get all posts related to a specific user and community (ordered by sum of votes and comments)
-        sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY (vote_count + comment_count) DESC";
-        results = await db.query(sql, [userID, communityID]);
-        } else if (userID === -1) {
-        // Get all posts related to a specific community (ordered by sum of votes and comments)
-        sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY (vote_count + comment_count) DESC";
-        results = await db.query(sql, [communityID]);
-        } else if (communityID === -1) {
-        // Get all posts related to a specific user (ordered by sum of votes and comments)
-        sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY (vote_count + comment_count) DESC";
-        results = await db.query(sql, [userID]);
+    sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+    results = await db.query(sql, params.length > 0 ? params : null);
 
+    for (let i = 0; i < results.length; i++) {
+        post = await new Post().load(results[i].id);
+        posts.push(post);
     }
 
-        for (let i = 0; i < results.length; i++) {
-            post = await new Post().load(results[i].id);
-            posts.push(post);
-        }
-
-        return posts;
-    }
-
+    return posts;
+}
     async getAmountOfPosts({
         userID = -1,
         communityID = -1

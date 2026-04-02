@@ -1,18 +1,20 @@
 const ContentManager = require("../classes/ContentManager");
 
 /**
- * Middleware that handles post sorting and filtering based on query parameters
- * Attaches sorted posts to req.sortedFilteredPosts and sort type to req.activeSort
- * Supports filtering by user ID from request parameters
+ * Middleware handles the queries and parameters.
+ * Depending on the query/parameter it calls the 
+ * getPosts method from content manager with the 
+ * appropriate options.  
  * 
  * Supported sort types:
  * - "popular": Posts sorted by votes + comments (descending)
  * - "foryou": Personalized posts (default content manager)
  * - "latest": Posts sorted by creation date (newest first, default)
+ * - "oldest": latest reversed duh
  * 
  * TODO: Implement filtering functionality and personalized "for you" sorting
  */
-async function getPosts(req, _, next) {
+async function getFilteredPosts(req, _, next) {
   try {
     const contentManager = new ContentManager();
     const userId = req.params.id || null;
@@ -38,18 +40,28 @@ async function getPosts(req, _, next) {
  * @returns {Promise<Array>} - Array of Post objects
  */
 async function fetchPostsBySortType(contentManager, sortType, userId) {
-  const params = userId ? { userID: userId } : {};
+   const options = {
+    userID: userId ?? -1,
+    sortByLatest: false,
+    sortByPopularity: false,
+    reverse: false
+  };
 
   switch (sortType) {
     case "popular":
-      return await contentManager.getPopularPosts(params);
+      options.sortByPopularity = true;
+      break;
     case "foryou":
-      // TODO: Implement getForYouPosts() in ContentManager
-      return await contentManager.getLatestPosts(params);
-    case "latest":
+      // TODO: implement later
+      options.sortByLatest = true;
+    case "oldest":
+      options.sortByLatest;
+      options.reverse;
     default:
-      return await contentManager.getLatestPosts(params);
+      options.sortByLatest;
+      options.reverse;
   }
+  return await contentManager.getPosts(options);
 }
 
 /**
@@ -63,4 +75,4 @@ function normalizeSortType(sortType) {
   return "latest";
 }
 
-module.exports = getPosts;
+module.exports = getFilteredPosts;

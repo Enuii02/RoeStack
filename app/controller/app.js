@@ -22,10 +22,10 @@ const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
 // Get Middleware
-const getPosts = require("../model/middleware/getPosts.js");
+const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 
 // Create a route for root - /
-app.get("/", getPosts, async function (req, res) {
+app.get("/", getFilteredPosts, async function (req, res) {
   let content = await new ContentManager().update(); 
   res.render("pages/index", { 
     content: content,
@@ -64,7 +64,7 @@ app.get("/all-users", async function (_, res) {
 /**
  * Single User page that takes in as input an id and renders the information about the user.
  */
-app.get("/user/:id", getPosts, async (req, res) => {
+app.get("/user/:id", getFilteredPosts, async (req, res) => {
   let content = await new ContentManager().update();
   var id = req.params.id;
 
@@ -116,7 +116,7 @@ app.get("/community/:id", async (req, res) => {
   // Load data from database
   await community.load(req.params.id);
 
-  let posts = await new ContentManager().getLatestPosts({communityID: community.id});
+  // let posts = await new ContentManager().getPosts({communityID: community.id});
 
   // Render single community
   res.render("./pages/single-community", { community, posts, content });
