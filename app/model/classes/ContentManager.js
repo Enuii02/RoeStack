@@ -1,6 +1,6 @@
 
 // Get the functions in the db.js file
-const db = require("../db");
+const db = require("../Db");
 const Community = require("./Community");
 
 const Post = require("./Post");
@@ -190,7 +190,6 @@ class ContentManager {
         for (let i = 0; i < results.length; i++) {
             user = await new User().load(results[i].id);
             users.push(user);
-            // console.log(user)
         }
         return users;
     }

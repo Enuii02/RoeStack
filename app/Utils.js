@@ -19,3 +19,8 @@ export const getElapsedTime = (date) => {
         return days + ((days === 1) ? " day ago" : " days ago")
     }
 }
+
+
+export const log = (message) => {
+    console.log("[@] - " + message);
+}

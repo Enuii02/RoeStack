@@ -1,6 +1,6 @@
 html 
     head    
-        title RoeStack
+        title RoeStack - Login
         link(rel="stylesheet", href="/styles/main.css")
         link(rel="stylesheet", href="/styles/layout.css")
         link(rel="stylesheet", href="/styles/post.css")
@@ -9,16 +9,8 @@ html
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
         block head 
     body 
-        include ./partials/header.pug
-
-        .layout 
-            include ./partials/left-sidebar.pug
-
-            main.content 
-                block content 
-            
-            include ./partials/right-sidebar.pug
-        script(src="/js/sidebar.js" defer)
-
-        block scripts
-
+        block content
+            .sidebar-card(style="align-items: center;")
+                h3.sidebar-title Oooops! Wrong way! 
+                p It looks like you took the wrong turn.
+                a(href="/") Click here to get back home.

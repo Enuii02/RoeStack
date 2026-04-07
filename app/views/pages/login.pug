@@ -1,0 +1,16 @@
+html 
+    head    
+        title RoeStack - Login
+        link(rel="stylesheet", href="/styles/main.css")
+        link(rel="stylesheet", href="/styles/login.css")
+    body 
+        block content
+            .login-card
+                h1 RoeStack 
+
+                form(action='/authenticate' method='POST')
+                    label(for='email') Email address: 
+                    input(name='email' placeholder="Enter your Email address") 
+                    label(for='email') Password: 
+                    input(name='password' type = 'password' placeholder="Enter your password")
+                    input(type='submit' value='Login')
