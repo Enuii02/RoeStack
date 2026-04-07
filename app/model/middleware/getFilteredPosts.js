@@ -52,8 +52,7 @@ async function fetchPostsBySortType(contentManager, sortType, userId) {
       options.sortByPopularity = true;
       break;
     case "foryou":
-      // TODO: implement later
-      options.sortByLatest = true;
+      options.sortByForYour = true;
     case "oldest":
       options.sortByLatest;
       options.reverse;

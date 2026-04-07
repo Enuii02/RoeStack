@@ -49,6 +49,7 @@ class ContentManager {
     userID = -1,
     communityID = -1,
     sortByLatest = true,
+    sortByForYou = false,
     sortByPopularity = false,
     reverse = false,
     
@@ -61,6 +62,7 @@ class ContentManager {
     // Build query dynamically based on provided filters
     let whereClause = "";
     let orderByClause = ""
+    let selectClause = (sortByForYou) ? `SELECT id FROM userFollowCommunity` : `SELECT id FROM posts`; 
     let params = [];
     let sortOrder = (reverse) ? `ASC` : `DESC`;
 
@@ -83,7 +85,7 @@ class ContentManager {
         orderByClause = "ORDER BY created_at";
     } 
 
-    sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+    sql = `${selectClause} ${whereClause} ${orderByClause} ${sortOrder}`;
     results = await db.query(sql, params.length > 0 ? params : null);
 
     for (let i = 0; i < results.length; i++) {
