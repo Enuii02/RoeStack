@@ -70,16 +70,15 @@ class User {
 
     /**
      * This function fetches the current post amount for a specific user id.
-     * @param {int} id 
      * @returns Amount of Posts.
      */
-    async getPostCount(id) {
+    async getPostCount() {
         var sql = `
             SELECT count(id) as count 
             FROM posts 
             WHERE user_id = ?
         `;
-        var row = await db.query(sql, [id]);
+        var row = await db.query(sql, [this.id]);
         return row[0].count;
     }
 

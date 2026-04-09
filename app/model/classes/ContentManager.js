@@ -164,6 +164,7 @@ class ContentManager {
         }
         return users;
     }
+    
 
     async getTopCommunities() {
         // TODO Get all communities sorted by amount of users DESC

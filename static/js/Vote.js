@@ -1,21 +1,29 @@
+
+// Get all .interactions in page
 document.querySelectorAll('.interactions').forEach(container => {
 
-  const upBtn = container.querySelector('.upvote');
-  const downBtn = container.querySelector('.downvote');
+  // Fetch upvote button
+  const upvoteButton = container.querySelector('.upvote');
+  // Fetch downvote button
+  const downvoteButton = container.querySelector('.downvote');
+  // Fetch vote count text
   const voteCount = container.querySelector('.vote-count span');
+  // Get post id from dataset in upvoteButton (defined in post.pug)
+  const postId = upvoteButton.dataset.id;
 
-  const postId = upBtn.dataset.id;
-
+  // Check if this current js script is loading data
   let isLoading = false;
 
   async function vote(positive) {
+    // If the script is already loading, skip this step
     if (isLoading) return;
 
+    // Declare that loading has started
     isLoading = true;
 
     // Disable buttons
-    upBtn.disabled = true;
-    downBtn.disabled = true;
+    upvoteButton.disabled = true;
+    downvoteButton.disabled = true;
 
     try {
       const res = await fetch('/vote', {
@@ -34,32 +42,32 @@ document.querySelectorAll('.interactions').forEach(container => {
 
     // Re-enable buttons
     isLoading = false;
-    upBtn.disabled = false;
-    downBtn.disabled = false;
+    upvoteButton.disabled = false;
+    downvoteButton.disabled = false;
   }
 
-  upBtn.addEventListener('click', async () => {
-    const isActive = upBtn.classList.contains('active');
+  upvoteButton.addEventListener('click', async () => {
+    const isActive = upvoteButton.classList.contains('active');
 
     if (isActive) {
-      upBtn.classList.remove('active');
+      upvoteButton.classList.remove('active');
       await vote(null);
     } else {
-      upBtn.classList.add('active');
-      downBtn.classList.remove('active');
+      upvoteButton.classList.add('active');
+      downvoteButton.classList.remove('active');
       await vote(1);
     }
   });
 
-  downBtn.addEventListener('click', async () => {
-    const isActive = downBtn.classList.contains('active');
+  downvoteButton.addEventListener('click', async () => {
+    const isActive = downvoteButton.classList.contains('active');
 
     if (isActive) {
-      downBtn.classList.remove('active');
+      downvoteButton.classList.remove('active');
       await vote(null);
     } else {
-      downBtn.classList.add('active');
-      upBtn.classList.remove('active');
+      downvoteButton.classList.add('active');
+      upvoteButton.classList.remove('active');
       await vote(0);
     }
   });

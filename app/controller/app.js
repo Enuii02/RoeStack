@@ -23,14 +23,13 @@ const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 
-
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.urlencoded({ extended: true }));
 
 // Set the sessions
 var session = require('express-session');
 app.use(session({
-  secret: 'secretkeysdfjsflyoifasdakjdbkjbdkajbsdkjabdkjakjsp3562njkn',
+  secret: 'supersecretthatwillneverbediscoveredbyanyonenotevenmateusz',
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
@@ -40,7 +39,9 @@ Utils.log("Session created.");
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
 
 
-// Create a route for root - /
+/**
+ * Create a route for root - /
+ */
 app.get("/", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Home page...");
@@ -51,7 +52,9 @@ app.get("/", async function (req, res) {
   }
 });
 
-// Create a route for explore - /explore
+/**
+ * Create a route for explore - /explore
+ */
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Explore page...");
@@ -62,7 +65,9 @@ app.get("/explore", async function (req, res) {
   }
 });
 
-// Create a route for add-post - /add-post
+/**
+ * Create a route for add-post - /add-post
+ */
 app.get("/add-post", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Add Post page...");
@@ -73,7 +78,9 @@ app.get("/add-post", async function (req, res) {
   }
 });
 
-// Create a route for profile - /profile
+/**
+ * Create a route for profile - /profile
+ */
 app.get("/profile", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Profile page...");
@@ -84,7 +91,9 @@ app.get("/profile", async function (req, res) {
   }
 });
 
-// Create a route for all-users - /all-users
+/**
+ * Create a route for all-users - /all-users
+ */
 app.get("/all-users", async function (req, res) {
   if (req.session.loggedIn) {
     if (req.session.user.isMod) {
@@ -110,7 +119,6 @@ app.get("/user/:id", async (req, res) => {
 
     var id = req.params.id;
 
-    // TODO Assign user based on current login
     if (id === "me") {
       id = req.session.uid;
     }
@@ -194,6 +202,9 @@ app.get("/community/:id", async (req, res) => {
 
 // VOTE SYSTEM ////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Vote page used to send a vote request from the client side to the server's db
+ */
 app.post('/vote', async (req, res) => {
     const { postId, positive } = req.body;
 
@@ -219,18 +230,24 @@ app.post('/vote', async (req, res) => {
 // LOGIN //////////////////////////////////////////////////////////////////////////////////////////
 
 
-// Create a route for the login page - /login
+/**
+ * Create a route for the login page - /login
+ */
 app.get("/login", async function (_, res) {
   res.render("pages/login");
 });
 
-// Create a route for the register page - /register
+/**
+ * Create a route for the register page - /register
+ */
 app.get("/register", async function (_, res) {
   Utils.log("Going to Register page...");
   res.render("pages/register");
 });
 
-// Set password 
+/**
+ * Set password request page
+ */
 app.post('/set-password', async function (req, res) {
   Utils.log("Setting password for " + req.body.email  + "...");
   params = await req.body;
@@ -241,7 +258,7 @@ app.post('/set-password', async function (req, res) {
     if (uId) {
       await user.load(uId);
       Utils.log("User " + user.name + " identified.");
-      // If a valid, existing user is found, set the password and redirect to the users single-student page
+      // If a valid, existing user is found, set the password and redirect to the single-users page
       await user.setUserPassword(params.password);
       res.send('Password set successfully');
     }
@@ -256,7 +273,9 @@ app.post('/set-password', async function (req, res) {
   }
 });
 
-// Check submitted email and password pair
+/**
+ * Check submitted email and password pair request page
+ */
 app.post('/authenticate', async function (req, res) {
   Utils.log("Authenticating password...");
   const params = req.body;
@@ -288,7 +307,9 @@ app.post('/authenticate', async function (req, res) {
   }
 });
 
-// Logout
+/**
+ * Create a route for the logout page - /logout
+ */
 app.get('/logout', function (req, res) {
   Utils.log("Logging out...");
   req.session.destroy();
@@ -298,17 +319,23 @@ app.get('/logout', function (req, res) {
 
 // MISC ///////////////////////////////////////////////////////////////////////////////////////////
 
-// Invalid page
+/**
+ * Create a route for the invalid page - /invalid
+ */
 app.get('/invalid', function (req, res) {
   res.render("pages/invalid");
 });
 
-// Catch all 404s
+/**
+ * Catch all page redirection for 404s.
+ */
 app.use((req, res) => {
   res.status(404).redirect("/invalid");
 });
 
-// Start server on port 3000
+/**
+ * Start server on port 3000
+ */
 app.listen(3000, function () {
   Utils.log(`Server running at http://127.0.0.1:3000/`);
 });
