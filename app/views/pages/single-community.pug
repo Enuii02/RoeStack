@@ -17,27 +17,46 @@ block content
             .right 
                 .counter 
                     h3= community.amountUsers
-                    p Follower(s)
+                    if community.amountUsers === 1
+                        p Follower
+                    else    
+                        p Followers
             .divider-vertical 
             .left     
                 .counter
-                    h3= community.amountPosts         
-                    p post(s)
+                    h3= community.amountPosts   
+                    if community.amountPosts === 1
+                        p Post
+                    else    
+                        p Posts   
             .meatballs
                 .dropdown 
                     button.icon-btn(type="button" onclick="toggleMenu(this)")
                         i.fa-solid.fa-ellipsis-vertical  
 
-                    ul.dropdown-menu 
-                        li 
-                            a(href="#") Ban 
+                    if content.session.user.isMod || content.session.user.id == community.createdBy.id
+                        ul.dropdown-menu 
+                            if content.session.user.isMod
+                                if community.status === 'active'
+                                    li
+                                        a(href="#") Ban
 
-                        li 
-                            a(href="#") Approve
+                                if community.status === 'banned'
+                                    li
+                                        a(href="#") Approve
 
-                        li 
-                            a(href="#") Placeholder button
-        button.follow-btn Follow
+                            if content.session.user.id == community.createdBy.id || content.session.user.isMod
+                                li 
+                                    a(href="#") Modify
+
+        if !(community.status === "banned")
+            if content.session.user.communities.includes(community.id)
+                button(href="#").follow-btn Follow
+            else 
+                button(href="#").unfollow-btn Unfollow
+        else
+            h2.description-title This community has been banned.
+
         .community-description 
             h2.description-title Module description
             p= community.description

@@ -126,8 +126,6 @@ app.get("/user/:id", async (req, res) => {
     // Create new empty User
     let user = new User();
 
-    let currentUser = req.session.user;
-
     // Load data from database
     await user.load(id);
     
@@ -139,7 +137,6 @@ app.get("/user/:id", async (req, res) => {
     // Render single user
     res.render("./pages/single-user", {
       user,
-      currentUser,
       posts,
       content,
       currentPage: "profile",

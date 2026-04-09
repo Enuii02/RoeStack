@@ -34,6 +34,7 @@ class User {
         this.postCount = -1;
         this.elapsedTime = "";
         this.amountPosts = 0;
+        this.communities = [];
     }
 
     /**
@@ -61,9 +62,9 @@ class User {
         this.email = user.email;
         this.passwordHash = user.password_hash;
         this.createdAt = user.created_at;
-        this.postCount = await this.getPostCount(id);
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
-        this.amountPosts = await this.getPostCount(id);
+        this.amountPosts = await this.getPostCount();
+        this.communities = await this.getFollowedCommunities();
         
         return this;
     }
@@ -80,6 +81,20 @@ class User {
         `;
         var row = await db.query(sql, [this.id]);
         return row[0].count;
+    }
+
+    /**
+     * This function fetches the current post amount for a specific user id.
+     * @returns Amount of Posts.
+     */
+    async getFollowedCommunities() {
+        var sql = `
+            SELECT community_id  
+            FROM userFollowCommunity 
+            WHERE user_id = ?
+        `;
+        var row = await db.query(sql, [this.id]);
+        return row.map(r => r.community_id);
     }
 
     

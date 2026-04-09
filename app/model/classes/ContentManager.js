@@ -44,7 +44,7 @@ class ContentManager {
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList
+            latestPosts, userList, communityList, this.session
         );
 
     }
@@ -261,7 +261,7 @@ class ContentManager {
 class Content {
 
     constructor(totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList) {
+            latestPosts, userList, communityList, session) {
 
         this.totalPosts = totalPosts;
         this.totalUsers = totalUsers;
@@ -271,6 +271,7 @@ class Content {
         this.latestPosts = latestPosts; 
         this.userList = userList;
         this.communityList = communityList;
+        this.session = session;
     
     }
 }

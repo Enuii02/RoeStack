@@ -14,7 +14,10 @@ block content
         .right      
             .posts-counter
                 h3= user.amountPosts              
-                p post(s)
+                if user.amountPosts === 1
+                    p Post
+                else    
+                    p Posts   
             .meatballs
                 .dropdown 
                     button.icon-btn(type="button" onclick="toggleMenu(this)")
@@ -30,7 +33,7 @@ block content
                         li 
                             a(href="#") Report
 
-                        if currentUser.id == user.id 
+                        if content.session.user.id == user.id 
                             li 
                                 a(href="/logout" style="color: red;") Logout
     .about-me

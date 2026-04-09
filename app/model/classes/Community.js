@@ -48,6 +48,7 @@ class Community {
         this.id = community.id;
         this.name = community.name;
         this.description = community.description;
+        this.status = community.status;
         this.createdBy = await new User().load(community.created_by);
         this.createdAt = community.created_at;
         this.amountPosts = await this.getPostCount();
@@ -69,7 +70,7 @@ class Community {
         var row = await db.query(sql, [this.id]);
         return row[0].count;
     }
-    
+
     /**
      * This function fetches the current users following this community.
      * @returns Amount of Followers.
