@@ -5,7 +5,7 @@ document.querySelectorAll('.follow-btn').forEach(followButton => {
     // Get community id from dataset in followButton (defined in single-community.pug)
     const communityId = followButton.dataset.id;
     const userId = followButton.dataset.userId;
-
+    const followerCount = document.querySelector('.follower-count');
 
     var isLoading = false;
     
@@ -27,7 +27,7 @@ document.querySelectorAll('.follow-btn').forEach(followButton => {
             });
 
             const data = await res.json();
-            return data.following;
+            followerCount.textContent = data.followingAmount;
 
         } catch (err) {
             console.error(err);

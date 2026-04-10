@@ -43,18 +43,11 @@ Utils.log("Session created.");
 /**
  * Create a route for root - /
  */
-app.get("/", async function (req, res) {
-  if (req.session.loggedIn) {
+app.get("/", getFilteredPosts, async function (req, res) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
-    let content = await new ContentManager(req.session).update({ getLatestPosts: true });
-    res.render("pages/index", { content, currentPage: "home" });
-=======
-// Create a route for root - /
-app.get("/",getFilteredPosts, async function (req, res) {
-  if (req.session.loggedIn) {
-    Utils.log("Going to Home page...");
-    let content = await new ContentManager().update();
-    res.render(
+    let content = await new ContentManager(req.session).update();
+    res.render( 
       "pages/index",
       {
         content,
@@ -71,7 +64,7 @@ app.get("/",getFilteredPosts, async function (req, res) {
  * Create a route for explore - /explore
  */
 app.get("/explore", async function (req, res) {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Explore page...");
     let content = await new ContentManager(req.session).update({ getAllCommunities: true });
     res.render("pages/explore", { content, currentPage: "explore" });
@@ -84,7 +77,7 @@ app.get("/explore", async function (req, res) {
  * Create a route for add-post - /add-post
  */
 app.get("/add-post", async function (req, res) {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Add Post page...");
     let content = await new ContentManager(req.session).update();
     res.render("pages/add-post", { content, currentPage: "add-post" });
@@ -97,7 +90,7 @@ app.get("/add-post", async function (req, res) {
  * Create a route for profile - /profile
  */
 app.get("/profile", async function (req, res) {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Profile page...");
     let content = await new ContentManager(req.session).update();
     res.render("pages/profile", { content });
@@ -110,7 +103,7 @@ app.get("/profile", async function (req, res) {
  * Create a route for all-users - /all-users
  */
 app.get("/all-users", async function (req, res) {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     if (req.session.user.isMod) {
       Utils.log("Going to Add Users page...");
       let content = await new ContentManager(req.session).update({ getUserList: true });
@@ -128,7 +121,7 @@ app.get("/all-users", async function (req, res) {
  * Single User page that takes in as input an id and renders the information about the user.
  */
 app.get("/user/:id", getFilteredPosts, async (req, res) => {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to User page...");
     let content = await new ContentManager(req.session).update();
 
@@ -146,14 +139,12 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
     
     Utils.log("User '" + user.name + "' loaded.");
 
-    let posts = await new ContentManager(req.session).getLatestPosts({userID: user.id});
-    let currentUser = req.session.user;
+    let posts = await new ContentManager(req.session);
 
     // Render single user
     res.render("./pages/single-user", {
       user,
       posts,
-      currentUser,
       posts: req.sortedFilteredPosts,
       currentPath: req.path,
       activeSort: req.activeSort,
@@ -169,7 +160,7 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
  * Single Post page that takes in as input an id and renders the information about the post.
  */
 app.get("/post/:id", async (req, res) => {
-  if (req.session.loggedIn) {
+  if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Post page...");
     let content = await new ContentManager(req.session).update();
 
@@ -192,8 +183,8 @@ app.get("/post/:id", async (req, res) => {
 /**
  * Single Community page that takes in as input an id and renders the information about the community.
  */
-app.get("/community/:communityId", getFilteredPosts, async (req, res) => {
-  if (req.session.loggedIn) {
+app.get("/community/:id", getFilteredPosts, async (req, res) => {
+  if (req.session.loggedIn && req.session.user) {
     let content = await new ContentManager(req.session).update();
 
     // Create new empty Community
@@ -202,8 +193,6 @@ app.get("/community/:communityId", getFilteredPosts, async (req, res) => {
     // Load data from database
     await community.load(req.params.id);
 
-    await community.load(req.params.communityId);
-    
     Utils.log("Community '" + community.name + "' loaded.");
     // Render single community
     res.render("./pages/single-community", { 
@@ -219,6 +208,7 @@ app.get("/community/:communityId", getFilteredPosts, async (req, res) => {
 });
 
 app.post('/follow', async (req, res) => {
+  if (req.session.loggedIn && req.session.user) {
     const { userId, communityId } = req.body;
     // Check if the requested userId is the same as the current logged in user or if the user is mod
     if (userId == req.session.user.id || req.session.user.isMod) {
@@ -227,12 +217,12 @@ app.post('/follow', async (req, res) => {
       var user = await new User().load(userId)
       var community = await new Community().load(communityId)
       var result = await user.followUnfollow(community)
-      res.json({ following: result });
+      res.json({ followingAmount: result });
       
-      res.redirect("/community/" + community.id);
     } else {
       res.redirect("/invalid");
     }
+  }
 });
 
 
@@ -243,6 +233,7 @@ app.post('/follow', async (req, res) => {
  * Vote page used to send a vote request from the client side to the server's db
  */
 app.post('/vote', async (req, res) => {
+  if (req.session.loggedIn && req.session.user) {
     const { postId, positive } = req.body;
 
     // Create and populate post object
@@ -261,6 +252,7 @@ app.post('/vote', async (req, res) => {
     }
     // Give the total vote count result in json format
     res.json({ votes: result });
+  }
 });
 
 

@@ -13,27 +13,32 @@ const ContentManager = require("../classes/ContentManager");
  * - "oldest": latest reversed duh
  *  */
 async function getFilteredPosts(req, _, next) {
-  try {
-    const contentManager = new ContentManager();
-    const sortType = req.query.sortby || "latest";
-    let userId = req.params.id;
-    let communityId = parseInt(req.params.communityId) || -1;
-    
-    if (userId === "me") {
-      userId = req.session.uid;
-    } else {
-      userId = req.params.id || -1;
+  if (req.session.user) {
+  
+    try {
+      const contentManager = new ContentManager(req.session);
+      const sortType = req.query.sortby || "latest";
+      let userId = req.params.id;
+      let communityId = parseInt(req.params.communityId) || -1;
+      
+      if (userId === "me") {
+        userId = req.session.uid;
+      } else {
+        userId = req.params.id || -1;
+      }
+
+      const posts = await fetchPostsBySortType(contentManager, sortType, userId, req.session.uid, communityId);
+
+      req.sortedFilteredPosts = posts;
+      req.activeSort = normalizeSortType(sortType);
+
+      next();
+    } catch (error) {
+      console.error("Error in sorting middleware:", error);
+      next(error);
     }
-
-    const posts = await fetchPostsBySortType(contentManager, sortType, userId, req.session.uid, communityId);
-
-    req.sortedFilteredPosts = posts;
-    req.activeSort = normalizeSortType(sortType);
-
+  } else {
     next();
-  } catch (error) {
-    console.error("Error in sorting middleware:", error);
-    next(error);
   }
 }
 
@@ -71,6 +76,7 @@ async function fetchPostsBySortType(contentManager, sortType, userId = -1, sessi
   }
   // console.log(options)
   return await contentManager.getPosts(options);
+  
 }
 
 /**

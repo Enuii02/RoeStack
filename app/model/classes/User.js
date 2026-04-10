@@ -107,9 +107,7 @@ class User {
             FROM userFollowCommunity 
             WHERE user_id = ? AND community_id = ?
             `;
-            this.communities = await this.getFollowedCommunities();
             await db.query(sql, [this.id, community.id]);
-            return false;
 
         } else {
             Utils.log("User " + this.name + " has followed " + community.name)
@@ -117,10 +115,10 @@ class User {
             INSERT INTO userFollowCommunity (user_id, community_id)
             VALUES (?, ?); 
             `;
-            this.communities = await this.getFollowedCommunities();
             await db.query(sql, [this.id, community.id]);
-            return true;
         }
+        this.communities = await this.getFollowedCommunities();
+        return community.getFollowersCount();
     }
 
     // AUTHENTICATION /////////////////////////////////////////////////////////////////////////////

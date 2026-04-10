@@ -53,59 +53,59 @@ class ContentManager {
 
     }
 
-  async getPosts({
-    userID = -1,
-    communityID = -1,
-    sortByLatest = true,
-    sortByForYou = false,
-    sortByPopularity = false,
-    reverse = false,
+    async getPosts({
+        userID = -1,
+        communityID = -1,
+        sortByLatest = true,
+        sortByForYou = false,
+        sortByPopularity = false,
+        reverse = false,
     
-} = {}) { 
-    var post;
-    var posts = [];
-    var sql;
-    var results;
-    
-    // Build query dynamically based on provided filters
-    let whereClause = "";
-    let orderByClause = ""
-    let params = [];
-    let sortOrder = (reverse) ? `ASC` : `DESC`;
+    } = {}) { 
+        var post;
+        var posts = [];
+        var sql;
+        var results;
+        
+        // Build query dynamically based on provided filters
+        let whereClause = "";
+        let orderByClause = ""
+        let params = [];
+        let sortOrder = (reverse) ? `ASC` : `DESC`;
 
-    // Build WHERE clause and parameters array
-    if (userID !== -1 && communityID !== -1) {
-        whereClause = "WHERE user_id = ? AND community_id = ?";
-        params = [userID, communityID];
-    } else if (sortByForYou && userID !== -1) {
-        whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
-        params = [userID]
-    } else if (userID !== -1) {
-        whereClause = "WHERE user_id = ?";
-        params = [userID];
-    } else if (communityID !== -1) {
-        whereClause = "WHERE community_id = ?";
-        params = [communityID];
-    }  
+        // Build WHERE clause and parameters array
+        if (userID !== -1 && communityID !== -1) {
+            whereClause = "WHERE user_id = ? AND community_id = ?";
+            params = [userID, communityID];
+        } else if (sortByForYou && userID !== -1) {
+            whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
+            params = [userID]
+        } else if (userID !== -1) {
+            whereClause = "WHERE user_id = ?";
+            params = [userID];
+        } else if (communityID !== -1) {
+            whereClause = "WHERE community_id = ?";
+            params = [communityID];
+        }  
 
-    // Build ORDER BY clause
-    if (sortByPopularity) {
-        orderByClause = "ORDER BY (vote_count + comment_count)"
-    } else {
-        orderByClause = "ORDER BY created_at";
-    } 
+        // Build ORDER BY clause
+        if (sortByPopularity) {
+            orderByClause = "ORDER BY (vote_count + comment_count)"
+        } else {
+            orderByClause = "ORDER BY created_at";
+        } 
 
-    sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
-    console.log('SQL:', sql);
-    results = await db.query(sql, params);
+        sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+        // console.log('SQL:', sql);
+        results = await db.query(sql, params);
 
-        for (let i = 0; i < results.length; i++) {
-            post = await new Post().load(results[i].id, this.session);
-            posts.push(post);
-        }
+            for (let i = 0; i < results.length; i++) {
+                post = await new Post().load(results[i].id, this.session);
+                posts.push(post);
+            }
 
-    return posts;
-}
+        return posts;
+    }
     async getAmountOfPosts({
         userID = -1,
         communityID = -1
