@@ -5,6 +5,8 @@ const Community = require("./Community");
 
 const Post = require("./Post");
 const User = require("./User");
+const Comment = require("./Comment");
+
 
 // TODO Convert to Singleton or Observer
 /**
@@ -181,6 +183,34 @@ class ContentManager {
         }
         return users;
     }
+
+     /**
+   *  Load ALL comments for a post (flat)
+   */
+  static async getByPostId(postId) {
+    const sql = "SELECT * FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
+    const rows = await db.query(sql, [postId]);
+
+    const comments = [];
+
+    for (let row of rows) {
+      let comment = new Comment();
+
+      comment.id = row.id;
+      comment.postId = row.post_id;
+      comment.user = await new User().load(row.user_id);
+      comment.text = row.text;
+      comment.parentId = row.parent_id;
+      comment.createdAt = row.created_at;
+
+      comment.votes = await comment.getVoteCount(row.id);
+      comment.elapsedTime = Utils.getElapsedTime(comment.createdAt);
+
+      comments.push(comment);
+    }
+
+    return comments;
+  }
 }
 
 class Content {

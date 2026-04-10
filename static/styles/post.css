@@ -40,6 +40,7 @@
   color: #888888;
 }
 .top-section .right-side {
+  position: relative;
   display: flex;
   align-items: start;
   gap: 8px;
@@ -52,6 +53,7 @@
   align-items: center;
 }
 .right-side button {
+  position: relative;
   background: none;
   border: none;
   padding: 0;
@@ -146,7 +148,8 @@ p {
 .dropdown-menu {
   display: none;
   position: absolute;
-  right: 340px;
+  right: 0;
+  top: 20px;
   margin-top: 6px;
   list-style: none;
   padding: 6px 0;
@@ -170,4 +173,46 @@ p {
 
 .dropdown-menu.show {
   display: block;
+}
+
+/* for single post page */
+.main-answer {
+  width: 100%;
+  padding: 14px 30px;
+  border: 1px solid #b6b6b6;
+  border-radius: 30px;
+  font-size: 15px;
+  margin-top: 27px;
+  background-color: #f3f3f3;
+  color: #888888;
+  font-style: italic;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  margin-top: 20px;
+  position: relative;
+  width: fit-content;
+}
+
+.sort-btn {
+  font: inherit;
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.divider p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.line {
+  border-bottom: #b6b6b6 1px solid;
+  margin-top: 17px;
 }

@@ -22,8 +22,9 @@
             ul.dropdown-menu 
                 li 
                     a(href="#" style="color: red;") Report post 
-    h2.post-title= post.title
-    .post-content 
+    a(href="/post/" + post.id) 
+        h2.post-title= post.title
+    a(href="/post/" + post.id).post-content 
         p= post.content
     .post-footer
         .left-side 

@@ -1,0 +1,33 @@
+block head 
+    link(rel="stylesheet", href="/styles/comment.css")
+
+block content
+    .comment-body
+        .comment-header
+            span.name John Doe
+            span.dot •
+            span.time 2 hours ago
+            //span.name= comment.author.name
+            //span.time= comment.time
+
+        .role Student
+        //.role= comment.author.role
+
+        p.text= comment.text
+
+        .interactions
+            button.upvote 
+                img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+            span.vote-count 
+                span= post.amountVotes
+            button.downvote 
+                img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
+        a.answers(href="/")
+            img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
+            a.reply(href="#") Reply
+
+        // REPLIES
+        //if comment.replies
+        //.replies
+            each reply in comment.replies
+            include ./comment

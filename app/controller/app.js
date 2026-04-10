@@ -21,23 +21,24 @@ const User = require("../model/classes/User.js");
 const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
-
+const Comment = require("../model/classes/Comment.js");
 
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.urlencoded({ extended: true }));
 
 // Set the sessions
-var session = require('express-session');
-app.use(session({
-  secret: 'secretkeysdfjsflyoifasdakjdbkjbdkajbsdkjabdkjakjsp3562njkn',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
+var session = require("express-session");
+app.use(
+  session({
+    secret: "secretkeysdfjsflyoifasdakjdbkjbdkajbsdkjabdkjakjsp3562njkn",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  }),
+);
 Utils.log("Session created.");
 
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
-
 
 // Create a route for root - /
 app.get("/", async function (req, res) {
@@ -54,7 +55,9 @@ app.get("/", async function (req, res) {
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Explore page...");
-    let content = await new ContentManager().update({ getAllCommunities: true });
+    let content = await new ContentManager().update({
+      getAllCommunities: true,
+    });
     res.render("pages/explore", { content, currentPage: "explore" });
   } else {
     res.redirect("/login");
@@ -119,10 +122,10 @@ app.get("/user/:id", async (req, res) => {
 
     // Load data from database
     await user.load(id);
-    
+
     Utils.log("User '" + user.name + "' loaded.");
 
-    let posts = await new ContentManager().getLatestPosts({userID: user.id});
+    let posts = await new ContentManager().getLatestPosts({ userID: user.id });
 
     // Render single user
     res.render("./pages/single-user", {
@@ -149,12 +152,13 @@ app.get("/post/:id", async (req, res) => {
 
     // Load data from database
     await post.load(req.params.id);
-    
+
     Utils.log("Post '" + post.title + "' loaded.");
 
+    const comments = await new ContentManager().getCommentsForPost(post.id);
+
     // Render single post
-    res.render("./pages/single-post", { post, content });
-  
+    res.render("./pages/single-post", { post, content, comments });
   } else {
     res.redirect("/login");
   }
@@ -173,22 +177,21 @@ app.get("/community/:id", async (req, res) => {
 
     // Load data from database
     await community.load(req.params.id);
-    
+
     Utils.log("Community '" + community.name + "' loaded.");
 
-    let posts = await new ContentManager().getLatestPosts({communityID: community.id});
+    let posts = await new ContentManager().getLatestPosts({
+      communityID: community.id,
+    });
 
     // Render single community
     res.render("./pages/single-community", { community, posts, content });
-    
   } else {
     res.redirect("/login");
   }
 });
 
-
 // LOGIN //////////////////////////////////////////////////////////////////////////////////////////
-
 
 // Create a route for the login page - /login
 app.get("/login", async function (_, res) {
@@ -202,9 +205,9 @@ app.get("/register", async function (_, res) {
   res.render("pages/register");
 });
 
-// Set password 
-app.post('/set-password', async function (req, res) {
-  Utils.log("Setting password for " + req.body.email  + "...");
+// Set password
+app.post("/set-password", async function (req, res) {
+  Utils.log("Setting password for " + req.body.email + "...");
   params = await req.body;
   var user = new User();
   user.email = params.email;
@@ -215,13 +218,14 @@ app.post('/set-password', async function (req, res) {
       Utils.log("User " + user.name + " identified.");
       // If a valid, existing user is found, set the password and redirect to the users single-student page
       await user.setUserPassword(params.password);
-      res.send('Password set successfully');
-    }
-    else {
+      res.send("Password set successfully");
+    } else {
       Utils.log("User with id #" + uId + " not identified.");
       // If no existing user is found, add a new one
       newId = await user.addUser(params.email);
-      res.send('Perhaps a page where a new user sets a programme would be good here');
+      res.send(
+        "Perhaps a page where a new user sets a programme would be good here",
+      );
     }
   } catch (err) {
     console.error(`Error while adding password `, err.message);
@@ -229,7 +233,7 @@ app.post('/set-password', async function (req, res) {
 });
 
 // Check submitted email and password pair
-app.post('/authenticate', async function (req, res) {
+app.post("/authenticate", async function (req, res) {
   Utils.log("Authenticating password...");
   const params = req.body;
   var user = new User();
@@ -244,16 +248,13 @@ app.post('/authenticate', async function (req, res) {
         req.session.user = user;
         req.session.loggedIn = true;
 
-        res.redirect('/user/me');
-
-      }
-      else {
+        res.redirect("/user/me");
+      } else {
         // TODO improve the user journey here
-        res.send('Invalid password');
+        res.send("Invalid password");
       }
-    }
-    else {
-      res.send('Invalid email');
+    } else {
+      res.send("Invalid email");
     }
   } catch (err) {
     console.error(`Error while comparing `, err.message);
@@ -261,17 +262,16 @@ app.post('/authenticate', async function (req, res) {
 });
 
 // Logout
-app.get('/logout', function (req, res) {
+app.get("/logout", function (req, res) {
   Utils.log("Logging out...");
   req.session.destroy();
   res.redirect("/login");
 });
 
-
 // MISC ///////////////////////////////////////////////////////////////////////////////////////////
 
 // Invalid page
-app.get('/invalid', function (req, res) {
+app.get("/invalid", function (req, res) {
   Utils.log("Going to Invalid page...");
   res.render("pages/invalid");
 });
