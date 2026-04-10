@@ -43,11 +43,18 @@ Utils.log("Session created.");
 
 
 // Create a route for root - /
-app.get("/", async function (req, res) {
+app.get("/",getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn) {
     Utils.log("Going to Home page...");
-    let content = await new ContentManager().update({ getLatestPosts: true });
-    res.render("pages/index", { content, currentPage: "home" });
+    let content = await new ContentManager().update();
+    res.render(
+      "pages/index",
+      {
+        content,
+        currentPage: "home",
+        posts: req.sortedFilteredPosts,
+        activeSort: req.activeSort
+      });
   } else {
     res.redirect("/login");
   }
@@ -105,7 +112,7 @@ app.get("/all-users", async function (req, res) {
 /**
  * Single User page that takes in as input an id and renders the information about the user.
  */
-app.get("/user/:id", async (req, res) => {
+app.get("/user/:id", getFilteredPosts, async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to User page...");
     let content = await new ContentManager().update();
@@ -120,18 +127,20 @@ app.get("/user/:id", async (req, res) => {
     // Create new empty User
     let user = new User();
 
+
     let currentUser = req.session.user;
 
   // Load data from database
+  console.log("ID: " + id)
   await user.load(id);
-
-  let posts = await new ContentManager().getLatestPosts({userID: user.id});
 
     // Render single user
     res.render("./pages/single-user", {
       user,
       currentUser,
-      posts,
+      posts: req.sortedFilteredPosts,
+      currentPath: req.path,
+      activeSort: req.activeSort,
       content,
       currentPage: "profile",
     });
@@ -167,7 +176,7 @@ app.get("/post/:id", async (req, res) => {
 /**
  * Single Community page that takes in as input an id and renders the information about the community.
  */
-app.get("/community/:id", async (req, res) => {
+app.get("/community/:communityId", getFilteredPosts, async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to Community page...");
     let content = await new ContentManager().update();
@@ -176,14 +185,17 @@ app.get("/community/:id", async (req, res) => {
     let community = new Community();
 
     // Load data from database
-    await community.load(req.params.id);
+    await community.load(req.params.communityId);
     
     Utils.log("Community '" + community.name + "' loaded.");
 
-  // let posts = await new ContentManager().getPosts({communityID: community.id});
-
     // Render single community
-    res.render("./pages/single-community", { community, posts, content });
+    res.render("./pages/single-community", { 
+      community, 
+      posts: req.sortedFilteredPosts, 
+      activeSort: req.activeSort,
+      currentPath: req.path,
+      content });
     
   } else {
     res.redirect("/login");

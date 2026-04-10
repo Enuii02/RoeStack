@@ -42,20 +42,20 @@ block content
             h2.description-title Module description
             p= community.description
     .divider
-        p Sort by: 
+        p(style="display: inline-block; margin-right: 4px;") Sort by:
         button.sort-btn(type="button" onclick="toggleMenu(this)")
-            p Best
+            p #{activeSort}
             i.fa-solid.fa-angle-down
         
         ul.dropdown-menu 
             li 
-                a(href="#") Placeholder button 
+                a(href=`${currentPath}?sortby=latest`) Latest
 
             li 
-                a(href="#") Placeholder button
+                a(href=`${currentPath}?sortby=popular`) Popular
 
             li 
-                a(href="#") Placeholder button
+                a(href=`${currentPath}?sortby=oldest`) Oldest
     .line
 
     .posts 

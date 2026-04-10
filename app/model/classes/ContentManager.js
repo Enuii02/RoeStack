@@ -62,7 +62,6 @@ class ContentManager {
     // Build query dynamically based on provided filters
     let whereClause = "";
     let orderByClause = ""
-    let selectClause = (sortByForYou) ? `SELECT id FROM userFollowCommunity` : `SELECT id FROM posts`; 
     let params = [];
     let sortOrder = (reverse) ? `ASC` : `DESC`;
 
@@ -70,13 +69,16 @@ class ContentManager {
     if (userID !== -1 && communityID !== -1) {
         whereClause = "WHERE user_id = ? AND community_id = ?";
         params = [userID, communityID];
+    } else if (sortByForYou && userID !== -1) {
+        whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
+        params = [userID]
     } else if (userID !== -1) {
         whereClause = "WHERE user_id = ?";
         params = [userID];
     } else if (communityID !== -1) {
         whereClause = "WHERE community_id = ?";
         params = [communityID];
-    }
+    }  
 
     // Build ORDER BY clause
     if (sortByPopularity) {
@@ -85,8 +87,9 @@ class ContentManager {
         orderByClause = "ORDER BY created_at";
     } 
 
-    sql = `${selectClause} ${whereClause} ${orderByClause} ${sortOrder}`;
-    results = await db.query(sql, params.length > 0 ? params : null);
+    sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+    console.log('SQL:', sql);
+    results = await db.query(sql, params);
 
     for (let i = 0; i < results.length; i++) {
         post = await new Post().load(results[i].id);

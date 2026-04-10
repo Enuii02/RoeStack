@@ -11,16 +11,21 @@ const ContentManager = require("../classes/ContentManager");
  * - "foryou": Personalized posts (default content manager)
  * - "latest": Posts sorted by creation date (newest first, default)
  * - "oldest": latest reversed duh
- * 
- * TODO: Implement filtering functionality and personalized "for you" sorting
- */
+ *  */
 async function getFilteredPosts(req, _, next) {
   try {
     const contentManager = new ContentManager();
-    const userId = req.params.id || null;
     const sortType = req.query.sortby || "latest";
+    let userId = req.params.id;
+    let communityId = parseInt(req.params.communityId) || -1;
+    
+    if (userId === "me") {
+      userId = req.session.uid;
+    } else {
+      userId = req.params.id || -1;
+    }
 
-    const posts = await fetchPostsBySortType(contentManager, sortType, userId);
+    const posts = await fetchPostsBySortType(contentManager, sortType, userId, req.session.uid, communityId);
 
     req.sortedFilteredPosts = posts;
     req.activeSort = normalizeSortType(sortType);
@@ -39,9 +44,10 @@ async function getFilteredPosts(req, _, next) {
  * @param {number|null} userId - Optional user ID to filter posts
  * @returns {Promise<Array>} - Array of Post objects
  */
-async function fetchPostsBySortType(contentManager, sortType, userId) {
+async function fetchPostsBySortType(contentManager, sortType, userId = -1, sessionUserID, communityId = -1) {
    const options = {
-    userID: userId ?? -1,
+    userID: userId,
+    communityID: communityId,
     sortByLatest: false,
     sortByPopularity: false,
     reverse: false
@@ -52,14 +58,18 @@ async function fetchPostsBySortType(contentManager, sortType, userId) {
       options.sortByPopularity = true;
       break;
     case "foryou":
-      options.sortByForYour = true;
+      options.sortByForYou = true;
+      options.userID = sessionUserID || -1;
+      break;
     case "oldest":
-      options.sortByLatest;
-      options.reverse;
+      options.sortByLatest = true;
+      options.reverse = true;
+      break;
     default:
-      options.sortByLatest;
-      options.reverse;
+      options.sortByLatest = true;
+      options.reverse = false;
   }
+  // console.log(options)
   return await contentManager.getPosts(options);
 }
 
@@ -71,6 +81,7 @@ async function fetchPostsBySortType(contentManager, sortType, userId) {
 function normalizeSortType(sortType) {
   if (sortType === "popular") return "popular";
   if (sortType === "foryou") return "forYou";
+  if (sortType === "oldest") return "oldest";
   return "latest";
 }
 
