@@ -65,7 +65,7 @@ class User {
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
         this.amountPosts = await this.getPostCount();
         this.communities = await this.getFollowedCommunities();
-        
+        // Utils.log("Loaded " + this.role + " " + this.name + " | comms " + this.communities)
         return this;
     }
 
@@ -97,6 +97,33 @@ class User {
         return row.map(r => r.community_id);
     }
 
+    async followUnfollow(community) {
+    
+        // If the current user is following the community, delete it. Else, add it to userFollowCommunity.
+        if ((this.communities).includes(community.id)) {
+            Utils.log("User " + this.name + " has unfollowed " + community.name)
+            var sql = `
+            DELETE 
+            FROM userFollowCommunity 
+            WHERE user_id = ? AND community_id = ?
+            `;
+            this.communities = await this.getFollowedCommunities();
+            await db.query(sql, [this.id, community.id]);
+            return false;
+
+        } else {
+            Utils.log("User " + this.name + " has followed " + community.name)
+            var sql = `
+            INSERT INTO userFollowCommunity (user_id, community_id)
+            VALUES (?, ?); 
+            `;
+            this.communities = await this.getFollowedCommunities();
+            await db.query(sql, [this.id, community.id]);
+            return true;
+        }
+    }
+
+    // AUTHENTICATION /////////////////////////////////////////////////////////////////////////////
     
     // Checks to see if the submitted email address exists in the Users table
     async getIdFromEmail() {
@@ -157,6 +184,8 @@ class User {
     }
 
 }
+
+
 
 // Add class to the exports, so that other classes can use it
 module.exports = User;

@@ -32,6 +32,11 @@ class ContentManager {
         if (getStatistics)  totalComments    = await this.getTotalComments();
         if (getStatistics)  mostHelpful      = await this.getMostHelpful();
         if (getStatistics)  topCommunities   = await this.getTopCommunities();
+        if (getStatistics)  {
+            // this.session.user is not an instance of user anymore, hence the user is loaded again to update any new attributes.
+            this.session.user = await new User().load(this.session.user.id)
+        }
+
 
         // Get latest post sorted by created_at descending
         if (getLatestPosts) latestPosts      = await this.getLatestPosts();

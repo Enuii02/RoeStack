@@ -29,12 +29,13 @@ block content
                         p Post
                     else    
                         p Posts   
-            .meatballs
-                .dropdown 
-                    button.icon-btn(type="button" onclick="toggleMenu(this)")
-                        i.fa-solid.fa-ellipsis-vertical  
 
-                    if content.session.user.isMod || content.session.user.id == community.createdBy.id
+            if content.session.user.isMod || content.session.user.id == community.createdBy.id
+                .meatballs
+                    .dropdown 
+                        button.icon-btn(type="button" onclick="toggleMenu(this)")
+                            i.fa-solid.fa-ellipsis-vertical  
+
                         ul.dropdown-menu 
                             if content.session.user.isMod
                                 if community.status === 'active'
@@ -51,9 +52,11 @@ block content
 
         if !(community.status === "banned")
             if content.session.user.communities.includes(community.id)
-                button(href="#").follow-btn Follow
+                button(data-id=community.id
+                    data-user-id=content.session.user.id).follow-btn.inverse Unfollow
             else 
-                button(href="#").unfollow-btn Unfollow
+                button(data-id=community.id
+                    data-user-id=content.session.user.id).follow-btn Follow
         else
             h2.description-title This community has been banned.
 

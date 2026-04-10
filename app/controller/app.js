@@ -175,7 +175,6 @@ app.get("/post/:id", async (req, res) => {
  */
 app.get("/community/:id", async (req, res) => {
   if (req.session.loggedIn) {
-    Utils.log("Going to Community page...");
     let content = await new ContentManager(req.session).update();
 
     // Create new empty Community
@@ -183,7 +182,7 @@ app.get("/community/:id", async (req, res) => {
 
     // Load data from database
     await community.load(req.params.id);
-    
+
     Utils.log("Community '" + community.name + "' loaded.");
 
     let posts = await new ContentManager(req.session).getLatestPosts({communityID: community.id});
@@ -195,6 +194,24 @@ app.get("/community/:id", async (req, res) => {
     res.redirect("/login");
   }
 });
+
+app.post('/follow', async (req, res) => {
+    const { userId, communityId } = req.body;
+    // Check if the requested userId is the same as the current logged in user or if the user is mod
+    if (userId == req.session.user.id || req.session.user.isMod) {
+      // Send follow request, a new user object is needed as it could be that a moderator is forcefully 
+      // making another user follow/unfollow the community
+      var user = await new User().load(userId)
+      var community = await new Community().load(communityId)
+      var result = await user.followUnfollow(community)
+      res.json({ following: result });
+      
+      res.redirect("/community/" + community.id);
+    } else {
+      res.redirect("/invalid");
+    }
+});
+
 
 
 // VOTE SYSTEM ////////////////////////////////////////////////////////////////////////////////////

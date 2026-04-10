@@ -86,7 +86,6 @@ class Community {
         const row = await db.query(sql, [this.id]);
         return row[0].count;
     }
-
 }
 // Add class to the exports, so that other classes can use it
 module.exports = Community;
