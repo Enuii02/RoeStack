@@ -37,7 +37,6 @@ class ContentManager {
             this.session.user = await new User().load(this.session.user.id)
         }
 
-
         // Get latest post sorted by created_at descending
         if (getLatestPosts) latestPosts      = await this.getPosts();
 
