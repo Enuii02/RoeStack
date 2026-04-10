@@ -24,7 +24,7 @@ class ContentManager {
     } = {}) { 
 
         var totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList;
+            latestPosts, userList, communityList, popularPosts;
 
         // Get all statistics
         if (getStatistics)  totalPosts       = await this.getTotalPosts();
@@ -39,7 +39,7 @@ class ContentManager {
 
 
         // Get latest post sorted by created_at descending
-        if (getLatestPosts) latestPosts      = await this.getLatestPosts();
+        if (getLatestPosts) latestPosts      = await this.getPosts();
 
         // Get all users sorted by mods first
         if (getUserList)    userList         = await this.getUsersList();
@@ -49,70 +49,64 @@ class ContentManager {
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList, this.session
+            latestPosts, userList, communityList, popularPosts, this.session
         );
 
     }
+
+  async getPosts({
+    userID = -1,
+    communityID = -1,
+    sortByLatest = true,
+    sortByForYou = false,
+    sortByPopularity = false,
+    reverse = false,
     
-    async getLatestPosts({
-        userID = -1,
-        communityID = -1
-        
-    } = {}) { 
-        var post;
-        var posts = [];
-        var sql;
-        var results;
+} = {}) { 
+    var post;
+    var posts = [];
+    var sql;
+    var results;
+    
+    // Build query dynamically based on provided filters
+    let whereClause = "";
+    let orderByClause = ""
+    let params = [];
+    let sortOrder = (reverse) ? `ASC` : `DESC`;
 
-        var userNotSelected = userID === -1;
-        var communityNotSelected = communityID === -1;
+    // Build WHERE clause and parameters array
+    if (userID !== -1 && communityID !== -1) {
+        whereClause = "WHERE user_id = ? AND community_id = ?";
+        params = [userID, communityID];
+    } else if (sortByForYou && userID !== -1) {
+        whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
+        params = [userID]
+    } else if (userID !== -1) {
+        whereClause = "WHERE user_id = ?";
+        params = [userID];
+    } else if (communityID !== -1) {
+        whereClause = "WHERE community_id = ?";
+        params = [communityID];
+    }  
 
-        if (userNotSelected && communityNotSelected) {
-            // Get all posts (ordered by newest)
-            sql = `
-                SELECT id 
-                FROM posts 
-                ORDER BY created_at DESC
-            `;
-            results = await db.query(sql, null);
-        } else if (userNotSelected && communityNotSelected) {
-            // Get all posts related to a specific user and community (ordered by newest)
-            sql = `
-                SELECT id 
-                FROM posts 
-                WHERE user_id = ? AND community_id = ? 
-                ORDER BY created_at DESC
-            `;
-            results = await db.query(sql, [userID, communityID]);
-        } else if (userNotSelected) {
-            // Get all posts related to a specific community (ordered by newest)
-            sql = `
-                SELECT id 
-                FROM posts 
-                WHERE community_id = ? 
-                ORDER BY created_at DESC
-            `;
-            results = await db.query(sql, [communityID]);
-        } else if (communityNotSelected) {
-            // Get all posts related to a specific user (ordered by newest)
-            sql = `
-                SELECT id 
-                FROM posts 
-                WHERE user_id = ? 
-                ORDER BY created_at DESC
-            `;
-            results = await db.query(sql, [userID]);
+    // Build ORDER BY clause
+    if (sortByPopularity) {
+        orderByClause = "ORDER BY (vote_count + comment_count)"
+    } else {
+        orderByClause = "ORDER BY created_at";
+    } 
 
-        }
+    sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+    console.log('SQL:', sql);
+    results = await db.query(sql, params);
 
         for (let i = 0; i < results.length; i++) {
             post = await new Post().load(results[i].id, this.session);
             posts.push(post);
         }
 
-        return posts;
-    }
-
+    return posts;
+}
     async getAmountOfPosts({
         userID = -1,
         communityID = -1
@@ -266,7 +260,7 @@ class ContentManager {
 class Content {
 
     constructor(totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList, session) {
+            latestPosts, userList, communityList, popularPosts, session) {
 
         this.totalPosts = totalPosts;
         this.totalUsers = totalUsers;
@@ -276,6 +270,7 @@ class Content {
         this.latestPosts = latestPosts; 
         this.userList = userList;
         this.communityList = communityList;
+        this.popularPosts = popularPosts;
         this.session = session;
     
     }
