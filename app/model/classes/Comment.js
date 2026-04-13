@@ -3,19 +3,18 @@ const User = require("./User");
 const Utils = require("../../Utils");
 
 class Comment {
-
   constructor(
     id = -1,
     postId = -1,
     user = null,
-    text = "",
+    content = "",
     parentId = null,
-    createdAt = new Date()
+    createdAt = new Date(),
   ) {
     this.id = id;
     this.postId = postId;
     this.user = user;
-    this.text = text;
+    this.content = content;
     this.parentId = parentId;
     this.createdAt = createdAt;
 
@@ -37,7 +36,7 @@ class Comment {
     this.id = c.id;
     this.postId = c.post_id;
     this.user = await new User().load(c.user_id);
-    this.text = c.text;
+    this.content = c.content;
     this.parentId = c.parent_id;
     this.createdAt = c.created_at;
 
@@ -56,20 +55,49 @@ class Comment {
     return row[0].count;
   }
 
+  /**
+   *  Load ALL comments for a post (flat)
+   */
+  static async getByPostId(postId) {
+    const sql =
+      "SELECT * FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
+    const rows = await db.query(sql, [postId]);
+
+    const comments = [];
+
+    for (let row of rows) {
+      let comment = new Comment();
+
+      comment.id = Number(row.id);
+      comment.postId = row.post_id;
+      comment.user = await new User().load(row.user_id);
+      comment.content = row.content;
+      comment.parentId = row.parent_id !== null ? Number(row.parent_id) : null;
+      comment.createdAt = row.created_at;
+
+      comment.votes = await comment.getVoteCount(row.id);
+      comment.elapsedTime = Utils.getElapsedTime(comment.createdAt);
+
+      comments.push(comment);
+    }
+
+    return comments;
+  }
 
   /**
    *  Build tree (replies)
    */
+
   static buildTree(comments) {
     const map = {};
     const roots = [];
 
-    comments.forEach(c => {
+    comments.forEach((c) => {
       map[c.id] = c;
       c.replies = [];
     });
 
-    comments.forEach(c => {
+    comments.forEach((c) => {
       if (c.parentId === null) {
         roots.push(c);
       } else {

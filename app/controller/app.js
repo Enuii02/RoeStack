@@ -146,13 +146,10 @@ app.get("/post/:id", async (req, res) => {
   if (req.session.loggedIn) {
     Utils.log("Going to Post page...");
     let content = await new ContentManager().update();
-
     // Create new empty Post
     let post = new Post();
-
     // Load data from database
     await post.load(req.params.id);
-
     Utils.log("Post '" + post.title + "' loaded.");
 
     const comments = await new ContentManager().getCommentsForPost(post.id);

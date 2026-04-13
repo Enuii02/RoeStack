@@ -1,4 +1,8 @@
 extends ../layout
+
+block head
+    link(rel="stylesheet", href="/styles/comment.css")
+
 block content
     .post-box 
         .top-section
@@ -35,7 +39,7 @@ block content
                         span= post.amountVotes
                     button.downvote 
                         img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
-                a.answers(href="/")
+                .answers
                     img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
                     .answer-count 5 answers
                     //span.answer-count= #{post.answersCount} answers
@@ -56,6 +60,9 @@ block content
                 li 
                     a(href="#") Oldest
         .line
-        include ../partials/post.pug
+        include ../partials/comment
+        .answers-section
+            each comment in comments
+                +commentItem(comment)
 block scripts
     script(src="/js/profile-page.js" defer)

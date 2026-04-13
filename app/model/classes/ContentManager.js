@@ -1,4 +1,3 @@
-
 // Get the functions in the db.js file
 const db = require("../Db");
 const Community = require("./Community");
@@ -7,227 +6,218 @@ const Post = require("./Post");
 const User = require("./User");
 const Comment = require("./Comment");
 
-
 // TODO Convert to Singleton or Observer
 /**
- * The Content Manager 
+ * The Content Manager
  */
 class ContentManager {
+  async update({
+    getStatistics = true,
+    getLatestPosts = false,
+    getUserList = false,
+    getAllCommunities = false,
+  } = {}) {
+    var totalPosts,
+      totalUsers,
+      totalComments,
+      mostHelpful,
+      topCommunities,
+      latestPosts,
+      userList,
+      communityList;
 
-    async update({
-        getStatistics = true,
-        getLatestPosts = false, 
-        getUserList = false,
-        getAllCommunities = false
-    } = {}) { 
+    // Get all statistics
+    if (getStatistics) totalPosts = await this.getTotalPosts();
+    if (getStatistics) totalUsers = await this.getTotalUsers();
+    if (getStatistics) totalComments = await this.getTotalComments();
+    if (getStatistics) mostHelpful = await this.getMostHelpful();
+    if (getStatistics) topCommunities = await this.getTopCommunities();
 
-        var totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList;
+    // Get latest post sorted by created_at descending
+    if (getLatestPosts) latestPosts = await this.getLatestPosts();
 
-        // Get all statistics
-        if (getStatistics)  totalPosts       = await this.getTotalPosts();
-        if (getStatistics)  totalUsers       = await this.getTotalUsers();
-        if (getStatistics)  totalComments    = await this.getTotalComments();
-        if (getStatistics)  mostHelpful      = await this.getMostHelpful();
-        if (getStatistics)  topCommunities   = await this.getTopCommunities();
+    // Get all users sorted by mods first
+    if (getUserList) userList = await this.getUsersList();
 
-        // Get latest post sorted by created_at descending
-        if (getLatestPosts) latestPosts      = await this.getLatestPosts();
+    // Get all communities sorted by oldest first
+    if (getAllCommunities) communityList = await this.getAllCommunities();
 
-        // Get all users sorted by mods first
-        if (getUserList)    userList         = await this.getUsersList();
+    return new Content(
+      totalPosts,
+      totalUsers,
+      totalComments,
+      mostHelpful,
+      topCommunities,
+      latestPosts,
+      userList,
+      communityList,
+    );
+  }
 
-        // Get all communities sorted by oldest first
-        if (getAllCommunities) communityList = await this.getAllCommunities();
+  async getLatestPosts({ userID = -1, communityID = -1 } = {}) {
+    var post;
+    var posts = [];
+    var sql;
+    var results;
 
-        return new Content(
-            totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList
-        );
-
+    if (userID === -1 && communityID === -1) {
+      // Get all posts (ordered by newest)
+      sql = "SELECT id FROM posts ORDER BY created_at DESC";
+      results = await db.query(sql, null);
+    } else if (userID !== -1 && communityID !== -1) {
+      // Get all posts related to a specific user and community (ordered by newest)
+      sql =
+        "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY created_at DESC";
+      results = await db.query(sql, [userID, communityID]);
+    } else if (userID === -1) {
+      // Get all posts related to a specific community (ordered by newest)
+      sql =
+        "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
+      results = await db.query(sql, [communityID]);
+    } else if (communityID === -1) {
+      // Get all posts related to a specific user (ordered by newest)
+      sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
+      results = await db.query(sql, [userID]);
     }
 
-    async getLatestPosts({
-        userID = -1,
-        communityID = -1
-        
-    } = {}) { 
-        var post;
-        var posts = [];
-        var sql;
-        var results;
-
-        if (userID === -1 && communityID === -1) {
-            // Get all posts (ordered by newest)
-            sql = "SELECT id FROM posts ORDER BY created_at DESC";
-            results = await db.query(sql, null);
-        } else if (userID !== -1 && communityID !== -1) {
-            // Get all posts related to a specific user and community (ordered by newest)
-            sql = "SELECT id FROM posts WHERE user_id = ? AND community_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [userID, communityID]);
-        } else if (userID === -1) {
-            // Get all posts related to a specific community (ordered by newest)
-            sql = "SELECT id FROM posts WHERE community_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [communityID]);
-        } else if (communityID === -1) {
-            // Get all posts related to a specific user (ordered by newest)
-            sql = "SELECT id FROM posts WHERE user_id = ? ORDER BY created_at DESC";
-            results = await db.query(sql, [userID]);
-
-        }
-
-
-        for (let i = 0; i < results.length; i++) {
-            post = await new Post().load(results[i].id);
-            posts.push(post);
-        }
-
-        return posts;
+    for (let i = 0; i < results.length; i++) {
+      post = await new Post().load(results[i].id);
+      posts.push(post);
     }
 
-    async getAmountOfPosts({
-        userID = -1,
-        communityID = -1
-    } = {}) { 
-        var sql;
-        var results;
+    return posts;
+  }
 
-        if (userID === -1 && communityID === -1) {
-            // Get count of all posts 
-            sql = "SELECT count(id) as count FROM posts";
-            results = await db.query(sql, null);
-        } else if (userID === -1) {
-            // Get count of all posts related to a specific community
-            sql = "SELECT count(id) FROM posts WHERE community_id = ?";
-            results = await db.query(sql, [communityID]);
-        } else if (communityID === -1) {
-            // Get count of all posts related to a specific user 
-            sql = "SELECT count(id) FROM posts WHERE user_id = ?";
-            results = await db.query(sql, [userID]);
-        }
+  async getAmountOfPosts({ userID = -1, communityID = -1 } = {}) {
+    var sql;
+    var results;
 
-        return results[i].id;
+    if (userID === -1 && communityID === -1) {
+      // Get count of all posts
+      sql = "SELECT count(id) as count FROM posts";
+      results = await db.query(sql, null);
+    } else if (userID === -1) {
+      // Get count of all posts related to a specific community
+      sql = "SELECT count(id) FROM posts WHERE community_id = ?";
+      results = await db.query(sql, [communityID]);
+    } else if (communityID === -1) {
+      // Get count of all posts related to a specific user
+      sql = "SELECT count(id) FROM posts WHERE user_id = ?";
+      results = await db.query(sql, [userID]);
     }
 
-    
-    async getUsersList() {
-        // Get all users, ordering it by wether it is a mod or not
-        const sql = "SELECT id FROM users ORDER BY is_mod DESC";
+    return results[i].id;
+  }
 
-        const results = await db.query(sql, null);
-        var users = [];
-        var user;
-        for (let i = 0; i < results.length; i++) {
-            user = await new User().load(results[i].id);
-            users.push(user);
-        }
-        return users;
+  async getUsersList() {
+    // Get all users, ordering it by wether it is a mod or not
+    const sql = "SELECT id FROM users ORDER BY is_mod DESC";
+
+    const results = await db.query(sql, null);
+    var users = [];
+    var user;
+    for (let i = 0; i < results.length; i++) {
+      user = await new User().load(results[i].id);
+      users.push(user);
     }
+    return users;
+  }
 
-    async getTopCommunities() {
-        // TODO Get all communities sorted by amount of users DESC
-        const sql = "SELECT id FROM communities ORDER BY created_at ASC LIMIT 5";
+  async getTopCommunities() {
+    // TODO Get all communities sorted by amount of users DESC
+    const sql = "SELECT id FROM communities ORDER BY created_at ASC LIMIT 5";
 
-        const results = await db.query(sql, null);
-        var communities = [];
-        var community;
-        for (let i = 0; i < results.length; i++) {
-            community = await new Community().load(results[i].id);
-            communities.push(community);
-        }
-        return communities;
+    const results = await db.query(sql, null);
+    var communities = [];
+    var community;
+    for (let i = 0; i < results.length; i++) {
+      community = await new Community().load(results[i].id);
+      communities.push(community);
     }
+    return communities;
+  }
 
-    async getAllCommunities() {
-        // Get all communities sorted by oldest first
-        const sql = "SELECT id FROM communities ORDER BY created_at ASC";
+  async getAllCommunities() {
+    // Get all communities sorted by oldest first
+    const sql = "SELECT id FROM communities ORDER BY created_at ASC";
 
-        const results = await db.query(sql, null);
-        var communities = [];
-        var community;
-        for (let i = 0; i < results.length; i++) {
-            community = await new Community().load(results[i].id);
-            communities.push(community);
-        }
-        return communities;
+    const results = await db.query(sql, null);
+    var communities = [];
+    var community;
+    for (let i = 0; i < results.length; i++) {
+      community = await new Community().load(results[i].id);
+      communities.push(community);
     }
+    return communities;
+  }
 
-    async getTotalPosts() {
-        const sql = "SELECT count(id) as count FROM posts";
-        const results = await db.query(sql, null);
-        return results[0].count
+  async getTotalPosts() {
+    const sql = "SELECT count(id) as count FROM posts";
+    const results = await db.query(sql, null);
+    return results[0].count;
+  }
+
+  async getTotalUsers() {
+    const sql = "SELECT count(id) as count FROM users";
+    const results = await db.query(sql, null);
+    return results[0].count;
+  }
+
+  async getTotalComments() {
+    return 25;
+    // TODO Uncomment when comments table is available
+    // const sql = "SELECT count(id) as count FROM comments";
+    // const results = await db.query(sql, null);
+    // return results[0].count
+  }
+
+  async getMostHelpful() {
+    const sql =
+      "SELECT users.id, SUM(vote_count) as count FROM users, posts WHERE posts.user_id = users.id GROUP BY users.id ORDER BY `count` DESC LIMIT 5";
+    const results = await db.query(sql, null);
+    var users = [];
+    var user;
+    for (let i = 0; i < results.length; i++) {
+      user = await new User().load(results[i].id);
+      users.push(user);
     }
+    return users;
+  }
 
-    async getTotalUsers() {
-        const sql = "SELECT count(id) as count FROM users";
-        const results = await db.query(sql, null);
-        return results[0].count
-    }
-
-    async getTotalComments() {
-        return 25;
-        // TODO Uncomment when comments table is available
-        // const sql = "SELECT count(id) as count FROM comments";
-        // const results = await db.query(sql, null);
-        // return results[0].count
-    }
-
-    async getMostHelpful() {
-        const sql = "SELECT users.id, SUM(vote_count) as count FROM users, posts WHERE posts.user_id = users.id GROUP BY users.id ORDER BY `count` DESC LIMIT 5";
-        const results = await db.query(sql, null);
-        var users = [];
-        var user;
-        for (let i = 0; i < results.length; i++) {
-            user = await new User().load(results[i].id);
-            users.push(user);
-        }
-        return users;
-    }
-
-     /**
-   *  Load ALL comments for a post (flat)
-   */
-  static async getByPostId(postId) {
-    const sql = "SELECT * FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
-    const rows = await db.query(sql, [postId]);
-
-    const comments = [];
-
-    for (let row of rows) {
-      let comment = new Comment();
-
-      comment.id = row.id;
-      comment.postId = row.post_id;
-      comment.user = await new User().load(row.user_id);
-      comment.text = row.text;
-      comment.parentId = row.parent_id;
-      comment.createdAt = row.created_at;
-
-      comment.votes = await comment.getVoteCount(row.id);
-      comment.elapsedTime = Utils.getElapsedTime(comment.createdAt);
-
-      comments.push(comment);
-    }
-
-    return comments;
+  async getCommentsForPost(postId) {
+    const flatComments = await Comment.getByPostId(postId);
+    console.log(
+      flatComments.map((c) => ({
+        id: c.id,
+        parentId: c.parentId,
+      })),
+    );
+    const tree = Comment.buildTree(flatComments);
+    console.log("TREE:", JSON.stringify(tree, null, 2));
+    return tree;
   }
 }
 
 class Content {
-
-    constructor(totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
-            latestPosts, userList, communityList) {
-
-        this.totalPosts = totalPosts;
-        this.totalUsers = totalUsers;
-        this.totalComments = totalComments;
-        this.mostHelpful = mostHelpful;
-        this.topCommunities = topCommunities;
-        this.latestPosts = latestPosts; 
-        this.userList = userList;
-        this.communityList = communityList;
-    
-    }
+  constructor(
+    totalPosts,
+    totalUsers,
+    totalComments,
+    mostHelpful,
+    topCommunities,
+    latestPosts,
+    userList,
+    communityList,
+  ) {
+    this.totalPosts = totalPosts;
+    this.totalUsers = totalUsers;
+    this.totalComments = totalComments;
+    this.mostHelpful = mostHelpful;
+    this.topCommunities = topCommunities;
+    this.latestPosts = latestPosts;
+    this.userList = userList;
+    this.communityList = communityList;
+  }
 }
 
 // Add class to the exports, so that other classes can use it

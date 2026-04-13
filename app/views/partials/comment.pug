@@ -1,33 +1,36 @@
-block head 
-    link(rel="stylesheet", href="/styles/comment.css")
+mixin commentItem(comment)
+   .comment-thread(class=comment.replies && comment.replies.length > 0 ? 'has-replies' : '')
+        .comment-body
+            .comment-left
+                img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            .comment-right
+                .comment-info
+                    a.name(href="/user/" + comment.user.id)= comment.user.name
+                    span.dot •
+                    span.time= comment.elapsedTime
+                    button.icon-btn(type="button" onclick="toggleMenu(this)")
+                        img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+                    ul.dropdown-menu 
+                        li 
+                            a(href="#" style="color: red;") Report comment
+                .role= comment.user.role
 
-block content
-    .comment-body
-        .comment-header
-            span.name John Doe
-            span.dot •
-            span.time 2 hours ago
-            //span.name= comment.author.name
-            //span.time= comment.time
+                p.comment-text= comment.content
 
-        .role Student
-        //.role= comment.author.role
+                .comment-footer
+                    .interactions
+                        button.upvote 
+                            img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+                        span.vote-count 
+                            span= comment.votes
+                        button.downvote 
+                            img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
+                    a.answers(href="/")
+                        img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
+                        a.reply(href="#") Reply
 
-        p.text= comment.text
-
-        .interactions
-            button.upvote 
-                img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
-            span.vote-count 
-                span= post.amountVotes
-            button.downvote 
-                img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
-        a.answers(href="/")
-            img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
-            a.reply(href="#") Reply
-
-        // REPLIES
-        //if comment.replies
-        //.replies
-            each reply in comment.replies
-            include ./comment
+        // REPLIES    
+        if comment.replies
+            .replies
+                each reply in comment.replies
+                    +commentItem(reply)
