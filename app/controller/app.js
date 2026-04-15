@@ -24,6 +24,7 @@ const ContentManager = require("../model/classes/ContentManager.js");
 const Comment = require("../model/classes/Comment.js");
 
 // This snippet is used to make sure that post data is encoded and read properly
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set the sessions
@@ -256,6 +257,30 @@ app.post("/authenticate", async function (req, res) {
   } catch (err) {
     console.error(`Error while comparing `, err.message);
   }
+});
+
+app.post("/api/comments", async (req, res) => {
+  const { content, postId, parentId } = req.body;
+
+  const userId = req.session.uid || req.session.user?.id;
+
+  const sql = `
+    INSERT INTO comments (content, user_id, post_id, parent_id, created_at)
+    VALUES (?, ?, ?, ?, NOW())
+  `;
+
+  const result = await db.query(sql, [content, userId, postId, parentId]);
+
+  const newComment = {
+    id: result.insertId,
+    content,
+    postId,
+    parentId,
+    createdAt: new Date(),
+    user: await new User().load(userId),
+  };
+
+  res.json(newComment);
 });
 
 // Logout

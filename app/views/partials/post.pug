@@ -37,7 +37,6 @@
                     img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
             a.answers(href="/post/" + post.id)
                 img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
-                .answer-count 5 answers
-                //span.answer-count= #{post.answersCount} answers
+                span.answer-count= post.answersCount + " answers"
 block scripts
     script(src="/js/profile-page.js" defer)

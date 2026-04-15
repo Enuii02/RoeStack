@@ -41,9 +41,10 @@ block content
                         img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
                 .answers
                     img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
-                    .answer-count 5 answers
-                    //span.answer-count= #{post.answersCount} answers
-        input(type="text" placeholder="Write your answer...").main-answer
+                    span.answer-count= post.answersCount + " answers"
+        .form-answer
+            input.main-answer(type="text" placeholder="Write your answer...")
+            button.answer-btn(disabled) Post Your Answer
         .divider
             p Sort by: 
             button.sort-btn(type="button" onclick="toggleMenu(this)")
@@ -66,3 +67,4 @@ block content
                 +commentItem(comment)
 block scripts
     script(src="/js/profile-page.js" defer)
+    script(src="/js/comment.js" defer)
