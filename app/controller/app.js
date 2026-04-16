@@ -15,7 +15,7 @@ app.set("view engine", "pug");
 app.set("views", "./app/views");
 
 // Get the functions in the db.js file to use
-const db = require("../model/Db.js");
+const db = require("../model/db..js");
 
 // Get Misc Classes
 const User = require("../model/classes/User.js");

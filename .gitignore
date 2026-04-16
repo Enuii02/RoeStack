@@ -120,3 +120,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 RoeStack.sql
+
+# Test output
+tests_output
