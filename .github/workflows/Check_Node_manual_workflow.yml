@@ -1,15 +1,10 @@
 # This is a workflow that is manually triggered to test the docker build
-
-name: Manual workflow for docker
+name: Run custom tests with Nighwatch
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
 on:
-  pull_request:
   workflow_dispatch:
-  push:
-    branches:
-      - test
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,11 +29,13 @@ jobs:
       - name: check dir
         run: ls
       - name: Create the .env file
-        run: echo "${{ secrets.ENV_FILE }}" > .env
-      - name: Check
-        run: cat .env
+        run: echo "${{ secrets.ENV_FILE }}"  > .env
       - name: Install dependencies
         run: npm install
       - uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose-test.yml"
+      - name: get dependencies for tests
+        run: sudo apt-get install xvfb
+      - name: run the nightwatch tests
+        run: xvfb-run --auto-servernum npm test -- --env chrome
