@@ -1,6 +1,6 @@
 
 // Get the functions in the db.js file
-const db = require("../Db");
+const db = require("../db.");
 const Community = require("./Community");
 
 const Post = require("./Post");
