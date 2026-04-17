@@ -15,6 +15,6 @@ jobs:
           curl -H "Content-Type: application/json" \
           -X POST \
           -d '{
-            "content": "New push to main\nRepository: '${{ github.repository }}'\nAuthor: '${{ github.actor }}'\nCommit: '${{ github.event.head_commit.message }}'\nURL: '${{ github.event.head_commit.url }}'"
+            "content": "New push to main\nRepository: ${{ github.repository }}\nAuthor: ${{ github.actor }}\nCommit: ${{ github.event.head_commit.message }}\nURL: ${{ github.event.head_commit.url }}"
           }' \
           ${{ secrets.DISCORD_WEBHOOK }}
