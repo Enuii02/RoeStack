@@ -1,6 +1,22 @@
 extends ../layout
+
+block head
+    link(rel="stylesheet", href="/styles/homepage.css")
+
 block content 
-    each post in content.latestPosts
-        include ../partials/post.pug
+    .sorting-buttons 
+        a.sort-btn(class= activeSort === "latest" ? "active-latest" : "", href="/") 
+            i.fa-regular.fa-clock 
+            p Latest 
+        a.sort-btn(class= activeSort === "popular" ? "active-popular" : "", href="/?sortby=popular") 
+            i.fa-solid.fa-fire  
+            p Popular
+        a.sort-btn(class= activeSort === "forYou" ? "active-for-you" : "", href="/?sortby=foryou")
+            i.fa-solid.fa-heart 
+            p For You
+
+    .posts 
+        each post in posts 
+            include ../partials/post.pug
 
     

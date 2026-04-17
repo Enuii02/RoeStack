@@ -18,19 +18,21 @@ class Comment {
     this.parentId = parentId;
     this.createdAt = createdAt;
 
-    this.votes = 0;
+    this.amountVotes = 0;
     this.elapsedTime = "";
+    this.currentUserVote = 0;
 
+    this.session;
     this.replies = [];
   }
 
   /**
    * Load single comment
    */
-  async load(id) {
+  async load(id, session) {
     const sql = "SELECT * FROM Comments WHERE id = ?";
     const results = await db.query(sql, [id]);
-
+    Utils.log(results, id)
     const c = results[0];
 
     this.id = c.id;
@@ -39,9 +41,11 @@ class Comment {
     this.content = c.content;
     this.parentId = c.parent_id;
     this.createdAt = c.created_at;
+    this.session = session;
 
-    this.votes = await this.getVoteCount(this.id);
+    this.amountVotes = await this.getVoteCount(this.id);
     this.elapsedTime = Utils.getElapsedTime(this.createdAt);
+    this.currentUserVote = await this.getCurrentUserVote();
 
     return this;
   }
@@ -58,25 +62,16 @@ class Comment {
   /**
    *  Load ALL comments for a post (flat)
    */
-  static async getByPostId(postId) {
+  static async getByPostId(postId, session) {
     const sql =
-      "SELECT * FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
+      "SELECT id FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
     const rows = await db.query(sql, [postId]);
 
     const comments = [];
 
     for (let row of rows) {
-      let comment = new Comment();
-
-      comment.id = Number(row.id);
-      comment.postId = row.post_id;
-      comment.user = await new User().load(row.user_id);
-      comment.content = row.content;
-      comment.parentId = row.parent_id !== null ? Number(row.parent_id) : null;
-      comment.createdAt = row.created_at;
-
-      comment.votes = await comment.getVoteCount(row.id);
-      comment.elapsedTime = Utils.getElapsedTime(comment.createdAt);
+      console.log(row.id)
+      let comment = await new Comment().load(row.id, session);
 
       comments.push(comment);
     }
@@ -109,6 +104,65 @@ class Comment {
 
     return roots;
   }
+
+  /**
+   * This function fetches the current user's vote.
+   * @returns User vote.
+   */
+  async getCurrentUserVote() {
+      
+      if (!this.session || !this.session.user) {
+          Utils.log("No session detected!")
+          return 0; // no user or session = no vote
+      }
+      // Select the current vote based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
+      // MAX ensures that at least one row exists, so that coalesce can give a 0
+      var sql = `
+          SELECT COALESCE(MAX(positive * 2 - 1), 0) as vote
+          FROM vote 
+          WHERE comment_id = ? AND user_id = ?;
+      `;
+      var row = await db.query(sql, [this.id, this.session.user.id]);
+      return row[0].vote;
+  }
+
+  /**
+   * This function deletes the current user's vote.
+   * @returns User vote.
+   */
+  async deleteCurrentUserVote() {
+      Utils.log("Deleting vote with user_id: " + this.session.user.id + " and comment_id: " + this.id)
+      var sql = `
+          DELETE FROM vote 
+          WHERE comment_id = ? AND user_id = ?;
+      `;
+      await db.query(sql, [this.id, this.session.user.id]);
+  }
+
+  /**
+   * This functions casts a positive or negative vote on this post.
+   * @param {Boolean} positive 1 = upvote, 0 = downvote
+   * @returns the amended total amount of votes for this post.
+   */
+  async vote(positive) {
+
+      Utils.log("Amending vote with user_id: " + this.session.user.id + " and comment_id: " + this.id + " to " + ((positive)? "upvote.":"downvote."))
+
+      const sql = `
+          INSERT INTO vote (user_id, post_id, comment_id, positive)
+          VALUES (?, NULL, ?, ?)
+          ON DUPLICATE KEY UPDATE positive = VALUES(positive)
+      `;
+
+      await db.query(sql, [this.session.user.id, this.id, positive]);
+
+      // Refresh vote count after voting
+      this.amountVotes = await this.getVoteCount();
+
+      return this.amountVotes;
+  }
 }
+
+
 
 module.exports = Comment;

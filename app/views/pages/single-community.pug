@@ -16,46 +16,68 @@ block content
             .empty 
             .right 
                 .counter 
-                    h3 0
-                    p Follower(s)
+                    h3.follower-count= community.amountUsers
+                    if community.amountUsers === 1
+                        p Follower
+                    else    
+                        p Followers
             .divider-vertical 
             .left     
                 .counter
-                    h3= community.amountPosts         
-                    p post(s)
-            .meatballs
-                .dropdown 
-                    button.icon-btn(type="button" onclick="toggleMenu(this)")
-                        i.fa-solid.fa-ellipsis-vertical  
+                    h3= community.amountPosts   
+                    if community.amountPosts === 1
+                        p Post
+                    else    
+                        p Posts   
 
-                    ul.dropdown-menu 
-                        li 
-                            a(href="#") Ban 
+            if content.session.user.isMod || content.session.user.id == community.createdBy.id
+                .meatballs
+                    .dropdown 
+                        button.icon-btn(type="button" onclick="toggleMenu(this)")
+                            i.fa-solid.fa-ellipsis-vertical  
 
-                        li 
-                            a(href="#") Approve
+                        ul.dropdown-menu 
+                            if content.session.user.isMod
+                                if community.status === 'active'
+                                    li
+                                        a(href="#") Ban
 
-                        li 
-                            a(href="#") Placeholder button
-        button.follow-btn Follow
+                                if community.status === 'banned'
+                                    li
+                                        a(href="#") Approve
+
+                            if content.session.user.id == community.createdBy.id || content.session.user.isMod
+                                li 
+                                    a(href="#") Modify
+
+        if !(community.status === "banned")
+            if content.session.user.communities.includes(community.id)
+                button(data-id=community.id
+                    data-user-id=content.session.user.id).follow-btn.inverse Unfollow
+            else 
+                button(data-id=community.id
+                    data-user-id=content.session.user.id).follow-btn Follow
+        else
+            h2.description-title This community has been banned.
+
         .community-description 
             h2.description-title Module description
             p= community.description
     .divider
-        p Sort by: 
+        p(style="display: inline-block; margin-right: 4px;") Sort by:
         button.sort-btn(type="button" onclick="toggleMenu(this)")
-            p Best
+            p #{activeSort}
             i.fa-solid.fa-angle-down
         
         ul.dropdown-menu 
             li 
-                a(href="#") Placeholder button 
+                a(href=`${currentPath}?sortby=latest`) Latest
 
             li 
-                a(href="#") Placeholder button
+                a(href=`${currentPath}?sortby=popular`) Popular
 
             li 
-                a(href="#") Placeholder button
+                a(href=`${currentPath}?sortby=oldest`) Oldest
     .line
 
     .posts 

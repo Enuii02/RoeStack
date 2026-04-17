@@ -2,20 +2,15 @@ html
     head    
         title RoeStack - Login
         link(rel="stylesheet", href="/styles/main.css")
-        link(rel="stylesheet", href="/styles/layout.css")
-        link(rel="stylesheet", href="/styles/post.css")
-        link(rel="stylesheet", href="/styles/explore-card.css")
-        link(rel="stylesheet", href="/styles/explore-page.css")
-        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
-        block head 
+        link(rel="stylesheet", href="/styles/login.css")
     body 
         block content
-            .sidebar-card(style="align-items: center;")
-                h3.sidebar-title Login 
+            .login-card
+                h1 RoeStack 
 
                 form(action='/authenticate' method='POST')
-                    label(for='email') Enter your email: 
-                    input(name='email') 
-                    label(for='email') Enter your password: 
-                    input(name='password' type = 'password')
-                    input(type='submit' value='Submit')
+                    label(for='email') Email address: 
+                    input(name='email' placeholder="Enter your Email address") 
+                    label(for='email') Password: 
+                    input(name='password' type = 'password' placeholder="Enter your password")
+                    input(type='submit' value='Login')

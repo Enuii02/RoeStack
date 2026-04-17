@@ -14,7 +14,10 @@ block content
         .right      
             .posts-counter
                 h3= user.amountPosts              
-                p post(s)
+                if user.amountPosts === 1
+                    p Post
+                else    
+                    p Posts   
             .meatballs
                 .dropdown 
                     button.icon-btn(type="button" onclick="toggleMenu(this)")
@@ -30,26 +33,27 @@ block content
                         li 
                             a(href="#") Report
 
-                        li 
-                            a(href="/logout" style="color: red;") Logout
+                        if content.session.user.id == user.id 
+                            li 
+                                a(href="/logout" style="color: red;") Logout
     .about-me
         h3.about-title About me
         p= user.bio
     .divider
-        p Sort by: 
+        p(style="display: inline-block; margin-right: 4px;") Sort by:
         button.sort-btn(type="button" onclick="toggleMenu(this)")
-            p Best
+            p #{activeSort}
             i.fa-solid.fa-angle-down
         
         ul.dropdown-menu 
             li 
-                a(href="#") Best 
+                a(href=`${currentPath}?sortby=latest`) Latest
 
             li 
-                a(href="#") Latest
+                a(href=`${currentPath}?sortby=popular`) Popular
 
             li 
-                a(href="#") Oldest
+                a(href=`${currentPath}?sortby=oldest`) Oldest
     .line
 
     .posts 

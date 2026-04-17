@@ -25,6 +25,7 @@ class Community {
         this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.amountPosts = 0;
+        this.amountUsers = 0;
     }
 
     /**
@@ -34,7 +35,11 @@ class Community {
      */
     async load(id) {
 
-        const sql = "SELECT * FROM Communities WHERE id = ?";
+        const sql = `
+            SELECT * 
+            FROM Communities 
+            WHERE id = ?
+        `;
 
         const results = await db.query(sql, [id]);
 
@@ -43,24 +48,44 @@ class Community {
         this.id = community.id;
         this.name = community.name;
         this.description = community.description;
+        this.status = community.status;
         this.createdBy = await new User().load(community.created_by);
         this.createdAt = community.created_at;
-        this.amountPosts = await this.getPostCount(id);
+        this.amountPosts = await this.getPostCount();
+        this.amountUsers = await this.getFollowersCount();
         
         return this;
     }
 
     /**
      * This function fetches the current post amount for a specific community id.
-     * @param {int} id 
      * @returns Amount of Posts.
      */
-    async getPostCount(id) {
-        var sql = "SELECT count(id) as count FROM posts WHERE community_id = ?";
-        var row = await db.query(sql, [id]);
+    async getPostCount() {
+        var sql = `
+            SELECT count(id) as count 
+            FROM posts 
+            WHERE community_id = ?
+        `;
+        var row = await db.query(sql, [this.id]);
         return row[0].count;
     }
 
+    /**
+     * This function fetches the current users following this community.
+     * @returns Amount of Followers.
+     */
+    async getFollowersCount() {
+        // Get all users, ordering it by wether it is a mod or not
+        const sql = `
+            SELECT COUNT(user_id) AS count
+            FROM userFollowCommunity
+            WHERE community_id = ?
+        `;
+
+        const row = await db.query(sql, [this.id]);
+        return row[0].count;
+    }
 }
 // Add class to the exports, so that other classes can use it
 module.exports = Community;

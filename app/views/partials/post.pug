@@ -29,14 +29,25 @@
     .post-footer
         .left-side 
             .interactions
-                button.upvote 
+                button.upvote(
+                    data-id=post.id,
+                    data-type-id=0,
+                    class=post.currentUserVote === 1 ? "active" : ""
+                    )
                     img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+
                 span.vote-count 
                     span= post.amountVotes
-                button.downvote 
+
+                button.downvote(
+                    data-id=post.id,
+                    data-type-id=0,
+                    class=post.currentUserVote === -1 ? "active" : ""
+                    )
                     img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
             a.answers(href="/post/" + post.id)
                 img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
                 span.answer-count= post.answersCount + " answers"
 block scripts
     script(src="/js/profile-page.js" defer)
+    script(src="/js/Vote.js" defer)

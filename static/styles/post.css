@@ -107,6 +107,17 @@
   border-top-right-radius: 25%;
   border-bottom-right-radius: 25%;
 }
+
+.interactions .upvote.active {
+  background-color: #004e36;
+}
+.vote-icon {
+  filter: brightness(0) invert(1);
+}
+.interactions .downvote.active {
+  background-color: red;
+}
+
 .interactions .vote-count {
   background-color: #f6f6f6;
   height: 100%;
@@ -115,8 +126,11 @@
   align-content: center;
   cursor: default;
 }
-.interactions button:hover {
-  background-color: #c2c2c2;
+.interactions button.upvote:hover {
+  background-color: #004e36;
+}
+.interactions button.downvote:hover {
+  background-color: red;
 }
 .left-side .answers {
   display: flex;

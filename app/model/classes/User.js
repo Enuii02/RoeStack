@@ -34,6 +34,7 @@ class User {
         this.postCount = -1;
         this.elapsedTime = "";
         this.amountPosts = 0;
+        this.communities = [];
     }
 
     /**
@@ -43,7 +44,11 @@ class User {
      */
     async load(id) {
         
-        const sql = "SELECT * FROM Users WHERE id = ?";
+        const sql = `
+            SELECT * 
+            FROM Users 
+            WHERE id = ?
+        `;
 
         const results = await db.query(sql, [id]);
 
@@ -57,28 +62,74 @@ class User {
         this.email = user.email;
         this.passwordHash = user.password_hash;
         this.createdAt = user.created_at;
-        this.postCount = await this.getPostCount(id);
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
-        this.amountPosts = await this.getPostCount(id);
-        
+        this.amountPosts = await this.getPostCount();
+        this.communities = await this.getFollowedCommunities();
+        // Utils.log("Loaded " + this.role + " " + this.name + " | comms " + this.communities)
         return this;
     }
 
     /**
      * This function fetches the current post amount for a specific user id.
-     * @param {int} id 
      * @returns Amount of Posts.
      */
-    async getPostCount(id) {
-        var sql = "SELECT count(id) as count FROM posts WHERE user_id = ?";
-        var row = await db.query(sql, [id]);
+    async getPostCount() {
+        var sql = `
+            SELECT count(id) as count 
+            FROM posts 
+            WHERE user_id = ?
+        `;
+        var row = await db.query(sql, [this.id]);
         return row[0].count;
     }
 
+    /**
+     * This function fetches the current post amount for a specific user id.
+     * @returns Amount of Posts.
+     */
+    async getFollowedCommunities() {
+        var sql = `
+            SELECT community_id  
+            FROM userFollowCommunity 
+            WHERE user_id = ?
+        `;
+        var row = await db.query(sql, [this.id]);
+        return row.map(r => r.community_id);
+    }
+
+    async followUnfollow(community) {
+    
+        // If the current user is following the community, delete it. Else, add it to userFollowCommunity.
+        if ((this.communities).includes(community.id)) {
+            Utils.log("User " + this.name + " has unfollowed " + community.name)
+            var sql = `
+            DELETE 
+            FROM userFollowCommunity 
+            WHERE user_id = ? AND community_id = ?
+            `;
+            await db.query(sql, [this.id, community.id]);
+
+        } else {
+            Utils.log("User " + this.name + " has followed " + community.name)
+            var sql = `
+            INSERT INTO userFollowCommunity (user_id, community_id)
+            VALUES (?, ?); 
+            `;
+            await db.query(sql, [this.id, community.id]);
+        }
+        this.communities = await this.getFollowedCommunities();
+        return community.getFollowersCount();
+    }
+
+    // AUTHENTICATION /////////////////////////////////////////////////////////////////////////////
     
     // Checks to see if the submitted email address exists in the Users table
     async getIdFromEmail() {
-        var sql = "SELECT id FROM Users WHERE email = ?";
+        var sql = `
+            SELECT id 
+            FROM Users 
+            WHERE email = ?
+        `;
         const result = await db.query(sql, [this.email]);
         // TODO LOTS OF ERROR CHECKS HERE..
         if (JSON.stringify(result) != '[]') {
@@ -92,7 +143,10 @@ class User {
 
     async setUserPassword(password) {
         const passwordHash = await bcrypt.hash(password, 10);
-        var sql = "UPDATE Users SET password_hash = ? WHERE id = ?"
+        var sql = `
+            UPDATE Users SET password_hash = ? 
+            WHERE id = ?
+        `;
         const result = await db.query(sql, [passwordHash, this.id]);
         return true;
     }
@@ -100,7 +154,11 @@ class User {
     // Test a submitted password against a stored password
     async authenticate(password) {
         // Get the stored, hashed password for the user
-        var sql = "SELECT password_hash FROM Users WHERE id = ?";
+        var sql = `
+            SELECT password_hash 
+            FROM Users 
+            WHERE id = ?
+        `;
         const result = await db.query(sql, [this.id]);
         const match = await bcrypt.compare(password, result[0].password_hash);
         if (match == true) {
@@ -114,13 +172,18 @@ class User {
     // Add a new record to the users table
     async addUser(password) {
         const passwordHash = await bcrypt.hash(password, 10);
-        var sql = "INSERT INTO Users (email, password_hash) VALUES (? , ?)";
+        var sql = `
+            INSERT INTO Users (email, password_hash) 
+            VALUES (? , ?)
+        `;
         const result = await db.query(sql, [this.email, passwordHash]);
         this.id = result.insertId;
         return true;
     }
 
 }
+
+
 
 // Add class to the exports, so that other classes can use it
 module.exports = User;

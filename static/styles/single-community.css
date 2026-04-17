@@ -168,9 +168,10 @@
 }
 
 /* ===============================
-   Follow Button
+   Follow / Unfollow Button
    =============================== */
 .follow-btn {
+    cursor: pointer;
     background-color: #004E36;
     border: none;
     width: 148px;
@@ -183,6 +184,15 @@
 }
 
 .follow-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0px 2px 2px 0px #00000040;
+}
+
+.follow-btn.inverse {
+    background-color: grey;
+}
+
+.follow-btn.inverse:active {
     transform: translateY(2px);
     box-shadow: 0px 2px 2px 0px #00000040;
 }
