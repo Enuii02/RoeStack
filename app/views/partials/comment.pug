@@ -12,7 +12,10 @@ mixin commentItem(comment)
                         img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
                     ul.dropdown-menu 
                         li 
-                            a(href="#" style="color: red;") Report comment
+                            if currentUser && (currentUser.id === comment.user.id || currentUser.is_mod === 1)
+                                a.delete-comment(href="#" data-comment-id=comment.id style="color: red;") Delete comment
+                            else
+                                a(href="#" style="color: red;") Report comment
                 .role= comment.user.role
 
                 p.comment-text= comment.content
@@ -35,9 +38,9 @@ mixin commentItem(comment)
                             class=comment.currentUserVote === -1 ? "active" : ""
                             )
                             img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
-                    a.answers(href="/")
+                    a.answers(href="#" data-comment-id=comment.id)
                         img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
-                        a.reply(href="#") Reply
+                        p.reply Reply
 
         // REPLIES    
         if comment.replies

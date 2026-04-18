@@ -88,6 +88,9 @@
 }
 
 .comment-footer .answers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
 }
 
@@ -99,4 +102,34 @@
   bottom: 0;
   width: 2px;
   background: #e6e6e6;
+}
+.reply-form {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.reply-input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 100;
+}
+
+.reply-btn:disabled {
+  background: #ccc;
+}
+
+.reply-btn:not(:disabled) {
+  background: #22c55e;
+  color: white;
+}
+
+.comment-thread.deleted .comment-text {
+  color: #888;
+  font-style: italic;
+}
+
+.comment-thread.deleted .interactions {
+  display: none;
 }
