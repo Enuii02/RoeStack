@@ -32,7 +32,7 @@ class Comment {
   async load(id, session) {
     const sql = "SELECT * FROM Comments WHERE id = ?";
     const results = await db.query(sql, [id]);
-    Utils.log(results, id)
+    Utils.log(results, id);
     const c = results[0];
 
     this.id = c.id;
@@ -70,7 +70,7 @@ class Comment {
     const comments = [];
 
     for (let row of rows) {
-      console.log(row.id)
+      console.log(row.id);
       let comment = await new Comment().load(row.id, session);
 
       comments.push(comment);
@@ -110,20 +110,19 @@ class Comment {
    * @returns User vote.
    */
   async getCurrentUserVote() {
-      
-      if (!this.session || !this.session.user) {
-          Utils.log("No session detected!")
-          return 0; // no user or session = no vote
-      }
-      // Select the current vote based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
-      // MAX ensures that at least one row exists, so that coalesce can give a 0
-      var sql = `
+    if (!this.session || !this.session.user) {
+      Utils.log("No session detected!");
+      return 0; // no user or session = no vote
+    }
+    // Select the current vote based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
+    // MAX ensures that at least one row exists, so that coalesce can give a 0
+    var sql = `
           SELECT COALESCE(MAX(positive * 2 - 1), 0) as vote
           FROM vote 
           WHERE comment_id = ? AND user_id = ?;
       `;
-      var row = await db.query(sql, [this.id, this.session.user.id]);
-      return row[0].vote;
+    var row = await db.query(sql, [this.id, this.session.user.id]);
+    return row[0].vote;
   }
 
   /**
@@ -131,12 +130,17 @@ class Comment {
    * @returns User vote.
    */
   async deleteCurrentUserVote() {
-      Utils.log("Deleting vote with user_id: " + this.session.user.id + " and comment_id: " + this.id)
-      var sql = `
+    Utils.log(
+      "Deleting vote with user_id: " +
+        this.session.user.id +
+        " and comment_id: " +
+        this.id,
+    );
+    var sql = `
           DELETE FROM vote 
           WHERE comment_id = ? AND user_id = ?;
       `;
-      await db.query(sql, [this.id, this.session.user.id]);
+    await db.query(sql, [this.id, this.session.user.id]);
   }
 
   /**
@@ -145,24 +149,43 @@ class Comment {
    * @returns the amended total amount of votes for this post.
    */
   async vote(positive) {
+    Utils.log(
+      "Amending vote with user_id: " +
+        this.session.user.id +
+        " and comment_id: " +
+        this.id +
+        " to " +
+        (positive ? "upvote." : "downvote."),
+    );
 
-      Utils.log("Amending vote with user_id: " + this.session.user.id + " and comment_id: " + this.id + " to " + ((positive)? "upvote.":"downvote."))
-
-      const sql = `
+    const sql = `
           INSERT INTO vote (user_id, post_id, comment_id, positive)
           VALUES (?, NULL, ?, ?)
           ON DUPLICATE KEY UPDATE positive = VALUES(positive)
       `;
 
-      await db.query(sql, [this.session.user.id, this.id, positive]);
+    await db.query(sql, [this.session.user.id, this.id, positive]);
 
-      // Refresh vote count after voting
-      this.amountVotes = await this.getVoteCount();
+    // Refresh vote count after voting
+    this.amountVotes = await this.getVoteCount();
 
-      return this.amountVotes;
+    return this.amountVotes;
+  }
+
+  static async create({ content, postId, parentId, userId, session }) {
+    const sql = `
+    INSERT INTO comments (content, user_id, post_id, parent_id, created_at)
+    VALUES (?, ?, ?, ?, NOW())
+  `;
+
+    const result = await db.query(sql, [content, userId, postId, parentId]);
+
+    const insertId = result.insertId || result[0]?.insertId;
+
+    const comment = await new Comment().load(insertId, session);
+
+    return comment;
   }
 }
-
-
 
 module.exports = Comment;

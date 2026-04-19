@@ -357,62 +357,27 @@ app.post("/authenticate", async function (req, res) {
 });
 
 app.post("/comments", async (req, res) => {
-  const { content, postId, parentId } = req.body;
+  try {
+    const { content, postId, parentId } = req.body;
+    const userId = req.session.uid || req.session.user?.id;
 
-  const userId = req.session.uid || req.session.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: "Not authorized" });
+    }
 
-  const sql = `
-    INSERT INTO comments (content, user_id, post_id, parent_id, created_at)
-    VALUES (?, ?, ?, ?, NOW())
-  `;
+    const comment = await Comment.create({
+      content,
+      postId,
+      parentId,
+      userId,
+      session: req.session,
+    });
 
-  const result = await db.query(sql, [content, userId, postId, parentId]);
-
-  const newComment = {
-    id: result.insertId,
-    content,
-    postId,
-    parentId,
-    createdAt: new Date(),
-    user: await new User().load(userId),
-  };
-
-  res.json(newComment);
-});
-
-app.delete("/comments/:id", async (req, res) => {
-  const commentId = req.params.id;
-
-  const userId = req.session.uid || req.session.user?.id;
-
-  // отримуємо комент
-  const [comment] = await db.query(
-    "SELECT user_id FROM comments WHERE id = ?",
-    [commentId],
-  );
-
-  if (!comment) {
-    return res.status(404).json({ error: "Comment not found" });
+    res.json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
-
-  // перевірка прав
-  const isOwner = comment.user_id === userId;
-  const isModerator = req.session.user?.is_moderator === 1;
-
-  if (!isOwner && !isModerator) {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-
-  const deletedText = isModerator
-    ? "Answer has been deleted by moderator"
-    : "Answer has been deleted by user";
-
-  await db.query(
-    "UPDATE comments SET content = ?, is_deleted = 1 WHERE id = ?",
-    [deletedText, commentId],
-  );
-
-  res.json({ success: true, text: deletedText });
 });
 
 /**
