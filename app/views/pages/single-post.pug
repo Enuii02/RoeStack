@@ -54,25 +54,24 @@ block content
             input.main-answer(type="text" placeholder="Write your answer...")
             button.answer-btn(disabled) Post Your Answer
         .divider
-            p Sort by: 
+            p.sort-label Sort by:  
             button.sort-btn(type="button" onclick="toggleMenu(this)")
                 p Best
                 i.fa-solid.fa-angle-down
             
             ul.dropdown-menu 
                 li 
-                    a(href="#") Best 
+                    a(href="#" data-sort="best") Best 
 
                 li 
-                    a(href="#") Latest
+                    a(href="#" data-sort="latest") Latest
 
                 li 
-                    a(href="#") Oldest
+                    a(href="#" data-sort="oldest") Oldest
         .line
         include ../partials/comment
         .answers-section
             each comment in comments
                 +commentItem(comment)
 block scripts
-    script(src="/js/profile-page.js" defer)
     script(src="/js/comment.js" defer)

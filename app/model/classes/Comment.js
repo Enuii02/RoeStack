@@ -63,17 +63,37 @@ class Comment {
   /**
    *  Load ALL comments for a post (flat)
    */
-  static async getByPostId(postId, session) {
-    const sql =
-      "SELECT id FROM Comments WHERE post_id = ? ORDER BY created_at ASC";
+  static async getByPostId(postId, session, sort = "best") {
+    let orderBy = "";
+
+    switch (sort) {
+      case "latest":
+        orderBy = "created_at DESC";
+        break;
+
+      case "oldest":
+        orderBy = "created_at ASC";
+        break;
+
+      case "best":
+      default:
+        orderBy = "vote_count DESC, created_at DESC";
+        break;
+    }
+
+    const sql = `
+    SELECT id 
+    FROM Comments 
+    WHERE post_id = ?
+    ORDER BY ${orderBy}
+  `;
+
     const rows = await db.query(sql, [postId]);
 
     const comments = [];
 
     for (let row of rows) {
-      console.log(row.id);
-      let comment = await new Comment().load(row.id, session);
-
+      const comment = await new Comment().load(row.id, session);
       comments.push(comment);
     }
 

@@ -405,6 +405,22 @@ app.delete("/comments/:id", async (req, res) => {
   }
 });
 
+app.get("/comments/:postId", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { sort } = req.query; // sort
+
+    const comments = await Comment.getByPostId(postId, req.session, sort);
+
+    const tree = Comment.buildTree(comments);
+
+    res.json(tree);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 /**
  * Create a route for the logout page - /logout
  */

@@ -47,12 +47,17 @@ button.addEventListener("click", async () => {
 });
 
 function createCommentHTML(comment) {
+  const isDeleted = comment.isDeleted;
+
+  const canDelete =
+    comment.user.id === window.CURRENT_USER_ID || window.IS_MOD === 1;
+
   return `
-    <div class="comment-thread">
+    <div class="comment-thread ${isDeleted ? "deleted" : ""}">
       <div class="comment-body">
         
         <div class="comment-left">
-          <img class="avatar" src="/images/none-avatar.svg" alt="User Avatar">
+          <img class="avatar" src="/images/none-avatar.svg">
         </div>
 
         <div class="comment-right">
@@ -61,42 +66,66 @@ function createCommentHTML(comment) {
             <a class="name" href="/user/${comment.user.id}">
               ${comment.user.name}
             </a>
-            <span class="dot">•</span>
-            <span class="time">just now</span>
 
+            <span class="dot">•</span>
+            <span class="time">${comment.elapsedTime}</span>
+
+            ${
+              !isDeleted
+                ? `
             <button class="icon-btn" onclick="toggleMenu(this)">
               <img class="options" src="/images/icons/three-vertical-dots.svg">
             </button>
 
             <ul class="dropdown-menu">
-              <li>
-                <a href="#" style="color:red;">Report comment</a>
-              </li>
+              ${
+                canDelete
+                  ? `
+                <li>
+                  <a href="#" class="delete-comment" data-comment-id="${comment.id}" style="color:red;">
+                    Delete comment
+                  </a>
+                </li>
+                `
+                  : `
+                <li>
+                  <a href="#" style="color:red;">Report comment</a>
+                </li>
+                `
+              }
             </ul>
+            `
+                : ""
+            }
           </div>
 
           <div class="role">${comment.user.role}</div>
 
-          <p class="comment-text"> ${comment.content} </p>
+          <p class="comment-text">
+            ${isDeleted ? "Answer has been deleted..." : comment.content}
+          </p>
 
+          ${
+            !isDeleted
+              ? `
           <div class="comment-footer">
             <div class="interactions">
               <button class="upvote">
                 <img class="vote-icon" src="/images/icons/up-vote.svg">
               </button>
-
-              <span class="vote-count">${comment.votes || 0}</span>
-
+              <span class="vote-count">${comment.amountVotes}</span>
               <button class="downvote">
                 <img class="vote-icon" src="/images/icons/down-vote.svg">
               </button>
             </div>
-
             <a class="answers" href="#" data-comment-id="${comment.id}">
               <img class="answer-icon" src="/images/icons/chat-left.svg">
               <p class="reply">Reply</p>
             </a>
           </div>
+          `
+              : ""
+          }
 
         </div>
       </div>
@@ -122,6 +151,26 @@ function addReplyToDOM(commentThread, reply) {
 
   repliesContainer.insertAdjacentHTML("beforeend", createCommentHTML(reply));
 }
+function renderComments(comments, container) {
+  comments.forEach((comment) => {
+    const html = createCommentHTML(comment);
+    container.insertAdjacentHTML("beforeend", html);
+
+    const added = container.lastElementChild;
+
+    if (comment.replies && comment.replies.length > 0) {
+      let repliesContainer = added.querySelector(".replies");
+
+      if (!repliesContainer) {
+        repliesContainer = document.createElement("div");
+        repliesContainer.classList.add("replies");
+        added.appendChild(repliesContainer);
+      }
+
+      renderComments(comment.replies, repliesContainer);
+    }
+  });
+}
 document.addEventListener("click", async (e) => {
   // ================= DELETE =================
   const deleteBtn = e.target.closest(".delete-comment");
@@ -146,10 +195,10 @@ document.addEventListener("click", async (e) => {
 
     const commentThread = deleteBtn.closest(".comment-thread");
 
+    commentThread.classList.add("deleted");
+
     const textEl = commentThread.querySelector(".comment-text");
     textEl.textContent = data.text;
-
-    commentThread.classList.add("deleted");
 
     const footer = commentThread.querySelector(".comment-footer");
     if (footer) footer.remove();
@@ -229,4 +278,23 @@ document.addEventListener("click", async (e) => {
       replyForm.remove();
     }
   }
+  // ================= SORT MENU =================
+  const sortOption = e.target.closest("[data-sort]");
+  if (!sortOption) return;
+
+  e.preventDefault();
+
+  const sort = sortOption.dataset.sort;
+  const postId = window.location.pathname.split("/").pop();
+
+  const sortLabel = document.querySelector(".sort-btn p");
+  sortLabel.textContent = sortOption.textContent;
+
+  const res = await fetch(`/comments/${postId}?sort=${sort}`);
+  const comments = await res.json();
+
+  const container = document.querySelector(".answers-section");
+  container.innerHTML = "";
+
+  renderComments(comments, container);
 });

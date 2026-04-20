@@ -1,5 +1,7 @@
 mixin commentItem(comment)
-   .comment-thread(class=comment.replies && comment.replies.length > 0 ? 'has-replies' : '')
+   .comment-thread(
+    class=[comment.replies && comment.replies.length > 0 ? 'has-replies' : '',
+        comment.isDeleted ? 'deleted' : ''])
         .comment-body
             .comment-left
                 img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
@@ -53,3 +55,7 @@ mixin commentItem(comment)
             .replies
                 each reply in comment.replies
                     +commentItem(reply)
+
+script.
+  window.CURRENT_USER_ID = !{JSON.stringify(currentUser.id)};
+  window.IS_MOD = !{JSON.stringify(currentUser.isMod)};
