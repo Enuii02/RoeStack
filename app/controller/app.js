@@ -380,6 +380,31 @@ app.post("/comments", async (req, res) => {
   }
 });
 
+app.delete("/comments/:id", async (req, res) => {
+  try {
+    const userId = req.session.uid || req.session.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Not authorized" });
+    }
+
+    const text = await Comment.delete(req.params.id, userId);
+
+    res.json({ success: true, text });
+  } catch (err) {
+    if (err.message === "Forbidden") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    if (err.message === "Comment not found") {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 /**
  * Create a route for the logout page - /logout
  */

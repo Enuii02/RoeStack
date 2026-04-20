@@ -42,6 +42,7 @@ class Comment {
     this.parentId = c.parent_id;
     this.createdAt = c.created_at;
     this.session = session;
+    this.isDeleted = c.is_deleted === 1;
 
     this.amountVotes = await this.getVoteCount(this.id);
     this.elapsedTime = Utils.getElapsedTime(this.createdAt);
@@ -185,6 +186,51 @@ class Comment {
     const comment = await new Comment().load(insertId, session);
 
     return comment;
+  }
+
+  static async delete(commentId, userId) {
+    // get comment
+    const result = await db.query("SELECT * FROM comments WHERE id = ?", [
+      commentId,
+    ]);
+
+    const comment = result[0]?.[0] || result[0];
+
+    console.log("COMMENT:", commentId, comment);
+    if (!comment) {
+      throw new Error("Comment not found");
+    }
+
+    // get user
+    const userResult = await db.query("SELECT * FROM users WHERE id = ?", [
+      userId,
+    ]);
+    const user = userResult[0]?.[0] || userResult[0];
+    console.log("USER:", user);
+    console.log("is_mod:", user.is_mod, typeof user.is_mod);
+
+    console.log("USER:", userId, user);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const isOwner = comment.user_id == userId;
+    const isModerator = user.is_mod === 1;
+
+    if (!isOwner && !isModerator) {
+      throw new Error("Forbidden");
+    }
+
+    const deletedBy = isModerator ? "moderator" : "user";
+
+    await db.query(
+      `UPDATE comments 
+     SET is_deleted = 1, content = ?, deleted_by = ?
+     WHERE id = ?`,
+      [`Answer has been deleted by ${deletedBy}`, deletedBy, commentId],
+    );
+
+    return `Answer has been deleted by ${deletedBy}`;
   }
 }
 

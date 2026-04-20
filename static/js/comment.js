@@ -47,7 +47,6 @@ button.addEventListener("click", async () => {
 });
 
 function createCommentHTML(comment) {
-  const isDeleted = comment.is_deleted;
   return `
     <div class="comment-thread">
       <div class="comment-body">
@@ -78,9 +77,7 @@ function createCommentHTML(comment) {
 
           <div class="role">${comment.user.role}</div>
 
-          <p class="comment-text">
-            ${isDeleted ? comment.content : comment.content}
-          </p>
+          <p class="comment-text"> ${comment.content} </p>
 
           <div class="comment-footer">
             <div class="interactions">
@@ -111,15 +108,66 @@ function addCommentToDOM(comment) {
   const container = document.querySelector(".answers-section");
   container.insertAdjacentHTML("afterbegin", createCommentHTML(comment));
 }
-document.addEventListener("click", function (e) {
-  const replyBtn = e.target.closest("[data-comment-id]");
+
+function addReplyToDOM(commentThread, reply) {
+  let repliesContainer = commentThread.querySelector(".replies");
+
+  if (!repliesContainer) {
+    repliesContainer = document.createElement("div");
+    repliesContainer.classList.add("replies");
+    commentThread.appendChild(repliesContainer);
+  }
+
+  commentThread.classList.add("has-replies");
+
+  repliesContainer.insertAdjacentHTML("beforeend", createCommentHTML(reply));
+}
+document.addEventListener("click", async (e) => {
+  // ================= DELETE =================
+  const deleteBtn = e.target.closest(".delete-comment");
+  if (deleteBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const commentId = deleteBtn.dataset.commentId;
+
+    if (!confirm("Delete this comment?")) return;
+
+    const res = await fetch(`/comments/${commentId}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      console.error("Delete failed");
+      return;
+    }
+
+    const data = await res.json();
+
+    const commentThread = deleteBtn.closest(".comment-thread");
+
+    const textEl = commentThread.querySelector(".comment-text");
+    textEl.textContent = data.text;
+
+    commentThread.classList.add("deleted");
+
+    const footer = commentThread.querySelector(".comment-footer");
+    if (footer) footer.remove();
+
+    const menu = deleteBtn.closest(".dropdown-menu");
+    if (menu) menu.style.display = "none";
+
+    return;
+  }
+
+  // ================= REPLY =================
+  const replyBtn = e.target.closest(".answers");
   if (replyBtn) {
     e.preventDefault();
 
     const commentId = replyBtn.dataset.commentId;
     const commentThread = replyBtn.closest(".comment-thread");
 
-    // Delete only empty reply-forms on the page
     document.querySelectorAll(".reply-form").forEach((form) => {
       const input = form.querySelector(".reply-input");
       if (!input.value.trim()) {
@@ -140,19 +188,18 @@ document.addEventListener("click", function (e) {
     const input = form.querySelector(".reply-input");
     const button = form.querySelector(".reply-btn");
 
-    // Focus on input
     input.focus();
 
     input.addEventListener("input", () => {
       button.disabled = !input.value.trim();
     });
 
-    // submit
     button.addEventListener("click", async () => {
       const content = input.value.trim();
       if (!content) return;
 
       const postId = window.location.pathname.split("/").pop();
+
       const res = await fetch("/comments", {
         method: "POST",
         headers: {
@@ -160,7 +207,7 @@ document.addEventListener("click", function (e) {
         },
         body: JSON.stringify({
           content,
-          postId: postId,
+          postId,
           parentId: commentId,
         }),
       });
@@ -168,65 +215,18 @@ document.addEventListener("click", function (e) {
       const reply = await res.json();
 
       addReplyToDOM(commentThread, reply);
-
       form.remove();
     });
-  } else {
-    // Close reply-form outside if it is empty
-    const replyForm = document.querySelector(".reply-form");
-    if (
-      replyForm &&
-      !replyForm.contains(e.target) &&
-      !e.target.classList.contains("reply")
-    ) {
-      const input = replyForm.querySelector(".reply-input");
-      if (!input.value.trim()) {
-        replyForm.remove();
-      }
-    }
-  }
-});
-function addReplyToDOM(commentThread, reply) {
-  let repliesContainer = commentThread.querySelector(".replies");
 
-  if (!repliesContainer) {
-    repliesContainer = document.createElement("div");
-    repliesContainer.classList.add("replies");
-    commentThread.appendChild(repliesContainer);
-  }
-
-  commentThread.classList.add("has-replies");
-
-  repliesContainer.insertAdjacentHTML("beforeend", createCommentHTML(reply));
-}
-document.addEventListener("click", async (e) => {
-  const deleteBtn = e.target.closest(".delete-comment");
-
-  if (!deleteBtn) return;
-
-  e.preventDefault();
-
-  const commentId = deleteBtn.dataset.commentId;
-
-  if (!confirm("Are you sure you want to delete this comment?")) return;
-
-  const res = await fetch(`/comments/${commentId}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    console.error("Delete failed");
     return;
   }
 
-  const data = await res.json();
-
-  const commentThread = deleteBtn.closest(".comment-thread");
-  const textEl = commentThread.querySelector(".comment-text");
-
-  textEl.textContent = data.text;
-
-  // remove footer (votes and reply) on deleted comments
-  const footer = commentThread.querySelector(".comment-footer");
-  if (footer) footer.remove();
+  // ================= CLOSE EMPTY FORM =================
+  const replyForm = document.querySelector(".reply-form");
+  if (replyForm && !replyForm.contains(e.target)) {
+    const input = replyForm.querySelector(".reply-input");
+    if (!input.value.trim()) {
+      replyForm.remove();
+    }
+  }
 });
