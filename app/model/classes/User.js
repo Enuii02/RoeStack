@@ -1,7 +1,7 @@
 
 // Get the functions in the db.js file
-const db = require("../db.");
-const Utils = require("../../Utils");
+const db = require("../db");
+const Utils = require("../../utils");
 const bcrypt = require("bcryptjs");
 
 /**

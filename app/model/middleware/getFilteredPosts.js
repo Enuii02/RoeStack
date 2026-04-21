@@ -1,4 +1,4 @@
-const ContentManager = require("../classes/ContentManager");
+const ContentManager = require("../classes/contentManager");
 
 /**
  * Middleware handles the queries and parameters.

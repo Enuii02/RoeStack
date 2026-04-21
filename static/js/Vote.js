@@ -9,7 +9,7 @@ document.querySelectorAll('.interactions').forEach(container => {
   // Fetch vote count text
   const voteCount = container.querySelector('.vote-count span');
   // Get post id from dataset in upvoteButton (defined in post.pug)
-  const postId = upvoteButton.dataset.id;
+  const subjectId = upvoteButton.dataset.id;
   const typeId = upvoteButton.dataset.typeId;
 
   // Check if this current js script is loading data
@@ -25,13 +25,11 @@ document.querySelectorAll('.interactions').forEach(container => {
     // Disable buttons
     upvoteButton.disabled = true;
     downvoteButton.disabled = true;
-
-    console.log(postId, positive)
     try {
       const res = await fetch('/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postId, typeId, positive })
+        body: JSON.stringify({ subjectId, typeId, positive })
       });
 
       const data = await res.json();
@@ -39,6 +37,8 @@ document.querySelectorAll('.interactions').forEach(container => {
       voteCount.innerText = data.votes;
 
     } catch (err) {
+      
+      console.log(subjectId, positive)
       console.error(err);
     }
 

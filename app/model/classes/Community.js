@@ -1,7 +1,8 @@
 
 // Get the functions in the db.js file
-const db = require("../db.");
-const User = require("./User");
+const db = require("../db");
+const User = require("./user");
+const Utils = require("../../utils");
 
 /**
  * This class defines a Community
@@ -40,6 +41,8 @@ class Community {
             FROM Communities 
             WHERE id = ?
         `;
+
+        Utils.log("Loading community #" + id + "...")
 
         const results = await db.query(sql, [id]);
 

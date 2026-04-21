@@ -49,13 +49,15 @@ mixin commentItem(comment)
                         a.answers(href="#" data-comment-id=comment.id)
                             img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
                             p.reply Reply
+                    
 
         // REPLIES    
         if comment.replies
             .replies
                 each reply in comment.replies
                     +commentItem(reply)
-
-script.
-  window.CURRENT_USER_ID = !{JSON.stringify(currentUser.id)};
-  window.IS_MOD = !{JSON.stringify(currentUser.isMod)};
+                    
+template#reply-template
+  .reply-form
+    input.reply-input(type="text" placeholder="Write a reply...")
+    button.reply-btn() Reply

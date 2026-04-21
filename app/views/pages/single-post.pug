@@ -35,6 +35,7 @@ block content
                 .interactions
                     button.upvote(
                         data-id=post.id,
+                        data-type-id=0,
                         class=post.currentUserVote === 1 ? "active" : ""
                         )
                         img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
@@ -44,6 +45,7 @@ block content
 
                     button.downvote(
                         data-id=post.id,
+                        data-type-id=0,
                         class=post.currentUserVote === -1 ? "active" : ""
                         )
                         img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")

@@ -1,7 +1,7 @@
 // Import express.js
 const express = require("express");
 const { DateTime } = require("luxon");
-const Utils = require("../Utils");
+const Utils = require("../utils.js");
 
 // Create express app
 var app = express();
@@ -15,14 +15,14 @@ app.set("view engine", "pug");
 app.set("views", "./app/views");
 
 // Get the functions in the db.js file to use
-const db = require("../model/db..js");
+const db = require("../model/db.js");
 
 // Get Misc Classes
-const User = require("../model/classes/User.js");
-const Post = require("../model/classes/Post.js");
-const Community = require("../model/classes/Community.js");
-const ContentManager = require("../model/classes/ContentManager.js");
-const Comment = require("../model/classes/Comment.js"); // Get Middleware
+const User = require("../model/classes/user.js");
+const Post = require("../model/classes/post.js");
+const Comment = require("../model/classes/comment.js")
+const Community = require("../model/classes/community.js");
+const ContentManager = require("../model/classes/contentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.json());
@@ -171,20 +171,19 @@ app.get("/post/:id", async (req, res) => {
     // Create new empty Post
     let post = new Post();
     // Load data from database
-    await post.load(req.params.id);
+    await post.load(req.params.id, req.session);
 
     Utils.log("Post '" + post.title + "' loaded.");
 
-    const comments = await new ContentManager(req.session).getCommentsForPost(
-      post.id,
+    const comments= await new ContentManager(req.session).getCommentsForPost(
+      post.id
     );
 
     // Render single post
     res.render("./pages/single-post", {
       post,
       content,
-      comments,
-      currentUser: req.session.user,
+      comments
     });
   } else {
     res.redirect("/login");
@@ -206,18 +205,18 @@ app.get("/community/:id", getFilteredPosts, async (req, res) => {
 
     Utils.log("Community '" + community.name + "' loaded.");
 
-    let posts = await new ContentManager().getLatestPosts({
-      communityID: community.id,
-    });
+    // let posts = await new ContentManager().getLatestPosts({
+    //   communityID: community.id,
+    // });
 
     // Render single community
-    res.render("./pages/single-community", { community, posts, content });
+    // res.render("./pages/single-community", { community, posts, content });
     res.render("./pages/single-community", {
       community,
       posts: req.sortedFilteredPosts,
       activeSort: req.activeSort,
       currentPath: req.path,
-      content,
+      content
     });
   } else {
     res.redirect("/login");
@@ -250,17 +249,14 @@ app.post("/vote", async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
     const { subjectId, typeId, positive } = req.body;
 
-    Utils.log(typeId);
     // Create and populate post object
     var subject;
     switch (typeId) {
       case "0":
         subject = await new Post().load(parseInt(subjectId), req.session);
-        Utils.log(subject);
         break;
       case "1":
         subject = await new Comment().load(parseInt(subjectId), req.session);
-        Utils.log(subject);
         break;
     }
     var result;
@@ -269,7 +265,6 @@ app.post("/vote", async (req, res) => {
       // the upvote/downvote button, leading the system to delete the vote.
       await subject.deleteCurrentUserVote();
       result = await subject.getVoteCount();
-      Utils.log(result);
     } else {
       // The user is casting either a new vote, or is replacing the current vote with the other.
       result = await subject.vote(positive);
@@ -285,6 +280,8 @@ app.post("/vote", async (req, res) => {
  * Create a route for the login page - /login
  */
 app.get("/login", async function (_, res) {
+  // var user = await new User().load(1);
+  // user.setUserPassword("123")
   res.render("pages/login");
 });
 
@@ -361,19 +358,17 @@ app.post("/comments", async (req, res) => {
     const { content, postId, parentId } = req.body;
     const userId = req.session.uid || req.session.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ error: "Not authorized" });
-    }
+    if (!userId) return res.status(401).json({ error: "Not authorized" });
 
     const comment = await Comment.create({
-      content,
-      postId,
-      parentId,
-      userId,
-      session: req.session,
+      content, postId, parentId, userId, session: req.session,
     });
 
-    res.json(comment);
+    // single-comment.pug renders one commentItem node
+    res.render("partials/single-comment", {
+      comment,
+      currentUser: req.session.user,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -405,6 +400,7 @@ app.delete("/comments/:id", async (req, res) => {
   }
 });
 
+// Is this needed?
 app.get("/comments/:postId", async (req, res) => {
   try {
     const { postId } = req.params;
@@ -414,7 +410,10 @@ app.get("/comments/:postId", async (req, res) => {
 
     const tree = Comment.buildTree(comments);
 
-    res.json(tree);
+    res.render("partials/comment", {
+      comments: tree,
+      currentUser: req.session.user,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });

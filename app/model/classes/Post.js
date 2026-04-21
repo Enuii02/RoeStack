@@ -1,9 +1,9 @@
 // Get the functions in the db.js file
-const db = require("../db.");
+const db = require("../db");
 
-const Community = require("./Community");
-const User = require("./User");
-const Utils = require("../../Utils");
+const Community = require("./community");
+const User = require("./user");
+const Utils = require("../../utils");
 
 /**
  * This class defines a Post created by an user
@@ -53,6 +53,7 @@ class Post {
             WHERE id = ?
         `;
 
+    Utils.log("Loading post #" + id + "...")
     const results = await db.query(sql, [id]);
 
     const post = results[0];
@@ -70,6 +71,7 @@ class Post {
     this.answersCount = await this.getCommentsCount();
     this.currentUserVote = await this.getCurrentUserVote();
 
+    Utils.log("Participation of current user voting: " + this.currentUserVote)
     return this;
   }
 
@@ -94,9 +96,10 @@ class Post {
      * @returns User vote.
      */
     async getCurrentUserVote() {
+        Utils.log(this.session)
         
         if (!this.session || !this.session.user) {
-            Utils.log("No session detected!")
+            Utils.log("Post - No session detected!")
             return 0; // no user or session = no vote
         }
         // Select the current vote based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
@@ -139,6 +142,8 @@ class Post {
         `;
 
         await db.query(sql, [this.session.user.id, this.id, positive]);
+
+        Utils.log("Vote amended.")
 
         // Refresh vote count after voting
         this.amountVotes = await this.getVoteCount();

@@ -1,10 +1,11 @@
 // Get the functions in the db.js file
-const db = require("../db.");
-const Community = require("./Community");
+const db = require("../db");
+const Community = require("./community");
+const Post = require("./post");
+const User = require("./user");
+const Comment = require("./comment");
+const Utils = require("../../utils");
 
-const Post = require("./Post");
-const User = require("./User");
-const Comment = require("./Comment");
 
 // TODO Convert to Singleton or Observer
 /**
@@ -23,6 +24,8 @@ class ContentManager {
         getAllCommunities = false
     } = {}) { 
 
+        Utils.log("- - - - - - - - - Updating layout...")
+
         var totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
             latestPosts, userList, communityList, popularPosts;
 
@@ -40,16 +43,19 @@ class ContentManager {
         // Get latest post sorted by created_at descending
         if (getLatestPosts) latestPosts      = await this.getPosts();
 
-    // Get all users sorted by mods first
-    if (getUserList) userList = await this.getUsersList();
+        // Get all users sorted by mods first
+        if (getUserList) userList = await this.getUsersList();
 
-    // Get all communities sorted by oldest first
-    if (getAllCommunities) communityList = await this.getAllCommunities();
+        // Get all communities sorted by oldest first
+        if (getAllCommunities) communityList = await this.getAllCommunities();
+
+        
+        Utils.log("- - - - - - - - - Layout Updated.")
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
             latestPosts, userList, communityList, popularPosts, this.session
-        );
+        );    
 
     }
 
@@ -141,7 +147,7 @@ class ContentManager {
             results = await db.query(sql, [userID]);
         }
 
-        return results[i].id;
+        return results[0].id;
     }
 
     
@@ -220,14 +226,12 @@ class ContentManager {
     }
 
     async getTotalComments() {
-        return 25;
-        // TODO Uncomment when comments table is available
-        // const sql = `
-        //     SELECT count(id) as count 
-        //     FROM comments
-        // `;
-        // const results = await db.query(sql, null);
-        // return results[0].count
+        const sql = `
+            SELECT count(id) as count 
+            FROM comments
+        `;
+        const results = await db.query(sql, null);
+        return results[0].count
     }
 
     async getMostHelpful() {
@@ -257,14 +261,15 @@ class ContentManager {
 
   async getCommentsForPost(postId) {
     const flatComments = await Comment.getByPostId(postId, this.session);
-    console.log(
-      flatComments.map((c) => ({
-        id: c.id,
-        parentId: c.parentId,
-      })),
-    );
+    // console.log(
+    //   flatComments.map((comment) => ({
+    //     id: comment.id,
+    //     parentId: comment.parentId,
+    //   })),
+    // );
     const tree = Comment.buildTree(flatComments);
-    console.log("TREE:", JSON.stringify(tree, null, 2));
+    
+    // console.log("TREE:", JSON.stringify(tree, null, 2));
     return tree;
   }
 }

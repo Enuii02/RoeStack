@@ -1,6 +1,6 @@
-const db = require("../Db");
-const User = require("./User");
-const Utils = require("../../Utils");
+const db = require("../db");
+const User = require("./user");
+const Utils = require("../../utils");
 
 class Comment {
   constructor(
@@ -31,18 +31,20 @@ class Comment {
    */
   async load(id, session) {
     const sql = "SELECT * FROM Comments WHERE id = ?";
-    const results = await db.query(sql, [id]);
-    Utils.log(results, id);
-    const c = results[0];
+    
+    Utils.log("Loading comment #" + id + "...")
 
-    this.id = c.id;
-    this.postId = c.post_id;
-    this.user = await new User().load(c.user_id);
-    this.content = c.content;
-    this.parentId = c.parent_id;
-    this.createdAt = c.created_at;
+    const results = await db.query(sql, [id]);
+    const comment = results[0];
+
+    this.id = comment.id;
+    this.postId = comment.post_id;
+    this.user = await new User().load(comment.user_id);
+    this.content = comment.content;
+    this.parentId = comment.parent_id;
+    this.createdAt = comment.created_at;
     this.session = session;
-    this.isDeleted = c.is_deleted === 1;
+    this.isDeleted = comment.is_deleted === 1;
 
     this.amountVotes = await this.getVoteCount(this.id);
     this.elapsedTime = Utils.getElapsedTime(this.createdAt);
@@ -52,13 +54,20 @@ class Comment {
   }
 
   /**
-   * Get votes
-   */
-  async getVoteCount(id) {
-    var sql = "SELECT vote_count AS count FROM comments WHERE id = ?";
-    var row = await db.query(sql, [id]);
-    return row[0].count;
-  }
+     * This function fetches the current vote amount for a specific comment id.
+     * @param {int} id
+     * @returns Amount of Votes.
+     */
+      async getVoteCount() {
+          // Select the sum of all votes based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
+          var sql = `
+              SELECT COALESCE(SUM(positive * 2 - 1), 0) AS count
+              FROM vote 
+              WHERE comment_id = ?;
+          `;
+          var row = await db.query(sql, [this.id]);
+          return row[0].count;
+      }
 
   /**
    *  Load ALL comments for a post (flat)
@@ -132,7 +141,7 @@ class Comment {
    */
   async getCurrentUserVote() {
     if (!this.session || !this.session.user) {
-      Utils.log("No session detected!");
+      Utils.log("Comment - No session detected!");
       return 0; // no user or session = no vote
     }
     // Select the current vote based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
@@ -187,6 +196,7 @@ class Comment {
 
     await db.query(sql, [this.session.user.id, this.id, positive]);
 
+    Utils.log("Vote amended.")
     // Refresh vote count after voting
     this.amountVotes = await this.getVoteCount();
 

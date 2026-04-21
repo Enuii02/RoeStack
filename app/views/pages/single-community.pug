@@ -13,7 +13,8 @@ block content
         .community-title
             h2= community.name 
         .community-stats 
-            .empty 
+            if content.session.user.isMod || content.session.user.id == community.createdBy.id
+                .empty 
             .right 
                 .counter 
                     h3.follower-count= community.amountUsers
