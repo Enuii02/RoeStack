@@ -260,7 +260,8 @@ app.post("/vote", async (req, res) => {
         break;
     }
     var result;
-    if (subject.currentUserVote === positive || positive === null) {
+    console.log(subject.currentUserVote, positive)
+    if (positive === null || (subject.currentUserVote*2)-1 === positive) {
       // The current vote is the same as the request, this means that the user clicked again on
       // the upvote/downvote button, leading the system to delete the vote.
       await subject.deleteCurrentUserVote();
