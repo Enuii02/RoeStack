@@ -27,7 +27,6 @@
 }
 .user-info .username {
   font-size: 24px;
-  text-decoration: none;
   color: black;
 }
 .user-info .dot,
@@ -40,6 +39,7 @@
   color: #888888;
 }
 .top-section .right-side {
+  position: relative;
   display: flex;
   align-items: start;
   gap: 8px;
@@ -52,6 +52,7 @@
   align-items: center;
 }
 .right-side button {
+  position: relative;
   background: none;
   border: none;
   padding: 0;
@@ -73,7 +74,6 @@
 .right-side .community-name {
   font-size: 14px;
   padding: 0 13px;
-  text-decoration: none;
   color: black;
 }
 .post-footer {
@@ -100,12 +100,12 @@
   transition: background-color 0.5s ease;
 }
 .interactions .upvote {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  border-top-left-radius: 25%;
+  border-bottom-left-radius: 25%;
 }
 .interactions .downvote {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  border-top-right-radius: 25%;
+  border-bottom-right-radius: 25%;
 }
 
 .interactions .upvote.active {
@@ -160,7 +160,8 @@ p {
 .dropdown-menu {
   display: none;
   position: absolute;
-  right: 340px;
+  right: 0;
+  top: 20px;
   margin-top: 6px;
   list-style: none;
   padding: 6px 0;
@@ -184,4 +185,93 @@ p {
 
 .dropdown-menu.show {
   display: block;
+}
+
+/* for single post page */
+.main-answer {
+  width: 100%;
+  padding: 14px 30px;
+  border: 1px solid #b6b6b6;
+  border-radius: 30px;
+  font-size: 15px;
+  margin-top: 27px;
+  background-color: #f3f3f3;
+  color: #888888;
+  font-style: italic;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  margin-top: 20px;
+  position: relative;
+  width: fit-content;
+}
+
+.sort-btn {
+  font: inherit;
+  display: flex;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.sort-btn p {
+  font-weight: 500;
+  color: #3e3e3e;
+  font-style: italic;
+}
+
+.divider p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.divider .sort-label {
+  margin-right: 10px;
+}
+
+.fa-solid.fa-angle-down {
+  align-self: center;
+}
+
+.line {
+  border-bottom: #b6b6b6 1px solid;
+  margin-top: 17px;
+}
+.post-box a {
+  text-decoration: none;
+  color: #000000;
+}
+
+.answer-btn {
+  display: none;
+  pointer-events: none;
+  padding: 10px 20px;
+  margin-top: 15px;
+  border-radius: 12px;
+  border-style: solid;
+  justify-self: end;
+  background-color: #efefef;
+  color: #888888;
+}
+
+.form-answer.active .answer-btn {
+  display: block;
+  pointer-events: auto;
+}
+
+.answer-btn:disabled {
+  cursor: not-allowed;
+}
+
+.answer-btn:not(:disabled) {
+  background-color: #004e36;
+  color: #f6f6f6;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border: none;
 }

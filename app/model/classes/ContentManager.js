@@ -1,14 +1,14 @@
-
 // Get the functions in the db.js file
 const db = require("../db.");
 const Community = require("./Community");
 
 const Post = require("./Post");
 const User = require("./User");
+const Comment = require("./Comment");
 
 // TODO Convert to Singleton or Observer
 /**
- * The Content Manager 
+ * The Content Manager
  */
 class ContentManager {
 
@@ -40,11 +40,11 @@ class ContentManager {
         // Get latest post sorted by created_at descending
         if (getLatestPosts) latestPosts      = await this.getPosts();
 
-        // Get all users sorted by mods first
-        if (getUserList)    userList         = await this.getUsersList();
+    // Get all users sorted by mods first
+    if (getUserList) userList = await this.getUsersList();
 
-        // Get all communities sorted by oldest first
-        if (getAllCommunities) communityList = await this.getAllCommunities();
+    // Get all communities sorted by oldest first
+    if (getAllCommunities) communityList = await this.getAllCommunities();
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
@@ -173,15 +173,15 @@ class ContentManager {
             LIMIT 5
         `;
 
-        const results = await db.query(sql, null);
-        var communities = [];
-        var community;
-        for (let i = 0; i < results.length; i++) {
-            community = await new Community().load(results[i].id);
-            communities.push(community);
-        }
-        return communities;
+    const results = await db.query(sql, null);
+    var communities = [];
+    var community;
+    for (let i = 0; i < results.length; i++) {
+      community = await new Community().load(results[i].id);
+      communities.push(community);
     }
+    return communities;
+  }
 
     async getAllCommunities() {
         // Get all communities sorted by oldest first
@@ -191,15 +191,15 @@ class ContentManager {
             ORDER BY created_at ASC
         `;
 
-        const results = await db.query(sql, null);
-        var communities = [];
-        var community;
-        for (let i = 0; i < results.length; i++) {
-            community = await new Community().load(results[i].id);
-            communities.push(community);
-        }
-        return communities;
+    const results = await db.query(sql, null);
+    var communities = [];
+    var community;
+    for (let i = 0; i < results.length; i++) {
+      community = await new Community().load(results[i].id);
+      communities.push(community);
     }
+    return communities;
+  }
 
     async getTotalPosts() {
         const sql = `
@@ -254,6 +254,19 @@ class ContentManager {
         }
         return users;
     }
+
+  async getCommentsForPost(postId) {
+    const flatComments = await Comment.getByPostId(postId, this.session);
+    console.log(
+      flatComments.map((c) => ({
+        id: c.id,
+        parentId: c.parentId,
+      })),
+    );
+    const tree = Comment.buildTree(flatComments);
+    console.log("TREE:", JSON.stringify(tree, null, 2));
+    return tree;
+  }
 }
 
 class Content {

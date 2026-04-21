@@ -1,0 +1,61 @@
+mixin commentItem(comment)
+   .comment-thread(
+    class=[comment.replies && comment.replies.length > 0 ? 'has-replies' : '',
+        comment.isDeleted ? 'deleted' : ''])
+        .comment-body
+            .comment-left
+                img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            .comment-right
+                .comment-info
+                    a.name(href="/user/" + comment.user.id)= comment.user.name
+                    span.dot •
+                    span.time= comment.elapsedTime
+                    button.icon-btn(type="button" onclick="toggleMenu(this)")
+                        img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+                    if !comment.isDeleted
+                        ul.dropdown-menu 
+                            li 
+                                if currentUser && (currentUser.id === comment.user.id || Number(currentUser.isMod) === 1)
+                                    a.delete-comment(
+                                        href="#"
+                                        data-comment-id=comment.id
+                                        style="color: red;"
+                                    ) Delete comment
+                                else
+                                    a(href="#" style="color: red;") Report comment
+                .role= comment.user.role
+
+                p.comment-text= comment.content
+
+                if !comment.isDeleted
+                    .comment-footer
+                        .interactions
+                            button.upvote(
+                                data-id=comment.id,
+                                data-type-id=1,
+                                class=comment.currentUserVote === 1 ? "active" : ""
+                                )
+                                img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
+
+                            span.vote-count 
+                                span= comment.amountVotes
+
+                            button.downvote(
+                                data-id=comment.id,
+                                data-type-id=1,
+                                class=comment.currentUserVote === -1 ? "active" : ""
+                                )
+                                img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
+                        a.answers(href="#" data-comment-id=comment.id)
+                            img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
+                            p.reply Reply
+
+        // REPLIES    
+        if comment.replies
+            .replies
+                each reply in comment.replies
+                    +commentItem(reply)
+
+script.
+  window.CURRENT_USER_ID = !{JSON.stringify(currentUser.id)};
+  window.IS_MOD = !{JSON.stringify(currentUser.isMod)};

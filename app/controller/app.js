@@ -22,23 +22,25 @@ const User = require("../model/classes/User.js");
 const Post = require("../model/classes/Post.js");
 const Community = require("../model/classes/Community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
-// Get Middleware
+const Comment = require("../model/classes/Comment.js"); // Get Middleware
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 // This snippet is used to make sure that post data is encoded and read properly
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set the sessions
-var session = require('express-session');
-app.use(session({
-  secret: 'supersecretthatwillneverbediscoveredbyanyonenotevenmateusz',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
+var session = require("express-session");
+app.use(
+  session({
+    secret: "supersecretthatwillneverbediscoveredbyanyonenotevenmateusz",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  }),
+);
 Utils.log("Session created.");
 
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * Create a route for root - /
@@ -47,14 +49,12 @@ app.get("/", getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
     let content = await new ContentManager(req.session).update();
-    res.render( 
-      "pages/index",
-      {
-        content,
-        currentPage: "home",
-        posts: req.sortedFilteredPosts,
-        activeSort: req.activeSort
-      });
+    res.render("pages/index", {
+      content,
+      currentPage: "home",
+      posts: req.sortedFilteredPosts,
+      activeSort: req.activeSort,
+    });
   } else {
     res.redirect("/login");
   }
@@ -66,7 +66,9 @@ app.get("/", getFilteredPosts, async function (req, res) {
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Explore page...");
-    let content = await new ContentManager(req.session).update({ getAllCommunities: true });
+    let content = await new ContentManager(req.session).update({
+      getAllCommunities: true,
+    });
     res.render("pages/explore", { content, currentPage: "explore" });
   } else {
     res.redirect("/login");
@@ -106,7 +108,9 @@ app.get("/all-users", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     if (req.session.user.isMod) {
       Utils.log("Going to Add Users page...");
-      let content = await new ContentManager(req.session).update({ getUserList: true });
+      let content = await new ContentManager(req.session).update({
+        getUserList: true,
+      });
       res.render("pages/all-users", { content });
     } else {
       Utils.log("Cannot access Add Users page, User is not mod.");
@@ -136,7 +140,7 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
 
     // Load data from database
     await user.load(id);
-    
+
     Utils.log("User '" + user.name + "' loaded.");
 
     let posts = await new ContentManager(req.session);
@@ -166,15 +170,22 @@ app.get("/post/:id", async (req, res) => {
 
     // Create new empty Post
     let post = new Post();
-
     // Load data from database
-    await post.load(req.params.id, req.session);
-    
+    await post.load(req.params.id);
+
     Utils.log("Post '" + post.title + "' loaded.");
 
+    const comments = await new ContentManager(req.session).getCommentsForPost(
+      post.id,
+    );
+
     // Render single post
-    res.render("./pages/single-post", { post, content });
-  
+    res.render("./pages/single-post", {
+      post,
+      content,
+      comments,
+      currentUser: req.session.user,
+    });
   } else {
     res.redirect("/login");
   }
@@ -194,70 +205,81 @@ app.get("/community/:id", getFilteredPosts, async (req, res) => {
     await community.load(req.params.id);
 
     Utils.log("Community '" + community.name + "' loaded.");
+
+    let posts = await new ContentManager().getLatestPosts({
+      communityID: community.id,
+    });
+
     // Render single community
-    res.render("./pages/single-community", { 
-      community, 
-      posts: req.sortedFilteredPosts, 
+    res.render("./pages/single-community", { community, posts, content });
+    res.render("./pages/single-community", {
+      community,
+      posts: req.sortedFilteredPosts,
       activeSort: req.activeSort,
       currentPath: req.path,
-      content });
-    
+      content,
+    });
   } else {
     res.redirect("/login");
   }
 });
 
-app.post('/follow', async (req, res) => {
+app.post("/follow", async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
     const { userId, communityId } = req.body;
     // Check if the requested userId is the same as the current logged in user or if the user is mod
     if (userId == req.session.user.id || req.session.user.isMod) {
-      // Send follow request, a new user object is needed as it could be that a moderator is forcefully 
+      // Send follow request, a new user object is needed as it could be that a moderator is forcefully
       // making another user follow/unfollow the community
-      var user = await new User().load(userId)
-      var community = await new Community().load(communityId)
-      var result = await user.followUnfollow(community)
+      var user = await new User().load(userId);
+      var community = await new Community().load(communityId);
+      var result = await user.followUnfollow(community);
       res.json({ followingAmount: result });
-      
     } else {
       res.redirect("/invalid");
     }
   }
 });
 
-
-
 // VOTE SYSTEM ////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Vote page used to send a vote request from the client side to the server's db
  */
-app.post('/vote', async (req, res) => {
+app.post("/vote", async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
-    const { postId, positive } = req.body;
+    const { subjectId, typeId, positive } = req.body;
 
+    Utils.log(typeId);
     // Create and populate post object
-    const post = await new Post().load(postId, req.session);
+    var subject;
+    switch (typeId) {
+      case "0":
+        subject = await new Post().load(parseInt(subjectId), req.session);
+        Utils.log(subject);
+        break;
+      case "1":
+        subject = await new Comment().load(parseInt(subjectId), req.session);
+        Utils.log(subject);
+        break;
+    }
     var result;
-    if (post.currentVote === positive || positive === null) {
-      // The current vote is the same as the request, this means that the user clicked again on 
+    if (subject.currentUserVote === positive || positive === null) {
+      // The current vote is the same as the request, this means that the user clicked again on
       // the upvote/downvote button, leading the system to delete the vote.
-      await post.deleteCurrentUserVote();
-      result = await post.getVoteCount();
+      await subject.deleteCurrentUserVote();
+      result = await subject.getVoteCount();
       Utils.log(result);
-
     } else {
       // The user is casting either a new vote, or is replacing the current vote with the other.
-      result = await post.vote(positive);
+      result = await subject.vote(positive);
     }
     // Give the total vote count result in json format
     res.json({ votes: result });
   }
 });
 
-
 // LOGIN //////////////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * Create a route for the login page - /login
@@ -277,8 +299,8 @@ app.get("/register", async function (_, res) {
 /**
  * Set password request page
  */
-app.post('/set-password', async function (req, res) {
-  Utils.log("Setting password for " + req.body.email  + "...");
+app.post("/set-password", async function (req, res) {
+  Utils.log("Setting password for " + req.body.email + "...");
   params = await req.body;
   var user = new User();
   user.email = params.email;
@@ -289,13 +311,14 @@ app.post('/set-password', async function (req, res) {
       Utils.log("User " + user.name + " identified.");
       // If a valid, existing user is found, set the password and redirect to the single-users page
       await user.setUserPassword(params.password);
-      res.send('Password set successfully');
-    }
-    else {
+      res.send("Password set successfully");
+    } else {
       Utils.log("User with id #" + uId + " not identified.");
       // If no existing user is found, add a new one
       newId = await user.addUser(params.email);
-      res.send('Perhaps a page where a new user sets a programme would be good here');
+      res.send(
+        "Perhaps a page where a new user sets a programme would be good here",
+      );
     }
   } catch (err) {
     console.error(`Error while adding password `, err.message);
@@ -305,7 +328,7 @@ app.post('/set-password', async function (req, res) {
 /**
  * Check submitted email and password pair request page
  */
-app.post('/authenticate', async function (req, res) {
+app.post("/authenticate", async function (req, res) {
   Utils.log("Authenticating password...");
   const params = req.body;
   var user = new User();
@@ -320,38 +343,99 @@ app.post('/authenticate', async function (req, res) {
         req.session.user = user;
         req.session.loggedIn = true;
 
-        res.redirect('/user/me');
-
-      }
-      else {
+        res.redirect("/user/me");
+      } else {
         // TODO improve the user journey here
-        res.send('Invalid password');
+        res.send("Invalid password");
       }
-    }
-    else {
-      res.send('Invalid email');
+    } else {
+      res.send("Invalid email");
     }
   } catch (err) {
     console.error(`Error while comparing `, err.message);
   }
 });
 
+app.post("/comments", async (req, res) => {
+  try {
+    const { content, postId, parentId } = req.body;
+    const userId = req.session.uid || req.session.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Not authorized" });
+    }
+
+    const comment = await Comment.create({
+      content,
+      postId,
+      parentId,
+      userId,
+      session: req.session,
+    });
+
+    res.json(comment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.delete("/comments/:id", async (req, res) => {
+  try {
+    const userId = req.session.uid || req.session.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Not authorized" });
+    }
+
+    const text = await Comment.delete(req.params.id, userId);
+
+    res.json({ success: true, text });
+  } catch (err) {
+    if (err.message === "Forbidden") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    if (err.message === "Comment not found") {
+      return res.status(404).json({ error: "Not found" });
+    }
+
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/comments/:postId", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { sort } = req.query; // sort
+
+    const comments = await Comment.getByPostId(postId, req.session, sort);
+
+    const tree = Comment.buildTree(comments);
+
+    res.json(tree);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 /**
  * Create a route for the logout page - /logout
  */
-app.get('/logout', function (req, res) {
+app.get("/logout", function (req, res) {
   Utils.log("Logging out...");
   req.session.destroy();
   res.redirect("/login");
 });
-
 
 // MISC ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Create a route for the invalid page - /invalid
  */
-app.get('/invalid', function (req, res) {
+app.get("/invalid", function (req, res) {
   res.render("pages/invalid");
 });
 

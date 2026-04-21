@@ -22,14 +22,16 @@
             ul.dropdown-menu 
                 li 
                     a(href="#" style="color: red;") Report post 
-    h2.post-title= post.title
-    .post-content 
+    a(href="/post/" + post.id) 
+        h2.post-title= post.title
+    a(href="/post/" + post.id).post-content 
         p= post.content
     .post-footer
         .left-side 
             .interactions
                 button.upvote(
                     data-id=post.id,
+                    data-type-id=0,
                     class=post.currentUserVote === 1 ? "active" : ""
                     )
                     img.vote-icon(src="/images/icons/up-vote.svg" alt="Upvote Icon")
@@ -39,11 +41,13 @@
 
                 button.downvote(
                     data-id=post.id,
+                    data-type-id=0,
                     class=post.currentUserVote === -1 ? "active" : ""
                     )
                     img.vote-icon(src="/images/icons/down-vote.svg" alt="Downvote Icon")
-                    
-            a.answers(href="/")
+            a.answers(href="/post/" + post.id)
                 img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
-                .answer-count 5 answers
-                //span.answer-count= #{post.answersCount} answers
+                span.answer-count= post.answersCount + " answers"
+block scripts
+    script(src="/js/profile-page.js" defer)
+    script(src="/js/Vote.js" defer)
