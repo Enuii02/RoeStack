@@ -20,7 +20,7 @@ const db = require("../model/db.js");
 // Get Misc Classes
 const User = require("../model/classes/user.js");
 const Post = require("../model/classes/post.js");
-const Comment = require("../model/classes/comment.js")
+const Comment = require("../model/classes/comment.js");
 const Community = require("../model/classes/community.js");
 const ContentManager = require("../model/classes/contentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
@@ -175,15 +175,16 @@ app.get("/post/:id", async (req, res) => {
 
     Utils.log("Post '" + post.title + "' loaded.");
 
-    const comments= await new ContentManager(req.session).getCommentsForPost(
-      post.id
+    const comments = await new ContentManager(req.session).getCommentsForPost(
+      post.id,
     );
 
     // Render single post
     res.render("./pages/single-post", {
       post,
       content,
-      comments
+      comments,
+      currentUser: req.session.user,
     });
   } else {
     res.redirect("/login");
@@ -216,7 +217,7 @@ app.get("/community/:id", getFilteredPosts, async (req, res) => {
       posts: req.sortedFilteredPosts,
       activeSort: req.activeSort,
       currentPath: req.path,
-      content
+      content,
     });
   } else {
     res.redirect("/login");
@@ -260,8 +261,8 @@ app.post("/vote", async (req, res) => {
         break;
     }
     var result;
-    console.log(subject.currentUserVote, positive)
-    if (positive === null || (subject.currentUserVote*2)-1 === positive) {
+    console.log(subject.currentUserVote, positive);
+    if (positive === null || subject.currentUserVote * 2 - 1 === positive) {
       // The current vote is the same as the request, this means that the user clicked again on
       // the upvote/downvote button, leading the system to delete the vote.
       await subject.deleteCurrentUserVote();
@@ -362,7 +363,11 @@ app.post("/comments", async (req, res) => {
     if (!userId) return res.status(401).json({ error: "Not authorized" });
 
     const comment = await Comment.create({
-      content, postId, parentId, userId, session: req.session,
+      content,
+      postId,
+      parentId,
+      userId,
+      session: req.session,
     });
 
     // single-comment.pug renders one commentItem node
@@ -401,7 +406,6 @@ app.delete("/comments/:id", async (req, res) => {
   }
 });
 
-// Is this needed?
 app.get("/comments/:postId", async (req, res) => {
   try {
     const { postId } = req.params;

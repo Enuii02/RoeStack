@@ -15,7 +15,7 @@ mixin commentItem(comment)
                     if !comment.isDeleted
                         ul.dropdown-menu 
                             li 
-                                if currentUser && (currentUser.id === comment.user.id || Number(currentUser.isMod) === 1)
+                                if currentUser && (Number(currentUser.id) === Number(comment.user.id) || Number(currentUser.isMod) === 1)
                                     a.delete-comment(
                                         href="#"
                                         data-comment-id=comment.id

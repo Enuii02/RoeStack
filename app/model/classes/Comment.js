@@ -31,8 +31,8 @@ class Comment {
    */
   async load(id, session) {
     const sql = "SELECT * FROM Comments WHERE id = ?";
-    
-    Utils.log("Loading comment #" + id + "...")
+
+    Utils.log("Loading comment #" + id + "...");
 
     const results = await db.query(sql, [id]);
     const comment = results[0];
@@ -54,20 +54,20 @@ class Comment {
   }
 
   /**
-     * This function fetches the current vote amount for a specific comment id.
-     * @param {int} id
-     * @returns Amount of Votes.
-     */
-      async getVoteCount() {
-          // Select the sum of all votes based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
-          var sql = `
+   * This function fetches the current vote amount for a specific comment id.
+   * @param {int} id
+   * @returns Amount of Votes.
+   */
+  async getVoteCount() {
+    // Select the sum of all votes based on the boolean positive (0 = -1 and 1 = +1 / if empty, default 0)
+    var sql = `
               SELECT COALESCE(SUM(positive * 2 - 1), 0) AS count
               FROM vote 
               WHERE comment_id = ?;
           `;
-          var row = await db.query(sql, [this.id]);
-          return row[0].count;
-      }
+    var row = await db.query(sql, [this.id]);
+    return row[0].count;
+  }
 
   /**
    *  Load ALL comments for a post (flat)
@@ -196,7 +196,7 @@ class Comment {
 
     await db.query(sql, [this.session.user.id, this.id, positive]);
 
-    Utils.log("Vote amended.")
+    Utils.log("Vote amended.");
     // Refresh vote count after voting
     this.amountVotes = await this.getVoteCount();
 
@@ -245,7 +245,7 @@ class Comment {
     }
 
     const isOwner = comment.user_id == userId;
-    const isModerator = user.is_mod === 1;
+    const isModerator = Number(user.is_mod) === 1;
 
     if (!isOwner && !isModerator) {
       throw new Error("Forbidden");
