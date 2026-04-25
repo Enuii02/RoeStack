@@ -1,4 +1,6 @@
 
+
+
 // Get all .follow-btn in page
 document.querySelectorAll('.follow-btn').forEach(followButton => {
 

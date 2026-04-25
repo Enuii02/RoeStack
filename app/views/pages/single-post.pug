@@ -74,6 +74,6 @@ block content
         include ../partials/comment
         .answers-section
             each comment in comments
-                +commentItem(comment)
+                +commentItem(comment, content)
 block scripts
     script(src="/js/comment.js" defer)

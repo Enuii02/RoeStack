@@ -275,7 +275,7 @@ app.post("/vote", async (req, res) => {
   }
 });
 
-// LOGIN //////////////////////////////////////////////////////////////////////////////////////////
+// LOGIN 
 
 /**
  * Create a route for the login page - /login
@@ -413,7 +413,6 @@ app.get("/comments/:postId", async (req, res) => {
 
     res.render("partials/comment", {
       comments: tree,
-      currentUser: req.session.user,
     });
   } catch (err) {
     console.error(err);

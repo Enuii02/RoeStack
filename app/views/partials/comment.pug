@@ -1,4 +1,4 @@
-mixin commentItem(comment)
+mixin commentItem(comment, content)
    .comment-thread(
     class=[comment.replies && comment.replies.length > 0 ? 'has-replies' : '',
         comment.isDeleted ? 'deleted' : ''])
@@ -15,7 +15,7 @@ mixin commentItem(comment)
                     if !comment.isDeleted
                         ul.dropdown-menu 
                             li 
-                                if currentUser && (currentUser.id === comment.user.id || Number(currentUser.isMod) === 1)
+                                if content.session.user && (content.session.user.id === comment.user.id || Number(content.session.user.isMod) === 1)
                                     a.delete-comment(
                                         href="#"
                                         data-comment-id=comment.id
@@ -55,7 +55,7 @@ mixin commentItem(comment)
         if comment.replies
             .replies
                 each reply in comment.replies
-                    +commentItem(reply)
+                    +commentItem(reply, content)
                     
 template#reply-template
   .reply-form
