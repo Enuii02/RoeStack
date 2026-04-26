@@ -435,7 +435,7 @@ app.get("/comments/:postId", async (req, res) => {
 
     const tree = Comment.buildTree(comments);
 
-    res.render("partials/comment", {
+    res.render("partials/comment-list", {
       comments: tree,
       currentUser: req.session.user,
     });
