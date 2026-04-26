@@ -24,6 +24,8 @@ const Comment = require("../model/classes/comment.js");
 const Community = require("../model/classes/community.js");
 const ContentManager = require("../model/classes/contentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
+const removeQueryParam = require("../model/middleware/removeQueryParam.js");
+const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +42,19 @@ app.use(
 );
 Utils.log("Session created.");
 
+// REGISTERING MIDDLEWARE /////////////////////////////////////////////////////////////////////////
+
+
+// This middleware is used to make the removeQueryParam function
+//  available in all Pug templates, used in the filtering of posts.
+
+app.use((req, res, next) => {
+  res.locals.removeQueryParam = removeQueryParam;
+  res.locals.addQueryParam = addQueryParam;
+  res.locals.req = req;
+  next();
+});
+
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -49,11 +64,13 @@ app.get("/", getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
     let content = await new ContentManager(req.session).update();
+    console.log("the link", req.originalUrl)
     res.render("pages/index", {
       content,
       currentPage: "home",
       posts: req.sortedFilteredPosts,
       activeSort: req.activeSort,
+      currentPath: req.path
     });
   } else {
     res.redirect("/login");
@@ -69,7 +86,10 @@ app.get("/explore", async function (req, res) {
     let content = await new ContentManager(req.session).update({
       getAllCommunities: true,
     });
-    res.render("pages/explore", { content, currentPage: "explore" });
+    res.render("pages/explore", { 
+      content,
+      currentPage: "explore"
+      });
   } else {
     res.redirect("/login");
   }
@@ -449,6 +469,8 @@ app.get("/invalid", function (req, res) {
 app.use((req, res) => {
   res.status(404).redirect("/invalid");
 });
+
+// 
 
 /**
  * Start server on port 3000

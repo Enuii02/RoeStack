@@ -21,14 +21,32 @@
     padding-inline: 5px;
 }
 
-.active-latest {
+.sort-btn p {
+    color: black;
+}
+
+ .active-latest  {
     background-color: #004E36;
-    color: #ffffff;
 }
 
 .active-popular {
     background-color: #E18700;
-    color: #ffffff;
     border: none
 }
 
+.active-for-you {
+    background-color: red;
+    border: none;
+}
+
+.active-popular p,
+.active-latest p,
+.active-for-you p {
+    color: white;
+}
+
+.active-latest i,
+.active-popular i,
+.active-for-you i {
+    color: white;
+}

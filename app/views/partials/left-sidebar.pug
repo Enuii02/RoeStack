@@ -2,18 +2,26 @@ aside.sidebar-left
     .sidebar-card
         h3.sidebar-title Categories 
         ul.category-list 
-            li.category-item.active(data-category="all") 
-                span All Categories
-                .active-indicator
-            li.category-item(data-category="questions")
-                span Questions
-                .active-indicator
-            li.category-item(data-category="advices")
-                span Advices
-                .active-indicator
-            li.category-item(data-category="surveys")
-                span Surveys
-                .active-indicator
+            a(href=removeQueryParam(req.originalUrl, 'category'))
+                li.category-item(class={active: !req.query.category})
+                    span All Categories
+                    .active-indicator
+            a(href=addQueryParam(req.originalUrl, 'category', 'question'))
+                li.category-item(class={active: req.query.category === 'question'})
+                    span Questions
+                    .active-indicator
+            a(href=addQueryParam(req.originalUrl, 'category', 'advice'))
+                li.category-item(class={active: req.query.category === 'advice'})       
+                    span Advices
+                    .active-indicator
+            a(href=addQueryParam(req.originalUrl, 'category', 'survey'))
+                li.category-item(class={active: req.query.category === 'survey'})
+                    span Surveys
+                    .active-indicator
+            a(href=addQueryParam(req.originalUrl, 'category', 'discussion'))
+                li.category-item(class={active: req.query.category === 'discussion'})
+                    span Discussions
+                    .active-indicator
     .sidebar-card 
         h3.sidebar-title Communities 
         ul.community-list 

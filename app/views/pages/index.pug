@@ -5,13 +5,13 @@ block head
 
 block content 
     .sorting-buttons 
-        a.sort-btn(class= activeSort === "latest" ? "active-latest" : "", href="/") 
+        a.sort-btn(class= activeSort === "latest" ? "active-latest" : "", href=addQueryParam(req.originalUrl, 'sortby', 'latest')) 
             i.fa-regular.fa-clock 
             p Latest 
-        a.sort-btn(class= activeSort === "popular" ? "active-popular" : "", href="/?sortby=popular") 
+        a.sort-btn(class= activeSort === "popular" ? "active-popular" : "", href=addQueryParam(req.originalUrl, 'sortby', 'popular')) 
             i.fa-solid.fa-fire  
             p Popular
-        a.sort-btn(class= activeSort === "forYou" ? "active-for-you" : "", href="/?sortby=foryou")
+        a.sort-btn(class= activeSort === "forYou" ? "active-for-you" : "", href=addQueryParam(req.originalUrl, 'sortby', 'foryou'))
             i.fa-solid.fa-heart 
             p For You
 
