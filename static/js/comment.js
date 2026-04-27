@@ -43,7 +43,6 @@ button.addEventListener("click", async () => {
   form.classList.remove("active");
 });
 
-
 document.addEventListener("click", async (e) => {
   // ================= DELETE =================
   const deleteBtn = e.target.closest(".delete-comment");
@@ -109,7 +108,10 @@ document.addEventListener("click", async (e) => {
     input.focus();
 
     input.addEventListener("input", () => {
-      button.disabled = !input.value.trim();
+      const hasText = input.value.trim().length > 0;
+
+      button.disabled = !hasText;
+      button.classList.toggle("active", hasText);
     });
 
     // Inside the REPLY handler, replace the button.addEventListener("click") block:
@@ -153,21 +155,21 @@ document.addEventListener("click", async (e) => {
   }
   // ================= SORT MENU =================
   const sortOption = e.target.closest("[data-sort]");
-  if (!sortOption) return;
+  if (sortOption) {
+    e.preventDefault();
 
-  e.preventDefault();
+    const sort = sortOption.dataset.sort;
+    const postId = window.location.pathname.split("/").pop();
 
-  const sort = sortOption.dataset.sort;
-  const postId = window.location.pathname.split("/").pop();
+    const sortLabel = document.querySelector(".sort-btn p");
+    sortLabel.textContent = sortOption.textContent.trim();
 
-  const sortLabel = document.querySelector(".sort-btn p");
-  sortLabel.textContent = sortOption.textContent;
+    const res = await fetch(`/comments/${postId}?sort=${sort}`);
+    const html = await res.text();
 
-  const res = await fetch(`/comments/${postId}?sort=${sort}`);
-  const comments = await res.json();
+    const container = document.querySelector(".answers-section");
+    container.innerHTML = html;
 
-  const container = document.querySelector(".answers-section");
-  container.innerHTML = "";
-
-  renderComments(comments, container);
+    return;
+  }
 });
