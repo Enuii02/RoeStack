@@ -71,6 +71,11 @@
   font-size: 14px;
   color: #f6f6f6;
 }
+
+.category-box img {
+  height: 18px;
+  width: 18px;
+}
 .right-side .community-name {
   font-size: 14px;
   padding: 0 13px;

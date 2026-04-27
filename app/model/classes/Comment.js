@@ -77,23 +77,26 @@ class Comment {
 
     switch (sort) {
       case "latest":
-        orderBy = "created_at DESC";
+        orderBy = "c.created_at DESC";
         break;
 
       case "oldest":
-        orderBy = "created_at ASC";
+        orderBy = "c.created_at ASC";
         break;
 
       case "best":
       default:
-        orderBy = "vote_count DESC, created_at DESC";
+        orderBy = "vote_count DESC, c.created_at DESC";
         break;
     }
 
     const sql = `
-    SELECT id 
-    FROM Comments 
-    WHERE post_id = ?
+    SELECT c.id,
+           COALESCE(SUM(v.positive * 2 - 1), 0) AS vote_count
+    FROM comments c
+    LEFT JOIN vote v ON v.comment_id = c.id
+    WHERE c.post_id = ?
+    GROUP BY c.id
     ORDER BY ${orderBy}
   `;
 

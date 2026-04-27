@@ -80,15 +80,28 @@ class ContentManager {
         let sortOrder = (reverse) ? `ASC` : `DESC`;
 
         // Build WHERE clause and parameters array
-        if (userID !== -1 && communityID !== -1) {
+
+        // If sortByPopularity is true, join the vote table to count the votes for each post
+        if (sortByPopularity) {
+            whereClause = "LEFT JOIN vote ON vote.post_id = posts.id GROUP BY posts.id";
+        }
+
+        // If both userID and communityID are provided, filter by both
+        else if (userID !== -1 && communityID !== -1) {
             whereClause = "WHERE user_id = ? AND community_id = ?";
             params = [userID, communityID];
+
+        // If sortByForYou is true, filter by communities the user follows (if userID is provided)
         } else if (sortByForYou && userID !== -1) {
             whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
             params = [userID]
+
+        // If only userID is provided, filter by userID
         } else if (userID !== -1) {
             whereClause = "WHERE user_id = ?";
             params = [userID];
+
+        // If only communityID is provided, filter by communityID
         } else if (communityID !== -1) {
             whereClause = "WHERE community_id = ?";
             params = [communityID];
@@ -96,12 +109,12 @@ class ContentManager {
 
         // Build ORDER BY clause
         if (sortByPopularity) {
-            orderByClause = "ORDER BY (vote_count + comment_count)"
+            orderByClause = "ORDER BY COUNT(vote.post_id)";
         } else {
             orderByClause = "ORDER BY created_at";
         } 
 
-        sql = `SELECT id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
+        sql = `SELECT posts.id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
         // console.log('SQL:', sql);
         results = await db.query(sql, params);
 

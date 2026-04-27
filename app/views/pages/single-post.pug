@@ -19,8 +19,12 @@ block content
                 .container 
                     a.community-name(href="/community/" + post.community.id)= post.community.name
                     .category-box
-                        img.category-icon(src="/images/icons/question-icon.svg" alt="Category Icon")
-                        span.category-name Question
+                        - let iconSrc = '/images/icons/comment-solid-full.svg'
+                        - if (post.category === 'question') iconSrc = '/images/icons/question-icon.svg'
+                        - else if (post.category === 'advice') iconSrc = '/images/icons/comment-medical-solid-full.svg'
+                        - else if (post.category === 'survey') iconSrc = '/images/icons/square-poll-horizontal-solid-full.svg'
+                        img.category-icon(src=iconSrc alt="Category Icon")
+                        span.category-name= post.category 
                         //post.category
                 button.icon-btn(type="button" onclick="toggleMenu(this)")
                     img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")

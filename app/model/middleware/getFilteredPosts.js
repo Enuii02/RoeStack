@@ -1,4 +1,5 @@
 const ContentManager = require("../classes/contentManager");
+const log = require("../../utils").log;
 
 /**
  * Middleware handles the queries and parameters.
@@ -11,6 +12,11 @@ const ContentManager = require("../classes/contentManager");
  * - "foryou": Personalized posts (default content manager)
  * - "latest": Posts sorted by creation date (newest first, default)
  * - "oldest": latest reversed duh
+ * 
+ * Additionally, if a category query parameter is provided, it filters the sorted posts by the specified category.
+ * If no posts match the category filter, it falls back to displaying all sorted posts and logs a message.
+ * 
+ * The resulting sorted and filtered posts are attached to the request object as req.sortedFilteredPosts for use in subsequent middleware or route handlers.
  *  */
 async function getFilteredPosts(req, _, next) {
   if (req.session.user) {
@@ -18,6 +24,7 @@ async function getFilteredPosts(req, _, next) {
     try {
       const contentManager = new ContentManager(req.session);
       const sortType = req.query.sortby || "latest";
+      const category = req.query.category;
       let userId = req.params.id;
       let communityId = parseInt(req.params.communityId) || -1;
       
@@ -27,9 +34,28 @@ async function getFilteredPosts(req, _, next) {
         userId = req.params.id || -1;
       }
 
-      const posts = await fetchPostsBySortType(contentManager, sortType, userId, req.session.uid, communityId);
+      const posts = await fetchPostsBySortType(
+        contentManager,
+        sortType,
+        userId,
+        req.session.uid,
+        communityId);
 
-      req.sortedFilteredPosts = posts;
+      // If category filter is applied, filter the sorted posts by the specified category
+      if (category) {
+        const filteredPosts = posts.filter(post => post.category === category);
+        if (filteredPosts.length === 0) {
+          req.sortedFilteredPosts = {};
+          log("No posts found for the selected category. Displaying all posts.");
+        } else {
+            req.sortedFilteredPosts = filteredPosts;
+          }
+
+      // If category filter is not applied, use the sorted posts as is
+      } else {
+        req.sortedFilteredPosts = posts;
+      }
+
       req.activeSort = normalizeSortType(sortType);
 
       next();
