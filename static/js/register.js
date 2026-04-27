@@ -46,9 +46,15 @@ document.addEventListener("click", (e) => {
 const firstName = document.querySelector("input[name='firstName']");
 const lastName = document.querySelector("input[name='lastName']");
 const role = document.querySelector("select[name='role']");
-const button = document.querySelector(".continue-btn");
+const buttons = document.querySelectorAll(".continue-btn");
+
+function getActiveButton() {
+  return buttons[currentStep];
+}
 
 function validateStep1() {
+  if (currentStep != 0) return;
+  console.log("Validating step 1...")
   const firstValid = firstName.value.trim().length > 0;
   const lastValid = lastName.value.trim().length > 0;
   const roleValid = role.value.trim().length > 0;
@@ -68,13 +74,14 @@ function validateStep1() {
 
   const isValid = firstValid && lastValid && roleValid;
 
-  button.disabled = !isValid;
-  button.classList.toggle("active", isValid);
+  getActiveButton().disabled = !isValid;
+  getActiveButton().classList.toggle("active", isValid);
 
   return isValid;
 }
 
 [firstName, lastName, role].forEach((el) => {
+  console.log("Loading step 1 items...")
   el.addEventListener("input", validateStep1);
   el.addEventListener("change", validateStep1);
 });
@@ -88,7 +95,7 @@ function isStepValid() {
   if (currentStep === 1) return validateStep2();
 }
 
-button.addEventListener("click", () => {
+getActiveButton().addEventListener("click", () => {
   if (!isStepValid()) return;
 
   steps[currentStep].classList.remove("active");
@@ -96,6 +103,8 @@ button.addEventListener("click", () => {
   steps[currentStep].classList.add("active");
 
   updateProgressBar();
+  
+  if (currentStep === 1) validateStep2();
 });
 
 // Progress bar
@@ -138,34 +147,45 @@ function isValidPassword(password) {
 }
 
 function validateStep2() {
-  const emailValid = isValidUniversityEmail(email.value.trim());
-  const passwordValid = isValidPassword(password.value.trim());
-  const match =
-    password.value === confirmPassword.value && password.value.length > 0;
+  const isActive = currentStep === 1;
+  if (isActive) {
+    console.log("Validating step 2...")
+    const emailValid = isValidUniversityEmail(email.value.trim());
+    const passwordValid = isValidPassword(password.value.trim());
+    const match =
+      password.value === confirmPassword.value && password.value.length > 0;
 
-  // ERROR
-  email.classList.toggle("error", !emailValid);
-  password.classList.toggle("error", !passwordValid);
-  confirmPassword.classList.toggle("error", !match);
+    // ERROR
+    email.classList.toggle("error", !emailValid);
+    password.classList.toggle("error", !passwordValid);
+    confirmPassword.classList.toggle("error", !match);
 
-  // SUCCESS
-  email.classList.toggle("success", emailValid);
-  password.classList.toggle("success", passwordValid);
-  confirmPassword.classList.toggle("success", match);
+    // SUCCESS
+    email.classList.toggle("success", emailValid);
+    password.classList.toggle("success", passwordValid);
+    confirmPassword.classList.toggle("success", match);
 
-  if (!emailValid) {
-    email.setCustomValidity("Use your university email");
-  } else {
-    email.setCustomValidity("");
+    if (!emailValid) {
+      email.setCustomValidity("Use your university email");
+    } else {
+      email.setCustomValidity("");
+    }
+    console.log(emailValid, passwordValid, match)
+
+    const isValid = emailValid && passwordValid && match;
+
+    if (isActive) {
+      getActiveButton().disabled = !isValid;
+      getActiveButton().classList.toggle("active", isValid);
+    }
+
+    return isValid;
   }
-
-  const isValid = emailValid && passwordValid && match;
-
-  button.disabled = !isValid;
-  button.classList.toggle("active", isValid);
-
-  return isValid;
+  return false;
 }
+
 [email, password, confirmPassword].forEach((el) => {
+  console.log("Loading step 2 items...")
   el.addEventListener("input", validateStep2);
+  el.addEventListener("change", validateStep2);
 });
