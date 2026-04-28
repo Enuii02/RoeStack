@@ -134,16 +134,16 @@ app.use("/", loginRoutes);
 /**
  * Create a route for the invalid page - /invalid
  */
-app.get("/invalid", function (req, res) {
-  res.render("pages/invalid");
-});
+//app.get("/invalid", function (req, res) {
+//res.render("pages/invalid");
+//});
 
 /**
  * Catch all page redirection for 404s.
  */
-app.use((req, res) => {
-  res.status(404).redirect("/invalid");
-});
+//app.use((req, res) => {
+//res.status(404).redirect("/invalid");
+//});
 
 //
 

@@ -6,6 +6,7 @@ const router = express.Router();
 
 const User = require("../model/classes/user.js");
 const ContentManager = require("../model/classes/ContentManager.js");
+const Community = require("../model/classes/community.js");
 
 /**
  * Create a route for the login page - /login
@@ -21,7 +22,24 @@ router.get("/login", async function (_, res) {
  */
 router.get("/register", async function (_, res) {
   Utils.log("Going to Register page...");
-  res.render("pages/register");
+
+  const communities = await Community.getAll();
+
+  res.render("pages/register", { communities });
+});
+
+router.post("/register", async (req, res) => {
+  try {
+    const user = new User();
+
+    await user.register(req.body);
+
+    res.redirect("/login");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Registration failed");
+    res.status(400).json({ error: "Email already exists" });
+  }
 });
 
 /**
@@ -82,7 +100,6 @@ router.post("/authenticate", async function (req, res) {
     console.error(`Error while comparing `, err.message);
   }
 });
-
 
 /**
  * Create a route for the logout page - /logout
