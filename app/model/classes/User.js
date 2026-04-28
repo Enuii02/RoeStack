@@ -72,7 +72,7 @@ class User {
     this.amountPosts = await this.getPostCount();
     this.communities = await this.getFollowedCommunities();
 
-    if (this.session) {
+    if (contentManager) {
       this.images = await contentManager.getImagePath({
         id: this.id,
         type: "user",

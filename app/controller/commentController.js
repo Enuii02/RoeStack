@@ -70,8 +70,7 @@ router.post("/comments", async (req, res) => {
 
     // single-comment.pug renders one commentItem node
     res.render("partials/single-comment", {
-      comment,
-      currentUser: req.session.user,
+      comment
     });
   } catch (err) {
     console.error(err);
