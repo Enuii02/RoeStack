@@ -16,8 +16,5 @@ const searchInput = document.getElementById("searchInput")
 
 searchButton.addEventListener('click', (e)=> {
     e.preventDefault();
-    if (searchInput.value === ''){
-        return
-    }
     window.location.href = addQueryParam(window.location.href, "search", searchInput.value);
 })
