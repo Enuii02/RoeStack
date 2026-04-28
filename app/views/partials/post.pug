@@ -3,7 +3,10 @@
     .top-section
         .left-side
             //a(href="/users/" + user.id)
-            img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+            if post.user.images && post.user.images.length > 0
+                img.avatar(src=`https://owres.org/roestack/${post.user.images[0].url}` alt=post.user.name loading="lazy")
+            else
+                img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .user-info
                 .top-line
                     a.username(href="/user/" + post.user.id)= post.user.name

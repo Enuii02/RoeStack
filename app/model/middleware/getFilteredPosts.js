@@ -25,6 +25,7 @@ async function getFilteredPosts(req, _, next) {
       const contentManager = new ContentManager(req.session);
       const sortType = req.query.sortby || "latest";
       const category = req.query.category;
+      
       let userId = req.params.id;
       let communityId = parseInt(req.params.communityId) || -1;
       
@@ -117,4 +118,18 @@ function normalizeSortType(sortType) {
   return "latest";
 }
 
+function clearUserImageCache(req, _, next) {
+    const id = req.params.id === "me" ? req.session.uid : req.params.id;
+    if (id) {
+        const contentManager = new ContentManager(req.session);
+        const key = `user_${id}`;
+        if (contentManager.imagePathCache?.[key]) {
+            delete contentManager.imagePathCache[key];
+            log(`ContentManager - Cleared cache for ${key}`);
+        }
+    }
+    next();
+}
+
 module.exports = getFilteredPosts;
+module.exports.clearUserImageCache = clearUserImageCache;

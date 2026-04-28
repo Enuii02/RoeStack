@@ -45,7 +45,7 @@ class Post {
      * @param {int} id 
      * @returns 
      */
-    async load(id, session) {
+    async load(id, contentManager) {
 
         const sql = `
             SELECT * 
@@ -61,10 +61,10 @@ class Post {
     this.id = post.id;
     this.title = post.title;
     this.content = post.content;
-    this.session = session;
-    this.user = await new User().load(post.user_id);
+    this.session = contentManager.session;
+    this.user = await new User().load(post.user_id, contentManager);
     this.category = post.category;
-    this.community = await new Community().load(post.community_id);
+    this.community = await new Community().load(post.community_id, contentManager);
     this.createdAt = post.created_at;
     this.amountVotes = await this.getVoteCount(id);
     this.elapsedTime = Utils.getElapsedTime(this.createdAt);

@@ -49,7 +49,7 @@ class User {
    * @param {int} id
    * @returns
    */
-  async load(id) {
+  async load(id, contentManager) {
     const sql = `
             SELECT * 
             FROM Users 
@@ -71,7 +71,12 @@ class User {
     this.elapsedTime = Utils.getElapsedTime(this.createdAt);
     this.amountPosts = await this.getPostCount();
     this.communities = await this.getFollowedCommunities();
-    // Utils.log("Loaded " + this.role + " " + this.name + " | comms " + this.communities)
+
+    this.images = await contentManager.getImagePath({
+      id: this.id,
+      type: "user",
+    });
+    // Utils.log("Loaded " + this.role + " " + this.name)
     return this;
   }
 

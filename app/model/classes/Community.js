@@ -39,7 +39,7 @@ class Community {
    * @param {int} id
    * @returns
    */
-  async load(id) {
+  async load(id, contentManager) {
     const sql = `
             SELECT * 
             FROM Communities 
@@ -56,7 +56,10 @@ class Community {
     this.name = community.name;
     this.description = community.description;
     this.status = community.status;
-    this.createdBy = await new User().load(community.created_by);
+    this.createdBy = await new User().load(
+      community.created_by,
+      contentManager,
+    );
     this.createdAt = community.created_at;
     this.amountPosts = await this.getPostCount();
     this.amountUsers = await this.getFollowersCount();

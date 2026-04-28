@@ -8,7 +8,10 @@ block content
         .top-section
             .left-side
                 //a(href="/users/" + user.id)
-                img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+                .profile-photo
+                    if post.user.images && post.user.images.length > 0
+                        img(src=`https://owres.org/roestack/${post.user.images[0].url}` alt=post.user.name loading="lazy")
+                        
                 .user-info
                     .top-line
                         a.username(href="/user/" + post.user.id)= post.user.name
@@ -57,7 +60,7 @@ block content
                     img.answer-icon(src="/images/icons/chat-left.svg" alt="Answer Icon")
                     span.answer-count= post.answersCount + " answers"
         .form-answer
-            input.main-answer(type="text" placeholder="Write your answer...")
+            input.main-answer(type="text" placeholder="Write your comment here...")
             button.answer-btn(disabled) Post Your Answer
         .divider
             p.sort-label Sort by:  

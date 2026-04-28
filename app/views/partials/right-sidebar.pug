@@ -19,7 +19,10 @@ aside.sidebar-right
 
                     //- V removed img.avatar(src=user.avatar alt=user.name), TODO add it back when we have access to the avatars V
                     a(href="/user/" + user.id)
-                        img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+                        if user.images && user.images.length > 0
+                            img.avatar(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
+                        else
+                            img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
                     a(href="/user/" + user.id).name= user.name
     .sidebar-card
         h3.sidebar-title Statistic

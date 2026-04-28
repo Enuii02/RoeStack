@@ -1,4 +1,36 @@
 extends ../layout
 block content 
     h2 Add Post
+    div.upload-box
+        h3 Post something!
+        form(action='/create-post' method='POST')
+            .full-name
+                input(name='firstName' placeholder="First Name")
+                input(name='lastName' placeholder="Last Name")
+            label(for='role') Your role:
+            select(name='role')
+                option(value='' disabled selected hidden) Select your role
+                option(value='Student') Student
+                option(value='Lecturer') Lecturer
+                option(value='Researcher') Researcher
+            label(for='course') Course
+                span  (if applicable):
+            .course-wrapper
+                input.course-input(
+                    name='course'
+                    placeholder="Course name"
+                    autocomplete="off"
+                )
+                ul.course-dropdown
+            button(type='button' class='continue-btn' disabled) Continue 
+        input#fileInput(type="file" name="images[]" multiple)
+
+        button#uploadBtn Upload
+
+        div.progress-container
+            div#progressBar.progress-bar
+
+        ul#uploadResults
+
+    script(src="/js/fileUpload.js")
    
