@@ -45,7 +45,10 @@ router.get("/add-post", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Add Post page...");
     let content = await ContentManager.getInstance(req.session).update();
-    res.render("pages/add-post", { content, currentPage: "add-post" });
+    res.render("pages/add-post", { 
+      content, 
+      currentPage: "add-post" 
+    });
   } else {
     res.redirect("/login");
   }

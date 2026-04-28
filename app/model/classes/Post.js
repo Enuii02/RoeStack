@@ -22,6 +22,8 @@ class Post {
     id = -1,
     title = "Undefined",
     content = "Undefined",
+    mapUrl = null,
+    imageUrl = null,
     user = null,
     category = "Undefined",
     community = null,
@@ -30,6 +32,8 @@ class Post {
     this.id = id;
     this.title = title;
     this.content = content;
+    this.mapUrl = content;
+    this.imageUrl = content;
     this.user = user;
     this.category = this.category;
     this.community = community;
@@ -64,6 +68,8 @@ class Post {
     this.session = contentManager.session;
     this.user = await new User().load(post.user_id, contentManager);
     this.category = post.category;
+    this.mapUrl = post.map_url;
+    this.imageUrl = post.image_url;
     this.community = await new Community().load(post.community_id, contentManager);
     this.createdAt = post.created_at;
     this.amountVotes = await this.getVoteCount(id);
@@ -71,7 +77,7 @@ class Post {
     this.answersCount = await this.getCommentsCount();
     this.currentUserVote = await this.getCurrentUserVote();
 
-    Utils.log("Participation of current user voting: " + this.currentUserVote)
+    // Utils.log("Participation of current user voting: " + this.currentUserVote)
     return this;
   }
 

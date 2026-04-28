@@ -5,6 +5,7 @@ const app = express();
 const router = express.Router();
 
 const Comment = require("../model/classes/comment.js");
+const ContentManager = require("../model/classes/ContentManager.js");
 
 router.delete("/comments/:id", async (req, res) => {
   try {
