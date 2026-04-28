@@ -42,7 +42,6 @@
   height: 134px;
   border-radius: 50%;
   background-color: #666;
-  cursor: pointer;
 
 }
 
@@ -51,6 +50,10 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.profile-photo.enabled {
+  cursor: pointer;
 }
 
 /* The overlay that appears over the profile photo */

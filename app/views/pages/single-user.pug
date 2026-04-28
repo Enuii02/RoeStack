@@ -7,15 +7,17 @@ block content
     .profile-info
         .left 
             .profile-photo-wrapper
-                .profile-photo(data-id=user.id onclick="triggerFileInput()" style="position: relative;")
+                .profile-photo(data-id=user.id onclick="triggerFileInput()" class=user.id === content.session.user.id ? "enabled" : "" style="position: relative;")
                     .loading-overlay#loadingOverlay
                         .spinner
                     if user.images && user.images.length > 0
-                        img#avatarDisplay(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
+                        .enabled
+                            img#avatar(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
                     else 
-                        img#avatarDisplay(src="/images/none-avatar.svg" alt="User Avatar")
+                        .enabled
+                            img#avatar(src="/images/none-avatar.svg" alt="User Avatar")
                     
-                    if user.id = content.session.user.id
+                    if user.id === content.session.user.id
                         //- Hidden file input
                         input#avatarInput(type="file" accept="image/*" style="display: none;" onchange="handleFileSelect(this)")
                     
