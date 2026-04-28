@@ -44,7 +44,6 @@ Utils.log("Session created.");
 
 // REGISTERING MIDDLEWARE /////////////////////////////////////////////////////////////////////////
 
-
 // This middleware is used to make the removeQueryParam function
 //  available in all Pug templates, used in the filtering of posts.
 
@@ -64,13 +63,13 @@ app.get("/", getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
     let content = await new ContentManager(req.session).update();
-    console.log("the link", req.originalUrl)
+    console.log("the link", req.originalUrl);
     res.render("pages/index", {
       content,
       currentPage: "home",
       posts: req.sortedFilteredPosts,
       activeSort: req.activeSort,
-      currentPath: req.path
+      currentPath: req.path,
     });
   } else {
     res.redirect("/login");
@@ -86,10 +85,10 @@ app.get("/explore", async function (req, res) {
     let content = await new ContentManager(req.session).update({
       getAllCommunities: true,
     });
-    res.render("pages/explore", { 
+    res.render("pages/explore", {
       content,
-      currentPage: "explore"
-      });
+      currentPage: "explore",
+    });
   } else {
     res.redirect("/login");
   }
@@ -296,7 +295,7 @@ app.post("/vote", async (req, res) => {
   }
 });
 
-// LOGIN 
+// LOGIN
 
 /**
  * Create a route for the login page - /login
@@ -312,9 +311,25 @@ app.get("/login", async function (_, res) {
  */
 app.get("/register", async function (_, res) {
   Utils.log("Going to Register page...");
-  res.render("pages/register");
+
+  const communities = await Community.getAll();
+
+  res.render("pages/register", { communities });
 });
 
+app.post("/register", async (req, res) => {
+  try {
+    const user = new User();
+
+    await user.register(req.body);
+
+    res.redirect("/login");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Registration failed");
+    res.status(400).json({ error: "Email already exists" });
+  }
+});
 /**
  * Set password request page
  */
@@ -469,7 +484,7 @@ app.use((req, res) => {
   res.status(404).redirect("/invalid");
 });
 
-// 
+//
 
 /**
  * Start server on port 3000
