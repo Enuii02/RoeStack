@@ -1,0 +1,66 @@
+const express = require("express");
+const session = require("express-session");
+const Utils = require("../utils.js");
+const app = express();
+const router = express.Router();
+
+const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
+const { clearUserImageCache } = require("../model/middleware/getFilteredPosts.js");
+const removeQueryParam = require("../model/middleware/removeQueryParam.js");
+const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
+
+const User = require("../model/classes/user.js");
+const Community = require("../model/classes/community.js");
+const ContentManager = require("../model/classes/ContentManager.js");
+
+/**
+ * Single Community page that takes in as input an id and renders the information about the community.
+ */
+router.get("/community/:id", getFilteredPosts, async (req, res) => {
+  if (req.session.loggedIn && req.session.user) {
+    let content = await ContentManager.getInstance(req.session).update();
+
+    // Create new empty Community
+    let community = new Community();
+
+    // Load data from database
+    await community.load(req.params.id, ContentManager.getInstance(req.session));
+
+    Utils.log("Community '" + community.name + "' loaded.");
+
+    // let posts = await ContentManager.getInstance().getLatestPosts({
+    //   communityID: community.id,
+    // });
+
+    // Render single community
+    // res.render("./pages/single-community", { community, posts, content });
+    res.render("./pages/single-community", {
+      community,
+      posts: req.sortedFilteredPosts,
+      activeSort: req.activeSort,
+      currentPath: req.path,
+      content,
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
+
+router.post("/follow", async (req, res) => {
+  if (req.session.loggedIn && req.session.user) {
+    const { userId, communityId } = req.body;
+    // Check if the requested userId is the same as the current logged in user or if the user is mod
+    if (userId == req.session.user.id || req.session.user.isMod) {
+      // Send follow request, a new user object is needed as it could be that a moderator is forcefully
+      // making another user follow/unfollow the community
+      var user = await new User().load(userId, ContentManager.getInstance(req.session));
+      var community = await new Community().load(communityId, ContentManager.getInstance(req.session));
+      var result = await user.followUnfollow(community);
+      res.json({ followingAmount: result });
+    } else {
+      res.redirect("/invalid");
+    }
+  }
+});
+
+module.exports = router;
