@@ -1,5 +1,5 @@
 
-const endpoint = `https://owres.org/roestack/user/4`;
+const endpoint = `https://owres.org/roestack/user/1`; // TEST URL
 
 const fileInput = document.getElementById('fileInput');
 const uploadBtn = document.getElementById('uploadBtn');
@@ -44,7 +44,6 @@ function uploadFiles() {
             }
         } catch (e) {
             console.error('Invalid JSON response or server error');
-            // This is where you see the "Missing Allow Origin" if the server crashed
         }
     };
 

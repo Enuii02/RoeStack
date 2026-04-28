@@ -7,11 +7,21 @@ block content
     .profile-info
         .left 
             .profile-photo-wrapper
-                .profile-photo
+                .profile-photo(data-id=user.id onclick="triggerFileInput()" style="position: relative;")
+                    .loading-overlay#loadingOverlay
+                        .spinner
                     if user.images && user.images.length > 0
-                        img(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
+                        img#avatarDisplay(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
                     else 
-                        .default-avatar
+                        img#avatarDisplay(src="/images/none-avatar.svg" alt="User Avatar")
+                    
+                    if user.id = content.session.user.id
+                        //- Hidden file input
+                        input#avatarInput(type="file" accept="image/*" style="display: none;" onchange="handleFileSelect(this)")
+                    
+                    //- Progress bar (shown during upload)
+                    .progress-container(style="display: none;")
+                        #progressBar(style="width: 0%; height: 5px; background: green;")
             .name-role
                 h2= user.name
                 h3= user.role

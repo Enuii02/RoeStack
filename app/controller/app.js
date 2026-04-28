@@ -24,6 +24,7 @@ const Comment = require("../model/classes/comment.js");
 const Community = require("../model/classes/community.js");
 const ContentManager = require("../model/classes/ContentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
+const { clearUserImageCache } = require("../model/middleware/getFilteredPosts.js");
 const removeQueryParam = require("../model/middleware/removeQueryParam.js");
 const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
 // This snippet is used to make sure that post data is encoded and read properly
@@ -147,10 +148,9 @@ app.get("/all-users", async function (req, res) {
 /**
  * Single User page that takes in as input an id and renders the information about the user.
  */
-app.get("/user/:id", getFilteredPosts, async (req, res) => {
+app.get("/user/:id", clearUserImageCache, getFilteredPosts, async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to User page...");
-    let content = await ContentManager.getInstance(req.session).update();
 
     var id = req.params.id;
 
@@ -158,21 +158,28 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
       id = req.session.uid;
     }
 
+    const contentManager = await ContentManager.getInstance(req.session);
+
+    // Delete image cache in case the user uploaded a new picture
+    if (contentManager.imagePathCache) {
+            Utils.log("ContentManager - Deleting cache")
+            contentManager.imagePathCache = {};
+        }
+
+    let content = await contentManager.update();
+
     // Create new empty User
     let user = new User();
 
     // Load data from database
-    await user.load(id);
+    await user.load(id, ContentManager.getInstance(req.session));
 
     Utils.log("User '" + user.name + "' loaded.");
-
-    let posts = await ContentManager.getInstance(req.session);
 
 
     // Render single user
     res.render("./pages/single-user", {
       user,
-      posts,
       posts: req.sortedFilteredPosts,
       currentPath: req.path,
       activeSort: req.activeSort,
@@ -195,7 +202,7 @@ app.get("/post/:id", async (req, res) => {
     // Create new empty Post
     let post = new Post();
     // Load data from database
-    await post.load(req.params.id, req.session);
+    await post.load(req.params.id, ContentManager.getInstance(req.session));
 
     Utils.log("Post '" + post.title + "' loaded.");
 
@@ -226,7 +233,7 @@ app.get("/community/:id", getFilteredPosts, async (req, res) => {
     let community = new Community();
 
     // Load data from database
-    await community.load(req.params.id);
+    await community.load(req.params.id, ContentManager.getInstance(req.session));
 
     Utils.log("Community '" + community.name + "' loaded.");
 
@@ -255,8 +262,8 @@ app.post("/follow", async (req, res) => {
     if (userId == req.session.user.id || req.session.user.isMod) {
       // Send follow request, a new user object is needed as it could be that a moderator is forcefully
       // making another user follow/unfollow the community
-      var user = await new User().load(userId);
-      var community = await new Community().load(communityId);
+      var user = await new User().load(userId, ContentManager.getInstance(req.session));
+      var community = await new Community().load(communityId, ContentManager.getInstance(req.session));
       var result = await user.followUnfollow(community);
       res.json({ followingAmount: result });
     } else {
@@ -278,10 +285,10 @@ app.post("/vote", async (req, res) => {
     var subject;
     switch (typeId) {
       case "0":
-        subject = await new Post().load(parseInt(subjectId), req.session);
+        subject = await new Post().load(parseInt(subjectId), ContentManager.getInstance(req.session));
         break;
       case "1":
-        subject = await new Comment().load(parseInt(subjectId), req.session);
+        subject = await new Comment().load(parseInt(subjectId), ContentManager.getInstance(req.session));
         break;
     }
     var result;
@@ -330,7 +337,7 @@ app.post("/set-password", async function (req, res) {
   try {
     uId = await user.getIdFromEmail();
     if (uId) {
-      await user.load(uId);
+      await user.load(uId, ContentManager.getInstance(req.session));
       Utils.log("User " + user.name + " identified.");
       // If a valid, existing user is found, set the password and redirect to the single-users page
       await user.setUserPassword(params.password);
@@ -359,7 +366,7 @@ app.post("/authenticate", async function (req, res) {
   try {
     uId = await user.getIdFromEmail();
     if (uId) {
-      await user.load(uId);
+      await user.load(uId, ContentManager.getInstance(req.session));
       match = await user.authenticate(params.password);
       if (match) {
         req.session.uid = uId;
@@ -368,7 +375,6 @@ app.post("/authenticate", async function (req, res) {
 
         res.redirect("/user/me");
       } else {
-        // TODO improve the user journey here
         res.send("Invalid password");
       }
     } else {
@@ -435,7 +441,7 @@ app.get("/comments/:postId", async (req, res) => {
     const { postId } = req.params;
     const { sort } = req.query; // sort
 
-    const comments = await Comment.getByPostId(postId, req.session, sort);
+    const comments = await ContentManager.getCommentsByPostId(postId, req.session, sort);
 
     const tree = Comment.buildTree(comments);
 

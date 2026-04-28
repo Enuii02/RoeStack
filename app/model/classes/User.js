@@ -43,7 +43,7 @@ class User {
      * @param {int} id 
      * @returns 
      */
-    async load(id) {
+    async load(id, contentManager) {
         
         const sql = `
             SELECT * 
@@ -67,10 +67,8 @@ class User {
         this.amountPosts = await this.getPostCount();
         this.communities = await this.getFollowedCommunities();
 
-        // REQUIRE inside the function to avoid the circular loop at startup (Circular dependency - Post requires User that requires ContentManager that requires Post...)
-        const ContentManager = require("./contentManager");
-        this.images = await ContentManager.getInstance().getImagePath({id: this.id, type: "user"});
-        Utils.log("Loaded " + this.role + " " + this.name)
+        this.images = await contentManager.getImagePath({id: this.id, type: "user"});
+        // Utils.log("Loaded " + this.role + " " + this.name)
         return this;
     }
 

@@ -29,7 +29,7 @@ class Comment {
   /**
    * Load single comment
    */
-  async load(id, session) {
+  async load(id, contentManager) {
     const sql = "SELECT * FROM Comments WHERE id = ?";
 
     Utils.log("Loading comment #" + id + "...");
@@ -39,11 +39,11 @@ class Comment {
 
     this.id = comment.id;
     this.postId = comment.post_id;
-    this.user = await new User().load(comment.user_id);
+    this.user = await new User().load(comment.user_id, contentManager);
     this.content = comment.content;
     this.parentId = comment.parent_id;
     this.createdAt = comment.created_at;
-    this.session = session;
+    this.session = contentManager.session;
     this.isDeleted = comment.is_deleted === 1;
 
     this.amountVotes = await this.getVoteCount(this.id);
@@ -69,48 +69,6 @@ class Comment {
     return row[0].count;
   }
 
-  /**
-   *  Load ALL comments for a post (flat)
-   */
-  static async getByPostId(postId, session, sort = "best") {
-    let orderBy = "";
-
-    switch (sort) {
-      case "latest":
-        orderBy = "c.created_at DESC";
-        break;
-
-      case "oldest":
-        orderBy = "c.created_at ASC";
-        break;
-
-      case "best":
-      default:
-        orderBy = "vote_count DESC, c.created_at DESC";
-        break;
-    }
-
-    const sql = `
-    SELECT c.id,
-           COALESCE(SUM(v.positive * 2 - 1), 0) AS vote_count
-    FROM comments c
-    LEFT JOIN vote v ON v.comment_id = c.id
-    WHERE c.post_id = ?
-    GROUP BY c.id
-    ORDER BY ${orderBy}
-  `;
-
-    const rows = await db.query(sql, [postId]);
-
-    const comments = [];
-
-    for (let row of rows) {
-      const comment = await new Comment().load(row.id, session);
-      comments.push(comment);
-    }
-
-    return comments;
-  }
 
   /**
    *  Build tree (replies)
