@@ -70,7 +70,7 @@ class ContentManager {
         if (getAllCommunities) communityList = await this.getAllCommunities();
 
         
-        Utils.log("- - - - - - - - - Layout Updated.")
+        // Utils.log("- - - - - - - - - Layout Updated.")
 
         return new Content(
             totalPosts, totalUsers, totalComments, mostHelpful, topCommunities,
@@ -324,7 +324,7 @@ class ContentManager {
         
 
         if (this.imagePathCache[cacheKey]) {
-            Utils.log("ContentManager - Cache " + cacheKey + " already exists.")
+            // Utils.log("ContentManager - Cache " + cacheKey + " already exists.")
             return this.imagePathCache[cacheKey];
         }
         try {

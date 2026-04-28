@@ -67,6 +67,8 @@ async function getFilteredPosts(req, _, next) {
         req.sortedFilteredPosts = posts;
       }
 
+      console.log("form get filtered posts: ", req.sortedFilteredPosts)
+  
       req.activeSort = normalizeSortType(sortType);
 
       next();

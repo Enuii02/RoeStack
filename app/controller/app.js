@@ -51,7 +51,7 @@ Utils.log("Session created.");
 // REGISTERING MIDDLEWARE /////////////////////////////////////////////////////////////////////////
 
 // This middleware is used to make the removeQueryParam function
-//  available in all Pug templates, used in the filtering of posts.
+//  Available in all Pug templates, used in the filtering of posts.
 
 app.use((req, res, next) => {
   res.locals.removeQueryParam = removeQueryParam;

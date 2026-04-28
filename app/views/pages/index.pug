@@ -15,6 +15,9 @@ block content
             i.fa-solid.fa-heart 
             p For You
 
+    .sad-cat(class = posts.length === undefined ? "show" : "")
+        img(src="/images/sad-cat.png", alt="a picture of a sad cat")
+        p No posts found, very sad :(
     .posts 
         each post in posts 
             include ../partials/post.pug
