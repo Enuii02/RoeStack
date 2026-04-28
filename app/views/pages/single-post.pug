@@ -37,6 +37,23 @@ block content
         h2.post-title= post.title
         .post-content 
             p= post.content
+        
+        if post.imageUrl || post.mapUrl
+            .media-card
+                if post.imageUrl
+                    img(src=post.imageUrl alt="Post Image")
+                
+                if post.mapUrl
+                    iframe(
+                        src=post.mapUrl 
+                        width="100%" 
+                        height="450" 
+                        style="border:0;"
+                        allowfullscreen 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                    )
+
         .post-footer
             .left-side 
                 .interactions

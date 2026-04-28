@@ -28,9 +28,6 @@ router.get("/community/:id", getFilteredPosts, async (req, res) => {
 
     Utils.log("Community '" + community.name + "' loaded.");
 
-    // let posts = await ContentManager.getInstance().getLatestPosts({
-    //   communityID: community.id,
-    // });
 
     // Render single community
     // res.render("./pages/single-community", { community, posts, content });

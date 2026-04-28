@@ -26,13 +26,19 @@ async function getFilteredPosts(req, _, next) {
       const sortType = req.query.sortby || "latest";
       const category = req.query.category;
       
-      let userId = req.params.id;
-      let communityId = parseInt(req.params.communityId) || -1;
-      
-      if (userId === "me") {
-        userId = req.session.uid;
-      } else {
-        userId = req.params.id || -1;
+      // Default values
+      let userId = -1;
+      let communityId = -1;
+
+      // Logic to handle the ":id" parameter based on the URL path
+      if (req.params.id) {
+        if (req.path.includes('/community/')) {
+          // If the URL has 'community', the :id is a communityId
+          communityId = parseInt(req.params.id);
+        } else {
+          // Otherwise, it's a userId (handle "me" alias)
+          userId = req.params.id === "me" ? req.session.uid : req.params.id;
+        }
       }
 
       const posts = await fetchPostsBySortType(
