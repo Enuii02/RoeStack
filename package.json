@@ -1,7 +1,7 @@
 {
-  "name": "sd2-example",
+  "name": "roestack",
   "version": "1.0.0",
-  "description": "",
+  "description": "A web app for Computing students to help each other with projects, connecting people with the same or similar modules via Reddit-like communities, all while finding useful student contacts (such as student or programme representatives and mentors through RoeBuddies). The main objective for this project focuses on aiding students and all the university staff by sharing guidance (while avoiding academic misconduct) and explaining difficult or interesting topics.",
   "main": "index.js",
   "scripts": {
     "start": "supervisor index.js",
@@ -12,13 +12,14 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1",
+    "express": "^4.22.1",
     "express-session": "^1.19.0",
     "express-validator": "^7.3.1",
     "luxon": "^3.7.2",
+    "multer": "^2.1.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-    "pug": "^3.0.3",
+    "pug": "^3.0.4",
     "supervisor": "^0.12.0"
   },
   "devDependencies": {

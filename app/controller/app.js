@@ -165,6 +165,14 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
 
     let posts = await new ContentManager(req.session);
 
+    
+    // Fetch the JSON list of images for this specific user
+    const apiResponse = await fetch("https://owres.org/roestack/user/" + user.id);
+    const result = await apiResponse.json();
+    var images = [];
+    console.log(result)
+    if (result) { if (result.success === true) images = result.data.images }
+
     // Render single user
     res.render("./pages/single-user", {
       user,
@@ -174,6 +182,7 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
       activeSort: req.activeSort,
       content,
       currentPage: "profile",
+      images: images 
     });
   } else {
     res.redirect("/login");

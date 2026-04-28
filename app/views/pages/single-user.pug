@@ -8,6 +8,10 @@ block content
         .left 
             .profile-photo-wrapper
                 .profile-photo
+                    if images && images.length > 0
+                        img(src=`https://owres.org/roestack/user/${content.session.user.id}/${images[0].filename}` alt=user.name)
+                    else 
+                        .default-avatar // Fallback if no photo exists
             .name-role
                 h2= user.name
                 h3= user.role

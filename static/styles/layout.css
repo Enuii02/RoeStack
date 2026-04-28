@@ -222,3 +222,26 @@ header .center {
   border-radius: 20%;
   object-fit: cover;
 }
+
+.upload-box {
+    width: 400px;
+    padding: 20px;
+    border: 1px solid #ddd;
+}
+
+.progress-container {
+    width: 100%;
+    height: 20px;
+    background: #eee;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00815a;
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    transition: width 0.2s ease;
+}

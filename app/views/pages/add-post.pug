@@ -1,4 +1,17 @@
 extends ../layout
 block content 
     h2 Add Post
+    div.upload-box
+        h3 Upload images
+
+        input#fileInput(type="file" name="images[]" multiple)
+
+        button#uploadBtn Upload
+
+        div.progress-container
+            div#progressBar.progress-bar
+
+        ul#uploadResults
+
+    script(src="/js/fileUpload.js")
    
