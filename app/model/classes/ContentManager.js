@@ -86,6 +86,7 @@ class ContentManager {
         sortByForYou = false,
         sortByPopularity = false,
         reverse = false,
+        search = ''
     
     } = {}) { 
         var post;
@@ -96,6 +97,7 @@ class ContentManager {
         // Build query dynamically based on provided filters
         let whereClause = "";
         let orderByClause = ""
+        let searchClause = ""
         let params = [];
         let sortOrder = (reverse) ? `ASC` : `DESC`;
 
@@ -127,6 +129,13 @@ class ContentManager {
             params = [communityID];
         }  
 
+        // If search is not an empty string, add additional statement
+        if (search != '' && whereClause === "") {
+            searchClause = `WHERE posts.title LIKE '%${search}%' `
+        } else if (search != '') {
+            searchClause = `AND posts.title LIKE '%${search}%' `
+        }
+
         // Build ORDER BY clause
         if (sortByPopularity) {
             orderByClause = "ORDER BY COUNT(vote.post_id)";
@@ -134,8 +143,8 @@ class ContentManager {
             orderByClause = "ORDER BY created_at";
         } 
 
-        sql = `SELECT posts.id FROM posts ${whereClause} ${orderByClause} ${sortOrder}`;
-        // console.log('SQL:', sql);
+        sql = `SELECT posts.id FROM posts ${whereClause} ${searchClause} ${orderByClause} ${sortOrder}`;
+        console.log('SQL:', sql);
         results = await db.query(sql, params);
 
         // Start all loads simultaneously

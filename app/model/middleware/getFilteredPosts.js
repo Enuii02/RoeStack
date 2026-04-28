@@ -25,6 +25,7 @@ async function getFilteredPosts(req, _, next) {
       const contentManager = new ContentManager(req.session);
       const sortType = req.query.sortby || "latest";
       const category = req.query.category;
+      const search = req.query.search || "";
       
       // Default values
       let userId = -1;
@@ -41,12 +42,15 @@ async function getFilteredPosts(req, _, next) {
         }
       }
 
+      console.log("Search: ", search)
+
       const posts = await fetchPostsBySortType(
         contentManager,
         sortType,
         userId,
         req.session.uid,
-        communityId);
+        communityId,
+        search);
 
       // If category filter is applied, filter the sorted posts by the specified category
       if (category) {
@@ -82,13 +86,14 @@ async function getFilteredPosts(req, _, next) {
  * @param {number|null} userId - Optional user ID to filter posts
  * @returns {Promise<Array>} - Array of Post objects
  */
-async function fetchPostsBySortType(contentManager, sortType, userId = -1, sessionUserID, communityId = -1) {
+async function fetchPostsBySortType(contentManager, sortType, userId = -1, sessionUserID, communityId = -1, search = '') {
    const options = {
     userID: userId,
     communityID: communityId,
     sortByLatest: false,
     sortByPopularity: false,
-    reverse: false
+    reverse: false,
+    search : search
   };
 
   switch (sortType) {
