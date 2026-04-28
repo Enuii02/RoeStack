@@ -22,13 +22,16 @@ const User = require("../model/classes/user.js");
 const Post = require("../model/classes/post.js");
 const Comment = require("../model/classes/comment.js");
 const Community = require("../model/classes/community.js");
-const ContentManager = require("../model/classes/contentManager.js");
+const ContentManager = require("../model/classes/ContentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 const removeQueryParam = require("../model/middleware/removeQueryParam.js");
 const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Initialize the ContentManager once
+const contentManager = new ContentManager();
 
 // Set the sessions
 var session = require("express-session");
@@ -63,7 +66,7 @@ app.use((req, res, next) => {
 app.get("/", getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
     console.log("the link", req.originalUrl)
     res.render("pages/index", {
       content,
@@ -83,7 +86,7 @@ app.get("/", getFilteredPosts, async function (req, res) {
 app.get("/explore", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Explore page...");
-    let content = await new ContentManager(req.session).update({
+    let content = await ContentManager.getInstance(req.session).update({
       getAllCommunities: true,
     });
     res.render("pages/explore", { 
@@ -101,7 +104,7 @@ app.get("/explore", async function (req, res) {
 app.get("/add-post", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Add Post page...");
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
     res.render("pages/add-post", { content, currentPage: "add-post" });
   } else {
     res.redirect("/login");
@@ -114,7 +117,7 @@ app.get("/add-post", async function (req, res) {
 app.get("/profile", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Profile page...");
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
     res.render("pages/profile", { content });
   } else {
     res.redirect("/login");
@@ -128,7 +131,7 @@ app.get("/all-users", async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     if (req.session.user.isMod) {
       Utils.log("Going to Add Users page...");
-      let content = await new ContentManager(req.session).update({
+      let content = await ContentManager.getInstance(req.session).update({
         getUserList: true,
       });
       res.render("pages/all-users", { content });
@@ -147,7 +150,7 @@ app.get("/all-users", async function (req, res) {
 app.get("/user/:id", getFilteredPosts, async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to User page...");
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
 
     var id = req.params.id;
 
@@ -163,15 +166,8 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
 
     Utils.log("User '" + user.name + "' loaded.");
 
-    let posts = await new ContentManager(req.session);
+    let posts = await ContentManager.getInstance(req.session);
 
-    
-    // Fetch the JSON list of images for this specific user
-    const apiResponse = await fetch("https://owres.org/roestack/user/" + user.id);
-    const result = await apiResponse.json();
-    var images = [];
-    console.log(result)
-    if (result) { if (result.success === true) images = result.data.images }
 
     // Render single user
     res.render("./pages/single-user", {
@@ -181,8 +177,7 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
       currentPath: req.path,
       activeSort: req.activeSort,
       content,
-      currentPage: "profile",
-      images: images 
+      currentPage: "profile"
     });
   } else {
     res.redirect("/login");
@@ -195,7 +190,7 @@ app.get("/user/:id", getFilteredPosts, async (req, res) => {
 app.get("/post/:id", async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Post page...");
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
 
     // Create new empty Post
     let post = new Post();
@@ -204,7 +199,7 @@ app.get("/post/:id", async (req, res) => {
 
     Utils.log("Post '" + post.title + "' loaded.");
 
-    const comments = await new ContentManager(req.session).getCommentsForPost(
+    const comments = await ContentManager.getInstance(req.session).getCommentsForPost(
       post.id,
     );
 
@@ -225,7 +220,7 @@ app.get("/post/:id", async (req, res) => {
  */
 app.get("/community/:id", getFilteredPosts, async (req, res) => {
   if (req.session.loggedIn && req.session.user) {
-    let content = await new ContentManager(req.session).update();
+    let content = await ContentManager.getInstance(req.session).update();
 
     // Create new empty Community
     let community = new Community();
@@ -235,7 +230,7 @@ app.get("/community/:id", getFilteredPosts, async (req, res) => {
 
     Utils.log("Community '" + community.name + "' loaded.");
 
-    // let posts = await new ContentManager().getLatestPosts({
+    // let posts = await ContentManager.getInstance().getLatestPosts({
     //   communityID: community.id,
     // });
 

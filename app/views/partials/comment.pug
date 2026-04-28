@@ -4,7 +4,10 @@ mixin commentItem(comment, content)
         comment.isDeleted ? 'deleted' : ''])
         .comment-body
             .comment-left
-                img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
+                if comment.user.images && comment.user.images.length > 0
+                    img.avatar(src=`https://owres.org/roestack/${comment.user.images[0].url}` alt=comment.user.name loading="lazy")
+                else
+                    img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .comment-right
                 .comment-info
                     a.name(href="/user/" + comment.user.id)= comment.user.name
@@ -15,7 +18,7 @@ mixin commentItem(comment, content)
                     if !comment.isDeleted
                         ul.dropdown-menu 
                             li 
-                                if content.session.user && (Number(content.session.user.id) === Number(comment.user.id) || Number(.user.isMod) === 1)
+                                if content.session.user && (Number(content.session.user.id) === Number(comment.user.id) || Number(comment.user.isMod) === 1)
                                     a.delete-comment(
                                         href="#"
                                         data-comment-id=comment.id

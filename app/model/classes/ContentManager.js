@@ -13,8 +13,27 @@ const Utils = require("../../utils");
  */
 class ContentManager {
 
+    static #instance = null;
+
     constructor(session) {
+        
+        if (ContentManager.#instance) {
+            // If instance exists, update the session and return it
+            ContentManager.#instance.session = session;
+            return ContentManager.#instance;
+        }
+
+        // Initialize the one-time data
         this.session = session;
+        this.imagePathCache = {};
+        
+        // Save this instance
+        ContentManager.#instance = this;
+    }
+
+    // Static helper to get the manager without new
+    static getInstance(session) {
+        return new ContentManager(session);
     }
 
     async update({
@@ -118,10 +137,11 @@ class ContentManager {
         // console.log('SQL:', sql);
         results = await db.query(sql, params);
 
-            for (let i = 0; i < results.length; i++) {
-                post = await new Post().load(results[i].id, this.session);
-                posts.push(post);
-            }
+        // Start all loads simultaneously
+        const postPromises = results.map(res => new Post().load(res.id, this.session));
+
+        // Wait for all of them to resolve together
+        posts = await Promise.all(postPromises);
 
         return posts;
     }
@@ -272,19 +292,47 @@ class ContentManager {
         return users;
     }
 
-  async getCommentsForPost(postId) {
-    const flatComments = await Comment.getByPostId(postId, this.session);
-    // console.log(
-    //   flatComments.map((comment) => ({
-    //     id: comment.id,
-    //     parentId: comment.parentId,
-    //   })),
-    // );
-    const tree = Comment.buildTree(flatComments);
-    
-    // console.log("TREE:", JSON.stringify(tree, null, 2));
-    return tree;
-  }
+    async getCommentsForPost(postId) {
+        const flatComments = await Comment.getByPostId(postId, this.session);
+        // console.log(
+        //   flatComments.map((comment) => ({
+        //     id: comment.id,
+        //     parentId: comment.parentId,
+        //   })),
+        // );
+        const tree = Comment.buildTree(flatComments);
+        
+        // console.log("TREE:", JSON.stringify(tree, null, 2));
+        return tree;
+    }   
+
+  
+    // Get user profile images
+    async getImagePath({ id = -1, type = "undefined" } = {}) {
+        // Create a unique key for the cache (e.g., "user_1")
+        const cacheKey = `${type}_${id}`;
+
+        if (this.imagePathCache[cacheKey]) {
+            return this.imagePathCache[cacheKey];
+        }
+
+        try {
+            const apiResponse = await fetch(`https://owres.org/roestack/${type}/${id}`);
+            const result = await apiResponse.json();
+            
+            let images = [];
+            if (result?.success && result.data?.images?.length > 0) {
+                images = result.data.images;
+            }
+
+            // Store it
+            this.imagePathCache[cacheKey] = images;
+            return images;
+        } catch (err) {
+            console.error("Fetch failed:", err);
+            return [];
+        }
+    }
 }
 
 class Content {

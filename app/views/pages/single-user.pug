@@ -8,10 +8,10 @@ block content
         .left 
             .profile-photo-wrapper
                 .profile-photo
-                    if images && images.length > 0
-                        img(src=`https://owres.org/roestack/user/${content.session.user.id}/${images[0].filename}` alt=user.name)
+                    if user.images && user.images.length > 0
+                        img(src=`https://owres.org/roestack/${user.images[0].url}` alt=user.name loading="lazy")
                     else 
-                        .default-avatar // Fallback if no photo exists
+                        .default-avatar
             .name-role
                 h2= user.name
                 h3= user.role
@@ -51,13 +51,13 @@ block content
         
         ul.dropdown-menu 
             li 
-                a(href=`${currentPath}?sortby=latest`) Latest
+                a(href="${currentPath}?sortby=latest") Latest
 
             li 
-                a(href=`${currentPath}?sortby=popular`) Popular
+                a(href="${currentPath}?sortby=popular") Popular
 
             li 
-                a(href=`${currentPath}?sortby=oldest`) Oldest
+                a(href="${currentPath}?sortby=oldest") Oldest
     .line
 
     .posts 

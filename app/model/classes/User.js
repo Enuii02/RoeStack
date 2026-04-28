@@ -35,6 +35,7 @@ class User {
         this.elapsedTime = "";
         this.amountPosts = 0;
         this.communities = [];
+        this.images = [];
     }
 
     /**
@@ -65,7 +66,11 @@ class User {
         this.elapsedTime = Utils.getElapsedTime(this.createdAt)
         this.amountPosts = await this.getPostCount();
         this.communities = await this.getFollowedCommunities();
-        // Utils.log("Loaded " + this.role + " " + this.name + " | comms " + this.communities)
+
+        // REQUIRE inside the function to avoid the circular loop at startup (Circular dependency - Post requires User that requires ContentManager that requires Post...)
+        const ContentManager = require("./contentManager");
+        this.images = await ContentManager.getInstance().getImagePath({id: this.id, type: "user"});
+        Utils.log("Loaded " + this.role + " " + this.name)
         return this;
     }
 
