@@ -242,7 +242,6 @@ class User {
   }
 
   async delete(userId) {
-    // 1. видалити підписки
     await db.query(
       `
     DELETE FROM userFollowCommunity
@@ -251,7 +250,6 @@ class User {
       [userId],
     );
 
-    // 2. (опціонально) видалити пости
     await db.query(
       `
     DELETE FROM posts
@@ -260,7 +258,6 @@ class User {
       [userId],
     );
 
-    // 3. видалити користувача
     await db.query(
       `
     DELETE FROM Users
