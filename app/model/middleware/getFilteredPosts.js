@@ -54,7 +54,7 @@ async function getFilteredPosts(req, _, next) {
       if (category) {
         const filteredPosts = posts.filter(post => post.category === category);
         if (filteredPosts.length === 0) {
-          req.sortedFilteredPosts = {};
+          req.sortedFilteredPosts = [];
           log("No posts found for the selected category. Displaying all posts.");
         } else {
             req.sortedFilteredPosts = filteredPosts;
@@ -64,7 +64,7 @@ async function getFilteredPosts(req, _, next) {
       } else {
         req.sortedFilteredPosts = posts;
       }
-  
+      
       req.activeSort = normalizeSortType(sortType);
 
       next();
