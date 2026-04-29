@@ -307,7 +307,7 @@ class ContentManager {
             return this.imagePathCache[cacheKey];
         }
         try {
-            Utils.log("ContentManager - Caching " + cacheKey)
+            // Utils.log("ContentManager - Caching " + cacheKey)
             const apiResponse = await fetch(`https://owres.org/roestack/${type}/${id}`);
             const result = await apiResponse.json();
             

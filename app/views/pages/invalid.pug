@@ -1,16 +1,18 @@
-html 
-    head    
-        title RoeStack - Login
-        link(rel="stylesheet", href="/styles/main.css")
-        link(rel="stylesheet", href="/styles/layout.css")
-        link(rel="stylesheet", href="/styles/post.css")
-        link(rel="stylesheet", href="/styles/explore-card.css")
-        link(rel="stylesheet", href="/styles/explore-page.css")
-        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
-        block head 
-    body 
-        block content
-            .sidebar-card(style="align-items: center;")
-                h3.sidebar-title Oooops! Wrong way! 
-                p It looks like you took the wrong turn.
-                a(href="/") Click here to get back home.
+
+
+block content
+
+  link(rel="stylesheet", href="/styles/layout.css")
+  link(rel="stylesheet", href="/styles/invalid.css")
+  
+  .error-container
+    .error-card
+      .error-icon
+        i.fas.fa-exclamation-triangle
+      h1.sidebar-title Oooops! Wrong way!
+      p.error-text It looks like you took a wrong turn or don't have permission to be here.
+      
+      .action-area
+        a.back-home-btn(href="/") 
+          i.fas.fa-house
+          span Click here to get back home

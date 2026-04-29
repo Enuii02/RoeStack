@@ -162,6 +162,55 @@ class Post {
     const result = await db.query(sql, [this.id]);
     return result[0].count;
   }
+
+  static async create({ title, content, mapUrl, imageUrl, communityId, category, contentManager }) {
+        const sql = `
+            INSERT INTO posts (title, content, map_url, image_url, user_id, community_id, category)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+    
+        const result = await db.query(sql, [title, content, mapUrl, imageUrl, contentManager.session.user.id, communityId, category]);
+    
+        const insertId = result.insertId || result[0]?.insertId;
+    
+        const post = await new Post().load(insertId, contentManager);
+    
+        return post;
+    }
+
+    // Inside your Post class
+    async update({ title, content, mapUrl, imageUrl, communityId, category }) {
+        const sql = `
+            UPDATE posts 
+            SET title = ?, 
+                content = ?, 
+                map_url = ?, 
+                image_url = ?, 
+                community_id = ?, 
+                category = ?
+            WHERE id = ?
+        `;
+
+        // this.id comes from the post object we loaded in the controller
+        await db.query(sql, [
+            title, 
+            content, 
+            mapUrl, 
+            imageUrl, 
+            communityId, 
+            category, 
+            this.id 
+        ]);
+
+        return this;
+    }
+ 
+    static async delete(postId, user) {
+        if (this.id == user.id || user.isMod) {
+            await db.query("DELETE FROM posts WHERE id = ?", [postId]);
+        }
+
+    }
 }
 // Add class to the exports, so that other classes can use it
 module.exports = Post;
