@@ -98,6 +98,7 @@ class ContentManager {
         let whereClause = "";
         let orderByClause = ""
         let searchClause = ""
+        let groupByClause = ""
         let params = [];
         let sortOrder = (reverse) ? `ASC` : `DESC`;
 
@@ -105,7 +106,8 @@ class ContentManager {
 
         // If sortByPopularity is true, join the vote table to count the votes for each post
         if (sortByPopularity) {
-            whereClause = "LEFT JOIN vote ON vote.post_id = posts.id GROUP BY posts.id";
+            whereClause = "LEFT JOIN vote ON vote.post_id = posts.id";
+            groupByClause = "GROUP BY posts.id"
         }
 
         // If both userID and communityID are provided, filter by both
@@ -130,7 +132,7 @@ class ContentManager {
         }  
 
         // If search is not an empty string, add additional statement
-        if (search != '' && whereClause === "") {
+        if ((search != '' && whereClause === "") || sortByPopularity) {
             searchClause = `WHERE posts.title LIKE '%${search}%' `
         } else if (search != '') {
             searchClause = `AND posts.title LIKE '%${search}%' `
@@ -143,7 +145,7 @@ class ContentManager {
             orderByClause = "ORDER BY created_at";
         } 
 
-        sql = `SELECT posts.id FROM posts ${whereClause} ${searchClause} ${orderByClause} ${sortOrder}`;
+        sql = `SELECT posts.id FROM posts ${whereClause} ${searchClause} ${groupByClause} ${orderByClause} ${sortOrder}`;
         console.log('SQL:', sql);
         results = await db.query(sql, params);
 
