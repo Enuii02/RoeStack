@@ -78,4 +78,30 @@ router.get("/all-users", async function (req, res) {
   }
 });
 
+// JE - Unban user route: only mods can unban a user.
+// When a mod clicks Unban, this route sets is_banned back to 0 in the database,
+// then sends the mod back to the all-users page.
+router.get("/user/unban/:id", async (req, res) => {
+  if (req.session.loggedIn && req.session.user && req.session.user.isMod) {
+    const db = require("../model/db.js");
+    await db.query("UPDATE users SET is_banned = 0 WHERE id = ?", [req.params.id]);
+    res.redirect("/all-users");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+// JE - Ban user route: only mods can ban a user.
+// When a mod clicks Ban on a user in the all-users page, this route sets
+// is_banned to 1 in the database, then sends the mod back to the all-users page.
+router.get("/user/ban/:id", async (req, res) => {
+  if (req.session.loggedIn && req.session.user && req.session.user.isMod) {
+    const db = require("../model/db.js");
+    await db.query("UPDATE users SET is_banned = 1 WHERE id = ?", [req.params.id]);
+    res.redirect("/all-users");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 module.exports = router;

@@ -22,8 +22,14 @@
             button.icon-btn(type="button" onclick="toggleMenu(this)")
                 img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
             ul.dropdown-menu
+                //- JE - Shows Ban or Unban depending on the user's current banned status.
+                //- Only visible to mods, and never shown for other mods.
                 if content.session.user.isMod && !user.isMod
-                    li
-                        a(href="#") Ban
+                    if user.isBanned
+                        li
+                            a(href="/user/unban/" + user.id) Unban
+                    else
+                        li
+                            a(href="/user/ban/" + user.id) Ban
     .post-content 
         p= user.bio

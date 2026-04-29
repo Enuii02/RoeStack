@@ -65,6 +65,8 @@ class User {
     this.role = user.role;
     this.bio = user.bio;
     this.isMod = user.is_mod;
+    // JE - Load is_banned from the database so the UI can show Ban or Unban accordingly.
+    this.isBanned = user.is_banned;
     this.email = user.email;
     this.passwordHash = user.password_hash;
     this.createdAt = user.created_at;
