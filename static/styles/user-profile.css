@@ -42,7 +42,6 @@
   height: 134px;
   border-radius: 50%;
   background-color: #666;
-
 }
 
 .profile-photo img {
@@ -58,33 +57,40 @@
 
 /* The overlay that appears over the profile photo */
 .loading-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255, 255, 255, 0.7);
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    border-radius: 50%; /* Match your avatar shape */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: none; /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 50%; /* Match your avatar shape */
 }
 
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Show class */
 .loading-overlay.active {
-    display: flex;
+  display: flex;
 }
 
 /* Name and role */
@@ -232,6 +238,21 @@
 .line {
   border-bottom: #b6b6b6 1px solid;
   margin-top: 17px;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: red;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.delete-btn:hover {
+  text-decoration: underline;
 }
 
 /* General utility */
