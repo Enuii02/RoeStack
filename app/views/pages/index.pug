@@ -3,6 +3,7 @@ extends ../layout
 block head
     link(rel="stylesheet", href="/styles/homepage.css")
 
+
 block content 
     .sorting-buttons 
         a.sort-btn(class= activeSort === "latest" ? "active-latest" : "", href=addQueryParam(req.originalUrl, 'sortby', 'latest')) 
@@ -15,11 +16,12 @@ block content
             i.fa-solid.fa-heart 
             p For You
 
-    .sad-cat(class = posts.length === undefined ? "show" : "")
+    .sad-cat(class = posts.length === 0 ? "show" : "")
         img(src="/images/sad-cat.png", alt="a picture of a sad cat")
         p No posts found, very sad :(
-    .posts 
-        each post in posts 
-            include ../partials/post.pug
+    block feed
+        .posts 
+            each post in posts 
+                include ../partials/post.pug
 
     

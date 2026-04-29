@@ -1,0 +1,19 @@
+extends ./index
+
+append head 
+    link(rel="stylesheet", href="/styles/search.css")
+
+block feed 
+    h2.section-header Posts 
+    .posts 
+        each post in posts 
+            include ../partials/post.pug
+    button#load-more-posts(type="button") Show more
+
+    h2.section-header Communities
+    .communities 
+        each community in communities 
+            include ../partials/community-card.pug
+    button#load-more-communities(type="button") Show more
+
+    

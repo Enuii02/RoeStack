@@ -1,0 +1,40 @@
+.communities {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+#load-more-posts,
+#load-more-communities {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 24px;
+    background-color: #004e36;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+#load-more-posts:hover,
+#load-more-communities:hover {
+    background-color: #006847;
+}
+
+#load-more-posts:active,
+#load-more-communities:active {
+    transform: scale(0.97);
+}
+
+.section-header {
+    color: #6b6b6b;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d0d0d0;
+}

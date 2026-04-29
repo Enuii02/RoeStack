@@ -242,6 +242,32 @@ class User {
 
     return this;
   }
+
+  async delete(userId) {
+    await db.query(
+      `
+    DELETE FROM userFollowCommunity
+    WHERE user_id = ?
+  `,
+      [userId],
+    );
+
+    await db.query(
+      `
+    DELETE FROM posts
+    WHERE user_id = ?
+  `,
+      [userId],
+    );
+
+    await db.query(
+      `
+    DELETE FROM Users
+    WHERE id = ?
+  `,
+      [userId],
+    );
+  }
 }
 
 // Add class to the exports, so that other classes can use it

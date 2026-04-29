@@ -112,6 +112,29 @@ app.get("/profile", async function (req, res) {
   }
 });
 
+app.get("/search", getFilteredPosts, async function(req, res) {
+   if (req.session.loggedIn && req.session.user) {
+      Utils.log("Going to the search page...");
+      let content = await ContentManager.getInstance(req.session).update({
+      getAllCommunities: true,
+    });
+  
+    // console.log(req.sortedFilteredPosts)
+
+  res.render("pages/search",
+    { content,
+      communities: content.communityList,
+      posts: req.sortedFilteredPosts,
+      activeSort: req.activeSort,
+      currentPath: req.path
+    }
+  )
+
+  } else {
+    res.redirect("/login");
+  }
+})
+
 // ROUTING ////////////////////////////////////////////////////////////////////////////////////////
 
 const commentRoutes = require("./commentController.js");

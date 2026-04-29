@@ -123,3 +123,4 @@ RoeStack.sql
 
 # Test output
 tests_output
+static/js/dev-autologin.js
