@@ -67,7 +67,8 @@ class User {
         this.amountPosts = await this.getPostCount();
         this.communities = await this.getFollowedCommunities();
 
-        this.images = await contentManager.getImagePath({id: this.id, type: "user"});
+
+        (contentManager) ? this.images = await contentManager.getImagePath({id: this.id, type: "user"}) : [];
         // Utils.log("Loaded " + this.role + " " + this.name)
         return this;
     }

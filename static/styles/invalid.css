@@ -1,0 +1,70 @@
+/* Container to center the card in the middle column of your grid */
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+}
+
+.error-card {
+    background: #fff;
+    border-radius: 21px;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.06);
+    padding: 60px 40px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.error-icon {
+    font-size: 64px;
+    color: #004e36; /* Your primary green */
+    margin-bottom: 20px;
+}
+
+/* Reusing your sidebar-title style but centering it */
+.error-card .sidebar-title {
+    margin-left: 0;
+    margin-top: 0;
+    font-size: 28px;
+    color: #004e36;
+}
+
+.error-text {
+    color: #4e4e4e;
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.action-area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.back-home-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #004e36;
+    color: #f6f6f6;
+    text-decoration: none;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.back-home-btn:hover {
+    background-color: #003625;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 78, 54, 0.2);
+}
+
+.back-home-btn i {
+    font-size: 18px;
+}

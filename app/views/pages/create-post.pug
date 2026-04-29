@@ -1,0 +1,84 @@
+extends ../layout
+
+block content 
+    link(rel="stylesheet", href="/styles/add-page.css")
+
+    div.upload-box
+        //- Add a data attribute to tell JS if we are editing
+        h2= post ? "Edit Post" : "Add Post"
+        form#postForm(data-edit-id=post ? post.id : "")
+
+            //- Community Selection Section
+            h4 Select Community
+            .community-dropdown#communityDropdown
+                button.community-trigger(type='button' onclick='toggleCommunityDropdown()')
+                    //- Pre-fill label if post exists
+                    span#communityTriggerLabel= post ? post.community.name : "Select a community..."
+                
+                .community-panel#communityPanel
+                    // ... (search input) ...
+                    .community-radio-list#communityList
+                        each community in communities
+                            label.community-radio-item
+                                input(
+                                    type='radio'
+                                    name='communityId'
+                                    value=community.id
+                                    checked=(post && post.community.id == community.id)
+                                    onchange=`selectCommunity(this, "${community.name}")`
+                                )
+                                span= community.name
+
+            label(for='title') Post Title:
+            input(type='text' name='title' value=(post ? post.title : "") required)
+
+            label(for='category') Category:
+            select(name='category')
+                each cat in ['discussion', 'question', 'advice', 'survey']
+                    option(value=cat selected=(post && post.category === cat))= cat.charAt(0).toUpperCase() + cat.slice(1)
+
+            label(for='content') Content:
+            textarea(name='content' rows="4" required)= post ? post.content : ""
+
+            //- Media Selection logic
+            - const hasMap = post && post.mapUrl
+            - const hasImg = post && post.imageUrl
+            .media-toggle
+                label
+                    input(type="radio" name="mediaType" value="none" checked=(!hasMap && !hasImg) onclick="toggleMedia('none')") 
+                    | None
+                label
+                    input(type="radio" name="mediaType" value="map" checked=hasMap onclick="toggleMedia('map')") 
+                    | Map URL
+                label
+                    input(type="radio" name="mediaType" value="picture" checked=hasImg onclick="toggleMedia('picture')") 
+                    | Picture
+
+            #mapSection(style=(hasMap ? "display: block;" : "display: none;"))
+                label(for='mapUrl') Location URL (Optional):
+                input(type='url' name='mapUrl' placeholder="https://maps.google.com/..." value=(post ? post.mapUrl : ""))
+
+            #pictureSection(style=(hasImg ? "display: block;" : "display: none;"))
+                .upload-type-toggle
+                    label
+                        input(type="radio" name="imageSource" value="url" checked=true onclick="toggleImageSource('url')") 
+                        | Image URL
+                    label
+                        input(type="radio" name="imageSource" value="local" onclick="toggleImageSource('local')") 
+                        | Local File
+
+                #urlUploadInput(style="display: block; margin-top: 10px;")
+                    label(for='imageUrl') Image URL:
+                    input(type='url' name='imageUrl' placeholder="https://example.com/image.jpg" value=(post ? post.imageUrl : ""))
+
+                #localUploadInput(style="display: none; margin-top: 10px;")
+                    label(for='imageFile') Choose Image File:
+                    input(type='file' name='imageFile' accept="image/*")
+                    //- Progress bar for local uploads
+                    .progress-container
+                        .progress-bar#progressBar 0%
+            hr
+            button#uploadBtn(type='submit')= post ? "Update Post" : "Create Post"
+
+block scripts
+    script(src="/js/createPosts.js" defer)

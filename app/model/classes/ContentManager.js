@@ -315,11 +315,11 @@ class ContentManager {
         
 
         if (this.imagePathCache[cacheKey]) {
-            Utils.log("ContentManager - Cache " + cacheKey + " already exists.")
+            // Utils.log("ContentManager - Cache " + cacheKey + " already exists.")
             return this.imagePathCache[cacheKey];
         }
         try {
-            Utils.log("ContentManager - Caching " + cacheKey)
+            // Utils.log("ContentManager - Caching " + cacheKey)
             const apiResponse = await fetch(`https://owres.org/roestack/${type}/${id}`);
             const result = await apiResponse.json();
             
