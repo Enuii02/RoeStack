@@ -58,6 +58,14 @@ block content
                         if content.session.user.id == user.id 
                             li 
                                 a(href="/logout" style="color: red;") Logout
+                            li
+                                form(
+                                    action="/delete-account" 
+                                    method="POST" 
+                                    onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')"
+                                )
+                                    button.delete-btn(type="submit")
+                                        | Delete Account
     .about-me
         h3.about-title About me
         p= user.bio

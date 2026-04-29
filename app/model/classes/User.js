@@ -240,6 +240,35 @@ class User {
 
     return this;
   }
+
+  async delete(userId) {
+    // 1. видалити підписки
+    await db.query(
+      `
+    DELETE FROM userFollowCommunity
+    WHERE user_id = ?
+  `,
+      [userId],
+    );
+
+    // 2. (опціонально) видалити пости
+    await db.query(
+      `
+    DELETE FROM posts
+    WHERE user_id = ?
+  `,
+      [userId],
+    );
+
+    // 3. видалити користувача
+    await db.query(
+      `
+    DELETE FROM Users
+    WHERE id = ?
+  `,
+      [userId],
+    );
+  }
 }
 
 // Add class to the exports, so that other classes can use it
