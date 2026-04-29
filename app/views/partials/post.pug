@@ -39,7 +39,7 @@
             button.icon-btn(type="button" onclick="toggleMenu(this)")
                 img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
             ul.dropdown-menu 
-                if content.session.user.id == post.user.id
+                if content.session.user.id == post.user.id || content.session.user.isMod
                     li 
                         a(href=`/edit-post/${post.id}`) Edit post 
                     li 
