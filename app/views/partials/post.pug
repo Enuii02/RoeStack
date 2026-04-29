@@ -9,7 +9,11 @@
                 img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .user-info
                 .top-line
-                    a.username(href="/user/" + post.user.id)= post.user.name
+                    //- JE - If the post author is banned, show [removed] instead of their name and remove the profile link.
+                    if post.user.isBanned
+                        span.username [removed]
+                    else
+                        a.username(href="/user/" + post.user.id)= post.user.name
                     span.dot •
                     span.post-time= post.elapsedTime
 

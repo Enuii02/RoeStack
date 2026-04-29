@@ -10,7 +10,11 @@ mixin commentItem(comment, content)
                     img.avatar(src="/images/none-avatar.svg" alt="User Avatar")
             .comment-right
                 .comment-info
-                    a.name(href="/user/" + comment.user.id)= comment.user.name
+                    //- JE - If the comment author is banned, show [removed] instead of their name and remove the profile link.
+                    if comment.user.isBanned
+                        span.name [removed]
+                    else
+                        a.name(href="/user/" + comment.user.id)= comment.user.name
                     span.dot •
                     span.time= comment.elapsedTime
                     button.icon-btn(type="button" onclick="toggleMenu(this)")
