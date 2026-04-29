@@ -81,6 +81,7 @@ header .center {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   color: #f6f6f6;
+  transition: background-color 0.3s ease;
 }
 .menu-option span {
   text-decoration: none;
