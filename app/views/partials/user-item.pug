@@ -16,7 +16,14 @@
                         b Moderator
                     else   
                         b User
-            button
+            //- JE - Added dropdown menu to the three dots button.
+            //- When a mod is viewing a non-mod user, a Ban option appears in the menu.
+            //- toggleMenu is an existing JS function used elsewhere in the project.
+            button.icon-btn(type="button" onclick="toggleMenu(this)")
                 img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
+            ul.dropdown-menu
+                if content.session.user.isMod && !user.isMod
+                    li
+                        a(href="#") Ban
     .post-content 
         p= user.bio

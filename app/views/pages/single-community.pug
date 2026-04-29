@@ -38,26 +38,43 @@ block content
                             i.fa-solid.fa-ellipsis-vertical  
 
                         ul.dropdown-menu 
+                            //- JE - Ban and Approve links now point to real routes.
+                            //- Active communities: mod can only Ban.
+                            //- Pending communities: mod can Approve or Ban.
+                            //- Banned communities: mod can only Approve (to restore it).
+                            //- All options are only visible to mods.
                             if content.session.user.isMod
                                 if community.status === 'active'
                                     li
-                                        a(href="#") Ban
+                                        a(href="/community/ban/" + community.id) Ban
+
+                                if community.status === 'pending'
+                                    li
+                                        a(href="/community/approve/" + community.id) Approve
+                                    li
+                                        a(href="/community/ban/" + community.id) Ban
 
                                 if community.status === 'banned'
                                     li
-                                        a(href="#") Approve
+                                        a(href="/community/approve/" + community.id) Approve
 
                             if content.session.user.id == community.createdBy.id || content.session.user.isMod
                                 li 
                                     a(href="#") Modify
 
-        if !(community.status === "banned")
+        //- JE - Follow button area now handles all three statuses.
+        //- Active: shows Follow/Unfollow as normal.
+        //- Pending: replaces the follow button with a "Pending Approval" notice so users know the community isn't open yet.
+        //- Banned: keeps the existing banned message.
+        if community.status === 'active'
             if content.session.user.communities.includes(community.id)
                 button(data-id=community.id
                     data-user-id=content.session.user.id).follow-btn.inverse Unfollow
-            else 
+            else
                 button(data-id=community.id
                     data-user-id=content.session.user.id).follow-btn Follow
+        else if community.status === 'pending'
+            h2.description-title This community is pending approval.
         else
             h2.description-title This community has been banned.
 

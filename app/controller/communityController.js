@@ -60,4 +60,30 @@ router.post("/follow", async (req, res) => {
   }
 });
 
+// JE - Ban route: only mods can ban a community.
+// When a mod clicks Ban on a community page, this route updates the community
+// status to 'banned' in the database, then sends them back to that community page.
+router.get("/community/ban/:id", async (req, res) => {
+  if (req.session.loggedIn && req.session.user && req.session.user.isMod) {
+    const db = require("../model/db.js");
+    await db.query("UPDATE communities SET status = 'banned' WHERE id = ?", [req.params.id]);
+    res.redirect("/community/" + req.params.id);
+  } else {
+    res.redirect("/login");
+  }
+});
+
+// JE - Approve route: only mods can approve a community.
+// When a mod clicks Approve on a banned community page, this route updates the
+// community status to 'active' in the database, then sends them back to that community page.
+router.get("/community/approve/:id", async (req, res) => {
+  if (req.session.loggedIn && req.session.user && req.session.user.isMod) {
+    const db = require("../model/db.js");
+    await db.query("UPDATE communities SET status = 'active' WHERE id = ?", [req.params.id]);
+    res.redirect("/community/" + req.params.id);
+  } else {
+    res.redirect("/login");
+  }
+});
+
 module.exports = router;
