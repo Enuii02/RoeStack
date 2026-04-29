@@ -52,7 +52,7 @@
         .media-card
             if post.imageUrl
                 img(
-                    href="/post/" + post.id
+                    href=`/post/${post.id}`
                     src=post.imageUrl 
                     alt="Post Image"
                     )

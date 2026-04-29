@@ -32,8 +32,18 @@ block content
                 button.icon-btn(type="button" onclick="toggleMenu(this)")
                     img.options(src="/images/icons/three-vertical-dots.svg" alt="Options Icon")
                 ul.dropdown-menu 
-                    li 
-                        a(href="#" style="color: red;") Report post      
+                    if content.session.user.id == post.user.id
+                        li 
+                            a(href=`/edit-post/${post.id}`) Edit post 
+                        li 
+                            a.delete-post(
+                                href="#"
+                                data-post-id=post.id
+                                style="color: red;"
+                            ) Delete post
+                    if content.session.user.id != post.user.id
+                        li
+                            a(href="#" style="color: red;") Report post   
         h2.post-title= post.title
         
         if post.imageUrl || post.mapUrl

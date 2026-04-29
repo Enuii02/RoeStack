@@ -12,11 +12,17 @@ block content
             h4 Select Community
             .community-dropdown#communityDropdown
                 button.community-trigger(type='button' onclick='toggleCommunityDropdown()')
-                    //- Pre-fill label if post exists
                     span#communityTriggerLabel= post ? post.community.name : "Select a community..."
                 
                 .community-panel#communityPanel
-                    // ... (search input) ...
+                    //- The Search Bar (Restored)
+                    .search-container
+                        input#communitySearch(
+                            type='text' 
+                            placeholder='Search communities...' 
+                            onkeyup='filterCommunities()'
+                        )
+                    
                     .community-radio-list#communityList
                         each community in communities
                             label.community-radio-item

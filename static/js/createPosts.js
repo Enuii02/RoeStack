@@ -50,34 +50,53 @@ function toggleImageSource(source) {
 
 document.getElementById('postForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
-    // Check if we are editing
-        const editId = document.getElementById('postForm').getAttribute('data-edit-id');
-    const isEditing = editId !== "";
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = true; // Prevent double clicks
 
-    const payload = {
-        title: document.querySelector('input[name="title"]').value.trim(),
-        content: document.querySelector('textarea[name="content"]').value.trim(),
-        category: document.querySelector('select[name="category"]').value,
-        communityId: document.querySelector('input[name="communityId"]:checked')?.value,
-        mapUrl: document.querySelector('input[name="mapUrl"]').value.trim(),
-        imageUrl: document.querySelector('input[name="imageUrl"]').value.trim()
-    };
+    const editId = this.getAttribute('data-edit-id');
+    const mediaType = document.querySelector('input[name="mediaType"]:checked').value;
+    
+    let finalImageUrl = document.querySelector('input[name="imageUrl"]').value;
+    const localFile = document.querySelector('input[name="imageFile"]')?.files[0];
 
     try {
-        const url = editId ? `/edit-post/${editId}` : "/post";
+        uploadBtn.disabled = true;
+        // If user chose 'picture' AND selected a 'local' file, upload to owres.org first
+        if (mediaType === 'picture' && localFile) {
+            console.log("Uploading image to asset server...");
+            finalImageUrl = await uploadImageToServer(localFile);
+        }
 
+        // Prepare payload for your RoeStack DB
+        const payload = {
+            title: document.querySelector('input[name="title"]').value.trim(),
+            content: document.querySelector('textarea[name="content"]').value.trim(),
+            category: document.querySelector('select[name="category"]').value,
+            communityId: document.querySelector('input[name="communityId"]:checked')?.value,
+            mapUrl: mediaType === 'map' ? document.querySelector('input[name="mapUrl"]').value.trim() : null,
+            imageUrl: mediaType === 'picture' ? finalImageUrl : null
+        };
+
+        const url = editId ? `/edit-post/${editId}` : "/post";
+        
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
         });
 
         const result = await res.json();
         if (result.postId) {
             window.location.href = "/post/" + result.postId;
+        } else {
+            alert("Error saving post: " + result.error);
+            uploadBtn.disabled = false;
         }
+
     } catch (err) {
-        console.error("Failed to save post:", err);
+        console.error("Workflow failed:", err);
+        alert("Action failed: " + err);
+        uploadBtn.disabled = false;
+        
     }
 });

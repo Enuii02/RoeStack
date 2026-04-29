@@ -90,6 +90,10 @@ header .center {
   background: #f6f6f6;
   color: #004e36;
 }
+.menu-option:hover {
+  background: #003525;
+  color: white;
+}
 
 .layout {
   margin-top: 142px;
