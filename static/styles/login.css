@@ -315,6 +315,15 @@ select.filled {
   color: #000;
 }
 
+/* JE - Red message shown above the login form when the user's account has been banned. */
+.error-message {
+  color: red;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
 /* error */
 input.error,
 select.error {

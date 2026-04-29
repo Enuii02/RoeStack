@@ -11,10 +11,9 @@ const Community = require("../model/classes/community.js");
 /**
  * Create a route for the login page - /login
  */
-router.get("/login", async function (_, res) {
-  // var user = await new User().load(1);
-  // user.setUserPassword("123")
-  res.render("pages/login");
+router.get("/login", async function (req, res) {
+  // JE - Pass any error query param to the login page so it can show the appropriate error state.
+  res.render("pages/login", { error: req.query.error });
 });
 
 /**
@@ -85,16 +84,22 @@ router.post("/authenticate", async function (req, res) {
       await user.load(uId, ContentManager.getInstance(req.session));
       match = await user.authenticate(params.password);
       if (match) {
+        // JE - If the user is banned, block login, do not create a session, and redirect back with an error.
+        if (user.isBanned) {
+          return res.redirect("/login?error=banned");
+        }
         req.session.uid = uId;
         req.session.user = user;
         req.session.loggedIn = true;
 
         res.redirect("/user/me");
       } else {
-        res.send("Invalid password");
+        // JE - Redirect back to login with error param so the page can show a red border on the password field.
+        res.redirect("/login?error=password");
       }
     } else {
-      res.send("Invalid email");
+      // JE - Redirect back to login with error param so the page can show a red border on the email field.
+      res.redirect("/login?error=email");
     }
   } catch (err) {
     console.error(`Error while comparing `, err.message);
