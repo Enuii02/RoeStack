@@ -87,75 +87,52 @@ class ContentManager {
         sortByPopularity = false,
         reverse = false,
         search = ''
-    
-    } = {}) { 
-        var post;
-        var posts = [];
-        var sql;
-        var results;
-        
-        // Build query dynamically based on provided filters
+    } = {}) {
+        const params = [];
+        const sortOrder = reverse ? "ASC" : "DESC";
+
+        // --- WHERE / JOIN clause based on filters ---
         let whereClause = "";
-        let orderByClause = ""
-        let searchClause = ""
-        let groupByClause = ""
-        let params = [];
-        let sortOrder = (reverse) ? `ASC` : `DESC`;
+        let groupByClause = "";
 
-        // Build WHERE clause and parameters array
-
-        // If sortByPopularity is true, join the vote table to count the votes for each post
         if (sortByPopularity) {
-            whereClause = "LEFT JOIN vote ON vote.post_id = posts.id";
-            groupByClause = "GROUP BY posts.id"
-        }
-
-        // If both userID and communityID are provided, filter by both
-        else if (userID !== -1 && communityID !== -1) {
+            whereClause   = "LEFT JOIN vote ON vote.post_id = posts.id";
+            groupByClause = "GROUP BY posts.id";
+        } else if (userID !== -1 && communityID !== -1) {
             whereClause = "WHERE user_id = ? AND community_id = ?";
-            params = [userID, communityID];
-
-        // If sortByForYou is true, filter by communities the user follows (if userID is provided)
+            params.push(userID, communityID);
         } else if (sortByForYou && userID !== -1) {
-            whereClause = "WHERE community_id IN ( SELECT community_id FROM userFollowCommunity WHERE user_id = ? )"
-            params = [userID]
-
-        // If only userID is provided, filter by userID
+            whereClause = "WHERE community_id IN (SELECT community_id FROM userFollowCommunity WHERE user_id = ?)";
+            params.push(userID);
         } else if (userID !== -1) {
             whereClause = "WHERE user_id = ?";
-            params = [userID];
-
-        // If only communityID is provided, filter by communityID
+            params.push(userID);
         } else if (communityID !== -1) {
             whereClause = "WHERE community_id = ?";
-            params = [communityID];
-        }  
-
-        // If search is not an empty string, add additional statement
-        if ((search != '' && whereClause === "") || sortByPopularity) {
-            searchClause = `WHERE posts.title LIKE '%${search}%' `
-        } else if (search != '') {
-            searchClause = `AND posts.title LIKE '%${search}%' `
+            params.push(communityID);
         }
 
-        // Build ORDER BY clause
-        if (sortByPopularity) {
-            orderByClause = "ORDER BY COUNT(vote.post_id)";
-        } else {
-            orderByClause = "ORDER BY created_at";
-        } 
+        // --- Search clause: WHERE if no prior WHERE exists, otherwise AND ---
+        let searchClause = "";
+        if (search !== '') {
+            const needsWhere = whereClause === "" || sortByPopularity;
+            searchClause = `${needsWhere ? "WHERE" : "AND"} posts.title LIKE ?`;
+            params.push(search);
+        }
 
-        sql = `SELECT posts.id FROM posts ${whereClause} ${searchClause} ${groupByClause} ${orderByClause} ${sortOrder}`;
-        console.log('SQL:', sql);
-        results = await db.query(sql, params);
+        // --- ORDER BY clause ---
+        const orderByClause = sortByPopularity
+            ? "ORDER BY COUNT(vote.post_id)"
+            : "ORDER BY created_at";
 
-        // Start all loads simultaneously
+        // --- Final query ---
+        const sql = `SELECT posts.id FROM posts ${whereClause} ${searchClause} ${groupByClause} ${orderByClause} ${sortOrder}`;
+        console.log("SQL:", sql);
+
+        const results = await db.query(sql, params);
+
         const postPromises = results.map(res => new Post().load(res.id, this));
-
-        // Wait for all of them to resolve together
-        posts = await Promise.all(postPromises);
-
-        return posts;
+        return Promise.all(postPromises);
     }
     async getAmountOfPosts({
         userID = -1,
