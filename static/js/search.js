@@ -23,6 +23,8 @@ searchButton.addEventListener('click', (e)=> {
 
 // ===============Search page==============
 
+if (window.location.pathname === "/search") {
+    
 const posts = document.querySelectorAll(".posts .post-box");
 const btnPost = document.getElementById("load-more-posts");
 const btnCommunity = document.getElementById("load-more-communities");
@@ -61,4 +63,6 @@ btnCommunity.addEventListener("click", () => {
     shown = next;
     if (shown >= posts.length) btn.style.display = "none";
 });
+
+}
 
