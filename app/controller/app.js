@@ -69,7 +69,6 @@ app.get("/", getFilteredPosts, async function (req, res) {
   if (req.session.loggedIn && req.session.user) {
     Utils.log("Going to Home page...");
     let content = await ContentManager.getInstance(req.session).update();
-    console.log("the link", req.originalUrl);
     res.render("pages/index", {
       content,
       currentPage: "home",

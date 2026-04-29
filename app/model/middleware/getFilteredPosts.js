@@ -42,8 +42,6 @@ async function getFilteredPosts(req, _, next) {
         }
       }
 
-      console.log("Search: ", search)
-
       const posts = await fetchPostsBySortType(
         contentManager,
         sortType,
@@ -66,8 +64,6 @@ async function getFilteredPosts(req, _, next) {
       } else {
         req.sortedFilteredPosts = posts;
       }
-
-      console.log("form get filtered posts: ", req.sortedFilteredPosts)
   
       req.activeSort = normalizeSortType(sortType);
 
