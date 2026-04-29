@@ -164,7 +164,7 @@ class Comment {
     return this.amountVotes;
   }
 
-  static async create({ content, postId, parentId, userId, session }) {
+  static async create({ content, postId, parentId, userId, contentManager }) {
     const sql = `
     INSERT INTO comments (content, user_id, post_id, parent_id, created_at)
     VALUES (?, ?, ?, ?, NOW())
@@ -174,7 +174,7 @@ class Comment {
 
     const insertId = result.insertId || result[0]?.insertId;
 
-    const comment = await new Comment().load(insertId, session);
+    const comment = await new Comment().load(insertId, contentManager);
 
     return comment;
   }
