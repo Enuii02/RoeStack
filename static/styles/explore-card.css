@@ -44,6 +44,7 @@
   height: 1px;
   width: 150px;
   background: #4e4e4e;
+  margin: 0;
 }
 
 /* text */
@@ -64,7 +65,6 @@
 .community-description {
   font-size: 13px;
   color: #4e4e4e;
-  margin-top: 2px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
