@@ -120,6 +120,80 @@ class Community {
 
     return communities;
   }
+
+  /**
+   * Static method to create a new community.
+   */
+  static async create({ name, description, contentManager }) {
+      const sql = `
+          INSERT INTO Communities (name, description, status, created_by, created_at)
+          VALUES (?, ?, 'active', ?, NOW())
+      `;
+
+      // Accessing user ID from the contentManager session
+      const userId = contentManager.session.user.id;
+
+      const result = await db.query(sql, [name, description, userId]);
+
+      // Handle different return structures from mysql2
+      const insertId = result.insertId || result[0]?.insertId;
+
+      // Load and return the full community object
+      const community = await new Community().load(insertId, contentManager);
+
+      return community;
+  }
+
+  /**
+   * Instance method to update community details.
+   */
+  async update({ name, description, status }) {
+      const sql = `
+          UPDATE Communities 
+          SET name = ?, 
+              description = ?, 
+              status = ?
+          WHERE id = ?
+      `;
+
+      // Use 'this.id' from the currently loaded community instance
+      await db.query(sql, [
+          name, 
+          description, 
+          status || this.status, 
+          this.id 
+      ]);
+
+      // Update local properties so the object stays in sync with DB
+      this.name = name;
+      this.description = description;
+      if (status) this.status = status;
+
+      return this;
+  }
+
+  /**
+   * Static method to delete a community.
+   * Checks if the user is the creator or a moderator.
+   */
+  static async delete(communityId, userId, isMod) {
+      // First, we must fetch the community to check ownership
+      const [rows] = await db.query("SELECT created_by FROM Communities WHERE id = ?", [communityId]);
+      
+      if (!rows || rows.length === 0) {
+          throw new Error("Community not found");
+      }
+
+      const communityOwnerId = rows.created_by || rows[0]?.created_by;
+
+      // Security check: must be owner OR a moderator
+      if (communityOwnerId == userId || isMod) {
+          await db.query("DELETE FROM Communities WHERE id = ?", [communityId]);
+          return true;
+      } else {
+          throw new Error("Forbidden: You do not have permission to delete this community.");
+      }
+  }
 }
 // Add class to the exports, so that other classes can use it
 module.exports = Community;

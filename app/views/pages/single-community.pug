@@ -59,8 +59,16 @@ block content
                                         a(href="/community/approve/" + community.id) Approve
 
                             if content.session.user.id == community.createdBy.id || content.session.user.isMod
+                            
                                 li 
-                                    a(href="#") Modify
+                                    a(href=`/edit-community/${community.id}`) Edit 
+                                li 
+                                    
+                                    a.delete-community(
+                                        href="#"
+                                        data-community-id=community.id
+                                        style="color: red;"
+                                    ) Delete
 
         //- JE - Follow button area now handles all three statuses.
         //- Active: shows Follow/Unfollow as normal.

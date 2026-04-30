@@ -1,6 +1,5 @@
 
-.add-post-page {
-  margin-top: 142px;
+.add-page {
   display: flex;
   justify-content: center;
   padding: 0 51px 60px;
@@ -409,3 +408,37 @@
   font-weight: bold;
 }
 
+#submitBtn {
+    /* Base Styles from your reference */
+    width: 192px;
+    height: 34px;
+    border-radius: 9px;
+    background-color: #054F00;
+    color: white;
+    border: none;
+    box-shadow: 0px 4px 4px 0px #00000040;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+
+    /* Transition setup */
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s ease;
+    
+    /* Center text specifically for button elements */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover effect to make it feel interactive */
+#submitBtn:hover {
+    background-color: #076d00; /* Slightly lighter green */
+    box-shadow: 0px 6px 8px 0px #00000040;
+    transform: translateY(-1px);
+}
+
+/* Active state (when clicked) to use your transitions */
+#submitBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0px 2px 2px 0px #00000040;
+}

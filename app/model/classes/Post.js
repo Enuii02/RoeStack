@@ -178,7 +178,6 @@ class Post {
         return post;
     }
 
-    // Inside your Post class
     async update({ title, content, mapUrl, imageUrl, communityId, category }) {
         const sql = `
             UPDATE posts 

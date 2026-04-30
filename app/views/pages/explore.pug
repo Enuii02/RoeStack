@@ -2,7 +2,7 @@ extends ../layout
 block content 
     .title-section 
         h2(style="font-size: 32px; margin-bottom: 50px;") Explore Communities
-        button(href="/create-community").create-community-btn() Create community
+        button.create-community-btn(onclick="window.location.href='/create-community'") Create community
     h2.section-divider Communities 
     .community-grid 
         each community in content.communityList

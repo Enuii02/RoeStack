@@ -1,3 +1,33 @@
 extends ../layout
 
-h2 Community!
+block content
+    link(rel="stylesheet", href="/styles/add-page.css")
+
+    div.upload-box
+        h2= community ? "Edit Community" : "Create a Community"
+        
+        //- data-edit-id helps JS know if we are updating an existing ID
+        form#communityForm(data-edit-id=community ? community.id : "")
+            
+            label(for='name') Community Name:
+            input(
+                type='text' 
+                name='name' 
+                placeholder="e.g. Space Enthusiasts" 
+                value=(community ? community.name : "") 
+                required
+            )
+
+            label(for='description') Description:
+            textarea(
+                name='description' 
+                rows="5" 
+                placeholder="What is this community about?" 
+                required
+            )=(community ? community.description : "")
+
+            hr
+            button#submitBtn(type='submit')= community ? "Update Community" : "Launch Community"
+
+block scripts
+    script(src="/js/createCommunity.js" defer)

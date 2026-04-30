@@ -1,4 +1,40 @@
+document.addEventListener("click", async (e) => {
+    // ================= DELETE COMMUNITY =================
+    const deleteBtn = e.target.closest(".delete-community");
+    
+    if (deleteBtn) {
+        e.preventDefault();
+        e.stopPropagation();
 
+        // Get ID from a data attribute: data-community-id
+        const communityId = deleteBtn.dataset.communityId;
+
+        // Alert for confirmation
+        if (!confirm("Are you sure you want to delete this community? This cannot be undone.")) return;
+
+        try {
+            // Send the DELETE request
+            const res = await fetch(`/community/${communityId}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                alert("Delete failed: " + (errorData.error || "Unknown error"));
+                return;
+            }
+
+            // Success handling
+            // Since the community is gone, we redirect to the home page
+            window.location.href = "/";
+
+        } catch (err) {
+            console.error("Delete request failed:", err);
+            alert("An error occurred while trying to delete the community.");
+        }
+    }
+});
 
 
 // Get all .follow-btn in page
