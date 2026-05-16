@@ -172,6 +172,8 @@ app.use("/", loginRoutes);
 /**
  * Start server on port 3000
  */
-app.listen(3000, function () {
-  Utils.log(`Server running at http://127.0.0.1:3000/`);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
+  Utils.log(`Server running at ${PORT}`);
 });
