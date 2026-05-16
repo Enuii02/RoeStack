@@ -5,7 +5,7 @@ const app = express();
 const router = express.Router();
 
 const Post = require("../model/classes/post.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 
 /**
  * Single Post page that takes in as input an id and renders the information about the post.

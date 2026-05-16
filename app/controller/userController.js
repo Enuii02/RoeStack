@@ -5,7 +5,7 @@ const app = express();
 const router = express.Router();
 
 const User = require("../model/classes/user.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 const {
   clearUserImageCache,

@@ -22,7 +22,7 @@ const User = require("../model/classes/user.js");
 const Post = require("../model/classes/post.js");
 const Comment = require("../model/classes/comment.js");
 const Community = require("../model/classes/community.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 const getFilteredPosts = require("../model/middleware/getFilteredPosts.js");
 const {
   clearUserImageCache,

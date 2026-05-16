@@ -11,7 +11,7 @@ const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
 
 const User = require("../model/classes/user.js");
 const Community = require("../model/classes/community.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 
 /**
  * Single Community page that takes in as input an id and renders the information about the community.

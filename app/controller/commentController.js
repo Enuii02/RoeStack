@@ -5,7 +5,7 @@ const app = express();
 const router = express.Router();
 
 const Comment = require("../model/classes/comment.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 
 
 router.get("/comments/:postId", async (req, res) => {

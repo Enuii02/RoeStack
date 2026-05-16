@@ -6,7 +6,7 @@ const router = express.Router();
 
 const Post = require("../model/classes/post.js");
 const Comment = require("../model/classes/comment.js");
-const ContentManager = require("../model/classes/ContentManager.js");
+const ContentManager = require("../model/classes/contentManager.js");
 
 /**
  * Vote page used to send a vote request from the client side to the server's db
