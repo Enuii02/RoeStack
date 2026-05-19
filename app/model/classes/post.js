@@ -53,7 +53,7 @@ class Post {
 
         const sql = `
             SELECT * 
-            FROM Posts 
+            FROM posts 
             WHERE id = ?
         `;
 

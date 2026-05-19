@@ -42,7 +42,7 @@ class Community {
   async load(id, contentManager) {
     const sql = `
             SELECT * 
-            FROM Communities 
+            FROM communities 
             WHERE id = ?
         `;
 
@@ -100,7 +100,7 @@ class Community {
   static async getAll() {
     const sql = `
     SELECT id, name
-    FROM Communities
+    FROM communities
   `;
 
     const results = await db.query(sql);
@@ -126,7 +126,7 @@ class Community {
    */
   static async create({ name, description, contentManager }) {
       const sql = `
-          INSERT INTO Communities (name, description, status, created_by, created_at)
+          INSERT INTO communities (name, description, status, created_by, created_at)
           VALUES (?, ?, 'active', ?, NOW())
       `;
 
@@ -149,7 +149,7 @@ class Community {
    */
   async update({ name, description, status }) {
       const sql = `
-          UPDATE Communities 
+          UPDATE communities 
           SET name = ?, 
               description = ?, 
               status = ?
@@ -178,7 +178,7 @@ class Community {
    */
   static async delete(communityId, userId, isMod) {
       // First, we must fetch the community to check ownership
-      const [rows] = await db.query("SELECT created_by FROM Communities WHERE id = ?", [communityId]);
+      const [rows] = await db.query("SELECT created_by FROM communities WHERE id = ?", [communityId]);
       
       if (!rows || rows.length === 0) {
           throw new Error("Community not found");
@@ -188,7 +188,7 @@ class Community {
 
       // Security check: must be owner OR a moderator
       if (communityOwnerId == userId || isMod) {
-          await db.query("DELETE FROM Communities WHERE id = ?", [communityId]);
+          await db.query("DELETE FROM communities WHERE id = ?", [communityId]);
           return true;
       } else {
           throw new Error("Forbidden: You do not have permission to delete this community.");

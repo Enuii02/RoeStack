@@ -52,7 +52,7 @@ class User {
   async load(id, contentManager) {
     const sql = `
             SELECT * 
-            FROM Users 
+            FROM users 
             WHERE id = ?
         `;
 
@@ -137,7 +137,7 @@ class User {
   async getIdFromEmail() {
     var sql = `
             SELECT id 
-            FROM Users 
+            FROM users 
             WHERE email = ?
         `;
     const result = await db.query(sql, [this.email]);
@@ -153,7 +153,7 @@ class User {
   async setUserPassword(password) {
     const passwordHash = await bcrypt.hash(password, 10);
     var sql = `
-            UPDATE Users SET password_hash = ? 
+            UPDATE users SET password_hash = ? 
             WHERE id = ?
         `;
     const result = await db.query(sql, [passwordHash, this.id]);
@@ -165,7 +165,7 @@ class User {
     // Get the stored, hashed password for the user
     var sql = `
             SELECT password_hash 
-            FROM Users 
+            FROM users 
             WHERE id = ?
         `;
     const result = await db.query(sql, [this.id]);
@@ -182,7 +182,7 @@ class User {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const sql = `
-    INSERT INTO Users (name, email, password_hash, role) 
+    INSERT INTO users (name, email, password_hash, role) 
     VALUES (?, ?, ?, ?)
   `;
 
@@ -215,7 +215,7 @@ class User {
     await this.addUser(fullName, email, password, role);
 
     const sql = `
-    UPDATE Users
+    UPDATE users
     SET bio = ?
     WHERE id = ?
   `;
@@ -258,7 +258,7 @@ class User {
 
     await db.query(
       `
-    DELETE FROM Users
+    DELETE FROM users
     WHERE id = ?
   `,
       [userId],

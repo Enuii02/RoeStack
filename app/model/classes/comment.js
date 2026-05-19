@@ -30,7 +30,7 @@ class Comment {
    * Load single comment
    */
   async load(id, contentManager) {
-    const sql = "SELECT * FROM Comments WHERE id = ?";
+    const sql = "SELECT * FROM comments WHERE id = ?";
 
     Utils.log("Loading comment #" + id + "...");
 
