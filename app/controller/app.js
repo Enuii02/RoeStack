@@ -29,6 +29,7 @@ const {
 } = require("../model/middleware/getFilteredPosts.js");
 const removeQueryParam = require("../model/middleware/removeQueryParam.js");
 const { addQueryParam } = require("../model/middleware/removeQueryParam.js");
+const demoMode = require("../model/middleware/demoMode.js");
 // This snippet is used to make sure that post data is encoded and read properly
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,6 +60,8 @@ app.use((req, res, next) => {
   res.locals.req = req;
   next();
 });
+
+app.use(demoMode);
 
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
 
