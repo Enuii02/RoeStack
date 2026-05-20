@@ -44,9 +44,17 @@ You will need the following installed:
 | Express app   | http://localhost:3000   |
 | phpMyAdmin    | http://localhost:8081   |
 
+## Documentation
+
+In-depth documentation lives under the [`docs/`](docs/README.md) directory:
+
+* [Tech Stack](docs/stack.md)
+* [Architecture (MVC)](docs/architecture.md)
+* [Contributors](docs/contributors.md)
+
 ## Collaborators
 
-* Oleksandr
+* Matteo
 * Mateusz
-* Julianna Eldridge
-* Matteo Organek
+* Oleksandr
+* Julianna

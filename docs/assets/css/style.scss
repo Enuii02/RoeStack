@@ -1,0 +1,153 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* RoeStack palette */
+$rs-deep:     #004e36;
+$rs-medium:   #16674e;
+$rs-bright:   #00b47d;
+$rs-accent:   #009668;
+$rs-ink:      #1d2733;
+$rs-muted:    #5a6c75;
+
+/* ---------- Page header ---------- */
+.page-header {
+  background-color: $rs-deep;
+  background-image: radial-gradient(circle at 50% 50%, $rs-bright, $rs-deep);
+  color: #ffffff;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.page-header .project-name {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.page-header .project-tagline {
+  opacity: 0.9;
+}
+
+.page-header .btn {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  font-weight: 600;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+}
+
+/* ---------- Logo in header ---------- */
+.page-header .site-logo {
+  display: block;
+  margin: 0 auto 1.25rem;
+  width: 96px;
+  height: auto;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+}
+
+/* ---------- Main content ---------- */
+.main-content {
+  color: $rs-ink;
+  max-width: 880px;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.main-content h4 {
+  color: $rs-deep;
+  border-bottom: none;
+}
+
+.main-content h2 {
+  margin-top: 2.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid rgba($rs-bright, 0.25);
+}
+
+.main-content a {
+  color: $rs-accent;
+  text-decoration: none;
+  border-bottom: 1px solid rgba($rs-accent, 0.35);
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    color: $rs-deep;
+    border-bottom-color: $rs-deep;
+  }
+}
+
+/* ---------- Tables ---------- */
+.main-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.25rem 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.main-content table th {
+  background-color: $rs-deep;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+}
+
+.main-content table th,
+.main-content table td {
+  padding: 10px 14px;
+  border: 1px solid rgba($rs-medium, 0.2);
+}
+
+.main-content table tr:nth-child(2n) {
+  background-color: rgba($rs-bright, 0.06);
+}
+
+/* ---------- Code blocks ---------- */
+.main-content code {
+  background-color: rgba($rs-medium, 0.08);
+  color: $rs-deep;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.92em;
+}
+
+.main-content pre {
+  background-color: #f6f8f7;
+  border: 1px solid rgba($rs-medium, 0.18);
+  border-left: 4px solid $rs-bright;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+}
+
+.main-content pre code {
+  background: transparent;
+  color: $rs-ink;
+}
+
+/* ---------- Blockquotes ---------- */
+.main-content blockquote {
+  border-left: 4px solid $rs-bright;
+  background-color: rgba($rs-bright, 0.06);
+  color: $rs-muted;
+  padding: 0.75rem 1rem;
+  margin: 1.25rem 0;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid rgba($rs-medium, 0.2);
+  color: $rs-muted;
+  font-size: 0.9rem;
+}
+
+.site-footer a {
+  color: $rs-accent;
+}
