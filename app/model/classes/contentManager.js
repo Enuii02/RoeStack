@@ -117,6 +117,7 @@ class ContentManager {
         if (search !== '') {
             const needsWhere = whereClause === "" || sortByPopularity;
             searchClause = `${needsWhere ? "WHERE" : "AND"} posts.title LIKE ?`;
+            search = `%${search}%`
             params.push(search);
         }
 
