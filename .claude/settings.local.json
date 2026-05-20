@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(awk 'END{print NR}' \"C:\\\\Users\\\\mati2\\\\Desktop\\\\Projects new\\\\RoeStack_Fork\\\\RoeStack\\\\static\\\\styles\\\\login.css\")",
-      "Bash(awk 'NR==46 || NR==47 || NR==7 || NR==6 {printf \"L%d: %s\\\\n\", NR, $0}')"
-    ]
-  }
-}
