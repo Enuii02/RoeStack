@@ -1,32 +1,52 @@
 # RoeStack
-A web app for Computing students to help each other with projects, connecting people with the same or similar modules via Reddit-like communities, all while finding useful student contacts (such as student or programme representatives and mentors through RoeBuddies). The main objective for this project focuses on aiding students and all the university staff by sharing guidance (while avoiding academic misconduct) and explaining difficult or interesting topics.
 
+A web app for Computing students to help each other with projects, connecting people with the same or similar modules via Reddit-like communities, all while finding useful student contacts (such as student or programme representatives and mentors through RoeBuddies). The main objective of this project is to aid students and university staff by sharing guidance (while avoiding academic misconduct) and explaining difficult or interesting topics.
+
+> This project was built as part of a university coursework assignment at the **University of Roehampton**.
+
+## Live Demo
+
+A hosted version of the app is available at:
+
+**[roestack-production.up.railway.app](https://roestack-production.up.railway.app)**
+
+Some functionality may be limited in the demo environment.
 
 ## Setup
 
-Below you can find the step-by-step procedure for installing and running a local dockerized web server for the webapp.
+Below is the step-by-step procedure for installing and running a local dockerized web server for the webapp.
 
-### Set-up the web application:
+### Prerequisites
 
-* Make sure that you don't have any other containers running using docker
-* run ```npm install```
-* run ```docker-compose up --build```
+You will need the following installed:
 
-#### Visit phphmyadmin at:
+* [Node.js](https://nodejs.org/en/download/) (Windows installer linked)
+* [Docker Desktop](https://docs.docker.com/desktop/windows/install/) (on Windows this will prompt you to install WSL)
 
-http://localhost:8081/
+### Running the app
 
-#### Visit your express app at:
+1. Make sure no other containers are currently running in Docker.
+2. Install dependencies:
 
-http://localhost:3000
+   ```bash
+   npm install
+   ```
+3. Build and start the stack:
 
-To be able to run the app, you will need to install the following:
+   ```bash
+   docker-compose up --build
+   ```
 
-* node.js  (windows: https://nodejs.org/en/download/)
-* docker desktop (for windows, this will also prompt you to install linux subsystem for windows https://docs.docker.com/desktop/windows/install/ )
+### Accessing the services
+
+| Service       | URL                     |
+| ------------- | ----------------------- |
+| Express app   | http://localhost:3000   |
+| phpMyAdmin    | http://localhost:8081   |
 
 ## Collaborators
-Oleksandr
-Mateusz
-Julianna Eldridge
-Matteo Organek
+
+* Oleksandr
+* Mateusz
+* Julianna Eldridge
+* Matteo Organek
