@@ -456,3 +456,75 @@ select.success {
   font-size: 24px;
   color: #7f7f7f;
 }
+
+.welcome-banner {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+.welcome-banner-content {
+  position: relative;
+  pointer-events: auto;
+  max-width: 420px;
+  padding: 24px 28px;
+  border-radius: 12px;
+  background: rgba(29, 29, 29, 0.65);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(129, 129, 129, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.welcome-banner-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  opacity: 0.75;
+}
+
+.welcome-banner-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.welcome-banner-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.welcome-banner-text {
+  margin: 0 0 14px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #e6e6e6;
+}
+
+.welcome-banner-link {
+  margin-top: 20px;
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #00b47d;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.welcome-banner-link:hover {
+  background: #00a070;
+}

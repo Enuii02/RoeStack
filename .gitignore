@@ -123,4 +123,8 @@ RoeStack.sql
 
 # Test output
 tests_output
-static/js/dev-autologin.js
+
+# docker compose files
+
+.docker-compose-test.yml
+.docker-compose.yml

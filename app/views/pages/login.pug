@@ -5,6 +5,7 @@ html
         link(rel="stylesheet", href="/styles/login.css")
     body 
         block content
+            include welcome-banner.pug
             .background
                 .shape.shape-1
                 .shape.shape-2
@@ -42,4 +43,5 @@ html
                 .side
                     .line.line-2
                     .line.line-1
+        
         script(src="/js/dev-autologin.js")
