@@ -264,15 +264,15 @@ searchInput.addEventListener("input", () => {
 });
 
 // submit
-finishBtn.addEventListener("click", () => {
-  const form = document.querySelector("#registerForm");
-
-  const input = document.createElement("input");
-  input.type = "hidden";
-  input.name = "communities";
-  input.value = JSON.stringify([...selectedCommunities]);
-
-  form.appendChild(input);
-
-  form.submit();
+finishBtn.addEventListener("click", (e) => {
+  // Demo mode: registration is disabled. Don't submit the form at all;
+  // just disable the button and surface the banner.
+  e.preventDefault();
+  finishBtn.disabled = true;
+  finishBtn.classList.remove("active");
+  if (typeof showDemoBanner === "function") {
+    showDemoBanner(
+      "Demo mode: account registration is disabled on the public demo.",
+    );
+  }
 });

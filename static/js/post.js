@@ -21,7 +21,11 @@ document.addEventListener("click", async (e) => {
 
             if (!res.ok) {
                 const errorData = await res.json();
-                alert("Delete failed: " + (errorData.error || "Unknown error"));
+                if (errorData.demo) {
+                    showDemoBanner(errorData.error);
+                } else {
+                    alert("Delete failed: " + (errorData.error || "Unknown error"));
+                }
                 return;
             }
 

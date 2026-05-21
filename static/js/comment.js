@@ -34,6 +34,21 @@ button.addEventListener("click", async () => {
     body: JSON.stringify({ content: text, postId, parentId: null }),
   });
 
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const data = await res.json();
+      if (data.demo) {
+        showDemoBanner(data.error);
+      } else {
+        alert("Error posting comment: " + (data.error || "Unknown error"));
+      }
+    } else {
+      alert("Error posting comment.");
+    }
+    return;
+  }
+
   const html = await res.text();
   const container = document.querySelector(".answers-section");
   container.insertAdjacentHTML("afterbegin", html);
@@ -59,7 +74,17 @@ document.addEventListener("click", async (e) => {
     });
 
     if (!res.ok) {
-      console.error("Delete failed");
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const errorData = await res.json();
+        if (errorData.demo) {
+          showDemoBanner(errorData.error);
+        } else {
+          alert("Delete failed: " + (errorData.error || "Unknown error"));
+        }
+      } else {
+        alert("Delete failed.");
+      }
       return;
     }
 
@@ -126,6 +151,21 @@ document.addEventListener("click", async (e) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content, postId, parentId: commentId }),
       });
+
+      if (!res.ok) {
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await res.json();
+          if (data.demo) {
+            showDemoBanner(data.error);
+          } else {
+            alert("Error posting reply: " + (data.error || "Unknown error"));
+          }
+        } else {
+          alert("Error posting reply.");
+        }
+        return;
+      }
 
       const html = await res.text();
 

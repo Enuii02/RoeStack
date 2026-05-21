@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(result)
                 const id = result.communityId.id || editId;
                 window.location.href = `/community/${id}`;
+            } else if (result.demo) {
+                showDemoBanner(result.error);
+                submitBtn.disabled = false;
+                submitBtn.innerText = isEditing ? "Update Community" : "Launch Community";
             } else {
                 alert("Error: " + (result.error || "Failed to save community"));
                 submitBtn.disabled = false;

@@ -18,6 +18,7 @@ app.set("views", "./app/views");
 const db = require("../model/db.js");
 
 // Get Misc Classes
+const demoMode = require("../model/middleware/demoMode.js")
 const User = require("../model/classes/user.js");
 const Post = require("../model/classes/post.js");
 const Comment = require("../model/classes/comment.js");
@@ -59,6 +60,8 @@ app.use((req, res, next) => {
   res.locals.req = req;
   next();
 });
+
+app.use(demoMode)
 
 // MAIN CONTENT ///////////////////////////////////////////////////////////////////////////////////
 

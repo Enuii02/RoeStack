@@ -88,6 +88,9 @@ document.getElementById('postForm').addEventListener('submit', async function(e)
         const result = await res.json();
         if (result.postId) {
             window.location.href = "/post/" + result.postId;
+        } else if (result.demo) {
+            showDemoBanner(result.error);
+            uploadBtn.disabled = false;
         } else {
             alert("Error saving post: " + result.error);
             uploadBtn.disabled = false;

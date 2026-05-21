@@ -1,9 +1,12 @@
-html 
-    head    
+html
+    head
         title RoeStack - Register
         link(rel="stylesheet", href="/styles/main.css")
         link(rel="stylesheet", href="/styles/login.css")
-    body 
+        link(rel="stylesheet", href="/styles/demo-banner.css")
+    body
+        include ../partials/demo-banner.pug
+        script(src="/js/demo-banner.js")
         block content
             .background
                 .shape.shape-1
