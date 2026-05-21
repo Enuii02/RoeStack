@@ -1,7 +1,12 @@
 aside.sidebar-left
     .sidebar-card
-        h3.sidebar-title Categories 
-        ul.category-list 
+        .sidebar-card-header
+            h3.sidebar-title Categories
+            button.sidebar-toggle(type="button", aria-label="Toggle categories", aria-expanded="false")
+                span.bar
+                span.bar
+                span.bar
+        ul.category-list
             a(href=removeQueryParam(req.originalUrl, 'category'))
                 li.category-item(class={active: !req.query.category})
                     span All Categories
@@ -11,7 +16,7 @@ aside.sidebar-left
                     span Questions
                     .active-indicator
             a(href=addQueryParam(req.originalUrl, 'category', 'advice'))
-                li.category-item(class={active: req.query.category === 'advice'})       
+                li.category-item(class={active: req.query.category === 'advice'})
                     span Advice
                     .active-indicator
             a(href=addQueryParam(req.originalUrl, 'category', 'survey'))
@@ -22,10 +27,15 @@ aside.sidebar-left
                 li.category-item(class={active: req.query.category === 'discussion'})
                     span Discussions
                     .active-indicator
-    .sidebar-card 
-        h3.sidebar-title Communities 
-        ul.community-list 
-            
+    .sidebar-card
+        .sidebar-card-header
+            h3.sidebar-title Communities
+            button.sidebar-toggle(type="button", aria-label="Toggle communities", aria-expanded="false")
+                span.bar
+                span.bar
+                span.bar
+        ul.community-list
+
             each community in content.topCommunities
                 li.community-item
                     a(href="/community/" + community.id)

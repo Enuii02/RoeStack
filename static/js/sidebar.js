@@ -36,4 +36,35 @@ categories.forEach((category) => {
 
 document.addEventListener("DOMContentLoaded", () => {
   filterPosts("all");
+
+  /* HAMBURGER TOGGLE (mobile) */
+  const MOBILE_BREAKPOINT = 600;
+  const toggles = document.querySelectorAll(".sidebar-toggle");
+
+  const setCollapsed = (card, collapsed) => {
+    const btn = card.querySelector(".sidebar-toggle");
+    card.classList.toggle("collapsed", collapsed);
+    if (btn) {
+      btn.classList.toggle("open", !collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+    }
+  };
+
+  const applyDefault = () => {
+    const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+    document.querySelectorAll(".sidebar-card").forEach((card) => {
+      setCollapsed(card, isMobile);
+    });
+  };
+
+  toggles.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".sidebar-card");
+      if (!card) return;
+      setCollapsed(card, !card.classList.contains("collapsed"));
+    });
+  });
+
+  applyDefault();
+  window.addEventListener("resize", applyDefault);
 });

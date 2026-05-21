@@ -17,6 +17,7 @@
 .top-section .avatar {
   height: 64px;
   width: 64px;
+  flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -67,9 +68,10 @@
   gap: 8px;
   align-items: center;
   background-color: #004e36;
-  padding: 6px 13px;
+  padding: 7px 13px;
   font-size: 14px;
   color: #f6f6f6;
+  height: 100%;
 }
 
 .category-box img {
@@ -80,6 +82,11 @@
   font-size: 14px;
   padding: 0 13px;
   color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  align-self: stretch;
 }
 .post-footer {
   display: flex;
