@@ -287,3 +287,103 @@ header .center {
   display: block;
   border: none;
 }
+
+/* ===================================
+   Responsive Breakpoints
+   - Large tablet / small laptop: <= 1200px
+   - Tablet:                      <= 900px
+   - Mobile:                      <= 600px
+   =================================== */
+
+/* Large tablet / small laptop */
+@media (max-width: 1200px) {
+  header {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .layout {
+    grid-template-columns: 240px 1fr 240px;
+    gap: 32px;
+    padding: 0 24px;
+  }
+  .sidebar-title {
+    margin-left: 24px;
+  }
+  .category-item {
+    padding: 14px 32px;
+  }
+  .leaderboard-list,
+  .community-list,
+  .stats-list {
+    padding: 14px 24px;
+  }
+}
+
+/* Tablet — hide right sidebar, keep left + content */
+@media (max-width: 900px) {
+  header {
+    height: 80px;
+    padding: 0 16px;
+  }
+  header .center {
+    margin-left: 12px;
+    margin-right: 8px;
+  }
+  .menu-option {
+    padding: 0 10px;
+  }
+  .menu-option span {
+    font-size: 16px;
+  }
+  .layout {
+    margin-top: 110px;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    padding: 0 16px;
+  }
+  .sidebar-right {
+    display: none;
+  }
+  .sidebar-left {
+    height: auto;
+    padding-bottom: 16px;
+  }
+}
+
+/* Mobile — single column, sidebars stack below content */
+@media (max-width: 600px) {
+  header {
+    height: 64px;
+    padding: 0 12px;
+  }
+  header .center {
+    margin: 0 8px;
+  }
+  .search-box {
+    height: 36px;
+    padding: 0 12px;
+  }
+  .menu-option span {
+    display: none;
+  }
+  .menu-option {
+    padding: 0 8px;
+  }
+  .layout {
+    margin-top: 80px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 12px;
+  }
+  .sidebar-left {
+    position: static;
+    top: auto;
+  }
+  .sidebar-title {
+    margin-left: 16px;
+    margin-top: 20px;
+  }
+  .category-item {
+    padding: 12px 20px;
+  }
+}
